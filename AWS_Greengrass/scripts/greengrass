@@ -1,0 +1,81 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:             greengrass
+# Required-Start:       $remote_fs $syslog $network
+# Required-Stop:        $remote_fs $syslog $network
+# Default-Start:        2 3 4 5
+# Default-Stop:         0 1 6
+# Short-Description:    AWS Greengrass
+# Description:
+#  AWS Greengrass is software for that allows to run local compute, messaging,
+#  data caching, sync, and ML inference capabilities for connected devices in a
+#  secure way on the edge of the internet. With AWS Greengrass, connected
+#  devices can run AWS Lambda functions, keep device data in sync, and
+#  communicate with other devices securely.
+#
+#  Greengrass ensures that IoT devices can respond quickly to local events,
+#  use Lambda functions running on Greengrass Core to interact with local
+#  resources, operate with intermittent connections, stay updated with over
+#  the air updates, and minimize the cost of transmitting IoT data to the cloud.
+#  AWS Greengrass authenticates and encrypts device data at all points of
+#  connection using the security and access management capabilities of AWS
+#  IoT Core. This way, data is never exchanged between devices when they
+#  communicate with each other and the cloud, without proven identity.
+#
+#  The communication between AWS Greengrass and local IoT devices is possible
+#  through MQTT, HTTPS or the industrial widely used OPC UA.
+### END INIT INFO
+
+# When this option is on, when any command fails, the shell immediately exits
+set -e
+
+DAEMON=/greengrass/ggc/packages/1.3.0/greengrassd
+
+# Does the file exist and is the permission to execute it granted
+test -x ${DAEMON} || exit 0
+
+# Set all files to be created from here on to -rw-r--r--
+umask 022
+
+# Load init functions
+. /lib/lsb/init-functions
+
+# Start the daemon
+start() {
+  log_daemon_msg "Starting daemon:" "Greengrass"
+  if /bin/bash -c "${DAEMON} start"; then
+      log_end_msg 0
+  else
+      log_end_msg 1
+  fi
+}
+
+# Stop the daemon
+stop() {
+  log_daemon_msg "Stopping daemon:" "Greengrass"
+  if /bin/bash -c "${DAEMON} stop"; then
+      log_end_msg 0
+  else
+      log_end_msg 1
+  fi
+}
+
+case "$1" in
+  start)
+        start
+        ;;
+  stop)
+        stop
+        ;;
+
+  restart)
+        stop
+        start
+        ;;
+  *)
+        log_action_msg "Usage: /etc/init.d/greengrass {start|stop|restart}"
+        exit 1
+esac
+
+exit 0
