@@ -4,6 +4,13 @@ This guide describes, how to set up an OPC UA server on a
 [KUNBUS Revolution Pi 3](https://revolution.kunbus.de/) (RevPi) using
 [open62541](https://open62541.org/) from zero.
 
+
+
+0.  Start by assembling the Revolution Pi and connecting the different modules /
+    gateways. Since there already exists a great [official tutorial](https://revolution.kunbus.com/tutorials/quick-start-guide/?noredirect=en_US)
+    concerning this process from KUNBUS, this document focusses more on the
+    software site of the set up procedure.
+
 1.  Connect your RevPi Core 3 to the router / network via the ethernet port.
 
 2.  Get the IP-address of your Revolution Pi (e.g. by using a network scanner
@@ -77,4 +84,26 @@ This guide describes, how to set up an OPC UA server on a
     the firewall in a way, that only the needed ports are accessible. An example
     of how to do this is provided in form of the script iptables_setup.sh.
 
-7. 
+7.  Befor being able to actually use the modules / gateways connected to the
+    RevPi, they have to be configured using the built-in tool PiCtory. First off,
+    evaluate that all modules have been correctly connected to the core by typing
+
+        piTest -d
+
+    This should result in an overview of all connected devices. Yet, most likely,
+    it will be stated that the modules have not been configured. To do so,
+    connect to the Core by typing in its IP-address in the browser of your choice
+    on a PC / laptop / etc. in the same network as the RevPi itself. You will be
+    able to access PiCtory from the web server hosted on the device (credentials
+    on the sticker on the side of the casing again). From this point on, simply
+    follow the instructions found [here](https://revolution.kunbus.com/tutorials/was-ist-pictory/).
+
+    Attention: To be able to access the web server, port 80 must not be blocked
+    by your firewall!
+
+8.  After finishing the configuration, it is recommended to update the modules /
+    gateways following the instructions that can be found [here](https://revolution.kunbus.com/tutorials/expansion-modules-firmware-update/).
+    Simply disconnect all modules except the one to update from the RevPi Core
+    and execute
+
+        piTest -f

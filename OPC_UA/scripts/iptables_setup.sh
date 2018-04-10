@@ -24,9 +24,13 @@ sudo iptables -A OUTPUT -p udp --dport 67:68 -j ACCEPT
 sudo iptables -A INPUT -p udp --sport 53 -j ACCEPT
 sudo iptables -A OUTPUT -p udp --dport 53 -j ACCEPT
 
-# Accept connections on port 80 (HTTP)
+# Accept connections from port 80 (HTTP)
 sudo iptables -A INPUT -p tcp --sport 80 -j ACCEPT
 sudo iptables -A OUTPUT -p tcp --dport 80 -j ACCEPT
+
+# Accept connections on port 80 (HTTP)
+sudo iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+sudo iptables -A OUTPUT -p tcp --sport 80 -j ACCEPT
 
 # Accept connections on port 443 (HTTPS)
 sudo iptables -A INPUT -p tcp --sport 443 -j ACCEPT
