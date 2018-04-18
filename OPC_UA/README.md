@@ -37,6 +37,11 @@ This guide describes, how to set up an OPC UA server on a
     well. Also, expand the filesystem (under the point "Advanced Options") if
     you haven't done it already while setting up the SD card.
 
+    Note: If you are experiencing trouble when changing locales, you might
+    have to manually enable the generation of the locale you want to set first.
+    Just remove the # infront of the respective entry in /etc/locale.gen and
+    re-run raspi-config afterwards.
+
     UPDATE YOUR SYSTEM AFTERWARDS BY EXECUTING
 
         sudo apt-get update
@@ -46,6 +51,11 @@ This guide describes, how to set up an OPC UA server on a
     (This needs internet-connection, so if you don't have the possibility to
     connect the RPI via ethernet, you might consider postponing this step until
     after you have set up a WiFi-connection (cf. step 5).)
+
+    Note: If you're running on Raspbian Jessy or below, you will have to upgrade
+    to Stretch (or higher) later on anyways, so it might be a good idea to do
+    this now. An instruction on how to do this can be found on the
+    [official Raspberry website](https://www.raspberrypi.org/blog/raspbian-stretch/).
 
     The last thing we'll have to do before setting up the network interfaces
     is to affix the necessity of a password to the usage of sudo. Eventually,
