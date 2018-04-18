@@ -1,5 +1,4 @@
 # Serverless system integration on an industrial level
-## -  A case study  -
 
 This case study aims to demonstrate the advantages of modern architectural
 approaches in the field of IoT and I4.0. It is designed to serve as an example
@@ -15,6 +14,6 @@ The schematic architecture can be seen in the below illustration:
 
 The project can be divided in three parts:
 
-    1. Setting up an OPC UA-server as an interface to the machinery
-    2. Setting up an AWS Greengrass instance on fog-level
-    3. Implementing the process logic
+1. Setting up an OPC UA-server as an interface to the machinery
+2. Setting up an AWS Greengrass instance on fog-level
+3. Implementing the process logic
