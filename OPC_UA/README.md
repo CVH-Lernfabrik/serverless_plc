@@ -117,3 +117,38 @@ This guide describes, how to set up an OPC UA server on a
     and execute
 
         piTest -f
+
+9.  Now, to actually be able to access the DI / DO modules of the RevPi, an
+    interface / API is needed. In analogy to the principles of modern software
+    development, it is recommended to split the actual functionality of the
+    connected peripheral devices in logical function blocks with highest possible
+    coherence and low coupling, leading to a highly modular architecture on this
+    layer. Doing this whilst considering the real-time requirements of the
+    individual sub-modules at the same time allows for the actual process logic
+    to be implemented on an arbitrary higher layer by abstracting the actual
+    hardware interactions to an API level.
+
+    1.  
+
+10. Now the last thing to do after creating the software interface is to set
+    up the actual OPC UA server:
+
+    1.  In this guide, we're using the open source OPC UA stack [open62541](https://open62541.org/)
+        for the creation of our OPC-server. Begin by cloning the repository from
+        GitHub via
+
+            git clone https://github.com/open62541/open62541
+
+    2.  Follow the [Building open62541](https://open62541.org/doc/current/building.html)
+        section from the official documentation to build the library. Concerning
+        the additional build options, it is recommended to at least activate
+        encryption (UA_ENABLE_ENCRYPTION) for security reasons (cf. below).
+        Furthermore, O2-level compiler optimization can be chosen by setting
+        CMAKE_BUILD_TYPE to RelWithDebInfo to increase the performance, which
+        again leads to a better real-time behaviour.
+
+        Attention: To be able to install all the dependencies necessary to build
+        open62541 with the UA_ENABLE_ENCRYPTION enabled, a Raspbian version Stretch
+        or higher is needed. So, if you are running on Jessy (or below), you need
+        to upgrade your operating system first. An instruction on how to do so
+        can e.g. be found on the [official Raspberry website](https://www.raspberrypi.org/blog/raspbian-stretch/).

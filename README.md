@@ -10,7 +10,7 @@ and split upbetween the cloud and the edge (PLC / OPC UA) level.
 
 The schematic architecture can be seen in the below illustration:
 
-
+![](doc/img/architecture.png)
 
 The project can be divided in three parts:
 
