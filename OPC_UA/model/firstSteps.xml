@@ -20,6 +20,7 @@
       <Reference ReferenceType="HasComponent">i=20004</Reference>
       <Reference ReferenceType="HasComponent">i=20005</Reference>
       <Reference ReferenceType="HasComponent">i=20006</Reference>
+      <Reference ReferenceType="HasComponent">i=20048</Reference>
     </References>
   </UAObject>
   <UAObject BrowseName="0:UserPanel" NodeId="i=20003" ParentNodeId="i=20002">
@@ -28,6 +29,14 @@
     <References>
       <Reference IsForward="false" ReferenceType="HasComponent">i=20002</Reference>
       <Reference ReferenceType="HasTypeDefinition">i=58</Reference>
+      <Reference ReferenceType="HasComponent">i=20049</Reference>
+      <Reference ReferenceType="HasComponent">i=20050</Reference>
+      <Reference ReferenceType="HasComponent">i=20051</Reference>
+      <Reference ReferenceType="HasComponent">i=20052</Reference>
+      <Reference ReferenceType="HasComponent">i=20053</Reference>
+      <Reference ReferenceType="HasComponent">i=20054</Reference>
+      <Reference ReferenceType="HasComponent">i=20055</Reference>
+      <Reference ReferenceType="HasComponent">i=20056</Reference>
     </References>
   </UAObject>
   <UAObject BrowseName="0:Conveyor" NodeId="i=20004" ParentNodeId="i=20002">
@@ -52,6 +61,15 @@
     <References>
       <Reference IsForward="false" ReferenceType="HasComponent">i=20002</Reference>
       <Reference ReferenceType="HasTypeDefinition">i=58</Reference>
+      <Reference ReferenceType="HasComponent">i=20036</Reference>
+      <Reference ReferenceType="HasComponent">i=20037</Reference>
+      <Reference ReferenceType="HasComponent">i=20038</Reference>
+      <Reference ReferenceType="HasComponent">i=20040</Reference>
+      <Reference ReferenceType="HasComponent">i=20041</Reference>
+      <Reference ReferenceType="HasComponent">i=20042</Reference>
+      <Reference ReferenceType="HasComponent">i=20043</Reference>
+      <Reference ReferenceType="HasComponent">i=20044</Reference>
+      <Reference ReferenceType="HasComponent">i=20046</Reference>
     </References>
   </UAObject>
   <UAObject BrowseName="0:Ejector" NodeId="i=20006" ParentNodeId="i=20002">
@@ -633,6 +651,285 @@
           </uax:Body>
         </uax:ExtensionObject>
       </uax:ListOfExtensionObject>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="0:limitCylinderRetracted" DataType="Boolean" NodeId="i=20036" ParentNodeId="i=20005">
+    <DisplayName>limitCylinderRetracted</DisplayName>
+    <Description>limitCylinderRetracted</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=20005</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="0:limitCylinderExtended" DataType="Boolean" NodeId="i=20037" ParentNodeId="i=20005">
+    <DisplayName>limitCylinderExtended</DisplayName>
+    <Description>limitCylinderExtended</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=20005</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="0:valveRetractCylinder" DataType="Boolean" NodeId="i=20038" ParentNodeId="i=20005">
+    <DisplayName>valveRetractCylinder</DisplayName>
+    <Description>valveRetractCylinder</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=20005</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="0:valveRetractCylinder" DataType="Boolean" NodeId="i=20039" ParentNodeId="i=20005">
+    <DisplayName>valveRetractCylinder</DisplayName>
+    <Description>valveRetractCylinder</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=20005</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="0:valveExtendCylinder" DataType="Boolean" NodeId="i=20040" ParentNodeId="i=20005">
+    <DisplayName>valveExtendCylinder</DisplayName>
+    <Description>valveExtendCylinder</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=20005</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="0:lightBarrierPartAvailable" DataType="Boolean" NodeId="i=20041" ParentNodeId="i=20005">
+    <DisplayName>lightBarrierPartAvailable</DisplayName>
+    <Description>lightBarrierPartAvailable</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=20005</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAMethod BrowseName="0:extendCylinder" NodeId="i=20042" ParentNodeId="i=20005">
+    <DisplayName>extendCylinder</DisplayName>
+    <Description>extendCylinder</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=20005</Reference>
+    </References>
+  </UAMethod>
+  <UAMethod BrowseName="0:retractCylinder" NodeId="i=20043" ParentNodeId="i=20005">
+    <DisplayName>retractCylinder</DisplayName>
+    <Description>retractCylinder</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=20005</Reference>
+    </References>
+  </UAMethod>
+  <UAMethod BrowseName="0:supplyPart" NodeId="i=20044" ParentNodeId="i=20005">
+    <DisplayName>supplyPart</DisplayName>
+    <Description>supplyPart</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=20005</Reference>
+      <Reference ReferenceType="HasProperty">i=20045</Reference>
+    </References>
+  </UAMethod>
+  <UAVariable BrowseName="0:OutputArguments" DataType="Argument" NodeId="i=20045" ParentNodeId="i=20044" ValueRank="0">
+    <DisplayName>OutputArguments</DisplayName>
+    <Description>OutputArguments</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasProperty">i=20044</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
+    </References>
+    <Value>
+      <uax:ListOfExtensionObject>
+        <uax:ExtensionObject>
+          <uax:TypeId>
+            <uax:Identifier>i=296</uax:Identifier>
+          </uax:TypeId>
+          <uax:Body>
+            <uax:Argument>
+              <uax:Name>success</uax:Name>
+              <uax:DataType>
+                <uax:Identifier>i=1</uax:Identifier>
+              </uax:DataType>
+              <uax:ValueRank>-1</uax:ValueRank>
+              <uax:ArrayDimensions />
+              <uax:Description>
+                <uax:Encoding>2</uax:Encoding>
+                <uax:Locale />
+                <uax:Text>1: part successfully supplied; 1: part could not be supplied</uax:Text>
+              </uax:Description>
+            </uax:Argument>
+          </uax:Body>
+        </uax:ExtensionObject>
+      </uax:ListOfExtensionObject>
+    </Value>
+  </UAVariable>
+  <UAMethod BrowseName="0:getStatus" NodeId="i=20046" ParentNodeId="i=20005">
+    <DisplayName>getStatus</DisplayName>
+    <Description>getStatus</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=20005</Reference>
+      <Reference ReferenceType="HasProperty">i=20047</Reference>
+    </References>
+  </UAMethod>
+  <UAVariable BrowseName="0:OutputArguments" DataType="Argument" NodeId="i=20047" ParentNodeId="i=20046" ValueRank="0">
+    <DisplayName>OutputArguments</DisplayName>
+    <Description>OutputArguments</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasProperty">i=20046</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
+    </References>
+    <Value>
+      <uax:ListOfExtensionObject>
+        <uax:ExtensionObject>
+          <uax:TypeId>
+            <uax:Identifier>i=296</uax:Identifier>
+          </uax:TypeId>
+          <uax:Body>
+            <uax:Argument>
+              <uax:Name>partsAvailable</uax:Name>
+              <uax:DataType>
+                <uax:Identifier>i=1</uax:Identifier>
+              </uax:DataType>
+              <uax:ValueRank>-1</uax:ValueRank>
+              <uax:ArrayDimensions />
+              <uax:Description>
+                <uax:Encoding>0</uax:Encoding>
+                <uax:Locale />
+                <uax:Text />
+              </uax:Description>
+            </uax:Argument>
+          </uax:Body>
+        </uax:ExtensionObject>
+        <uax:ExtensionObject>
+          <uax:TypeId>
+            <uax:Identifier>i=296</uax:Identifier>
+          </uax:TypeId>
+          <uax:Body>
+            <uax:Argument>
+              <uax:Name>partsSupplied</uax:Name>
+              <uax:DataType>
+                <uax:Identifier>i=1</uax:Identifier>
+              </uax:DataType>
+              <uax:ValueRank>-1</uax:ValueRank>
+              <uax:ArrayDimensions />
+              <uax:Description>
+                <uax:Encoding>0</uax:Encoding>
+                <uax:Locale />
+                <uax:Text />
+              </uax:Description>
+            </uax:Argument>
+          </uax:Body>
+        </uax:ExtensionObject>
+      </uax:ListOfExtensionObject>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="0:emergencyStop" DataType="Boolean" NodeId="i=20048" ParentNodeId="i=20002">
+    <DisplayName>emergencyStop</DisplayName>
+    <Description>emergencyStop</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=20002</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="0:btnStart" DataType="Boolean" NodeId="i=20049" ParentNodeId="i=20003">
+    <DisplayName>btnStart</DisplayName>
+    <Description>btnStart</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=20003</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="0:btnStop" DataType="Boolean" NodeId="i=20050" ParentNodeId="i=20003">
+    <DisplayName>btnStop</DisplayName>
+    <Description>btnStop</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=20003</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="0:btnReset" DataType="Boolean" NodeId="i=20051" ParentNodeId="i=20003">
+    <DisplayName>btnReset</DisplayName>
+    <Description>btnReset</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=20003</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="0:swAutoMan" DataType="Boolean" NodeId="i=20052" ParentNodeId="i=20003">
+    <DisplayName>swAutoMan</DisplayName>
+    <Description>swAutoMan</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=20003</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="0:ledStart" DataType="Boolean" NodeId="i=20053" ParentNodeId="i=20003">
+    <DisplayName>ledStart</DisplayName>
+    <Description>ledStart</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=20003</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="0:ledReset" DataType="Boolean" NodeId="i=20054" ParentNodeId="i=20003">
+    <DisplayName>ledReset</DisplayName>
+    <Description>ledReset</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=20003</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="0:ledQ1" DataType="Boolean" NodeId="i=20055" ParentNodeId="i=20003">
+    <DisplayName>ledQ1</DisplayName>
+    <Description>ledQ1</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=20003</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="0:ledQ2" DataType="Boolean" NodeId="i=20056" ParentNodeId="i=20003">
+    <DisplayName>ledQ2</DisplayName>
+    <Description>ledQ2</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=20003</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
     </Value>
   </UAVariable>
 </UANodeSet>
