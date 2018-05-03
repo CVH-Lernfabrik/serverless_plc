@@ -11,20 +11,20 @@
 ##################
 
 # Name of the output directory (relative to the project's path)
-BUILD_BASE		= build
+BUILD_BASE		= main/build
 
 # Name for the target project
 TARGET			= opcua
 
 # Which modules (subdirectories) of the project to include in compiling
-MODULES			= main main/utility
-EXTRA_INCDIR	=
+MODULES			= main main/utility ../model
+EXTRA_INCDIR	= main/utility/include ../model
 
 # Libraries used in this project
 BASE_LIBS		= mbedtls mbedx509 mbedcrypto
 
 # Compiler flags to use during compilation of the source files
-CFLAGS			= -O2 -Wall -std=c99
+CFLAGS			= -O2 -Wall -std=c99 -g
 
 # Linker flags used to generate the main object file
 LDFLAGS			=
