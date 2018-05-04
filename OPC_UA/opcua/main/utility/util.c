@@ -13,12 +13,12 @@
 //-------------------------------
 
 /**
- * Parses a given file and returns its contents as UA_ByteString
+ * Parses a given file in the PEM format and returns its contents as UA_ByteString
  *
- * @param   path    path to the file to parse
+ * @param   path    path to the PEM file to parse
  * @return          file content
  */
-UA_ByteString UA_loadFile(const char *const path)
+UA_ByteString UA_loadPEMFile(const char *const path)
 {
     if (!path || sizeof(path) == 0) {
         UA_LOG_FATAL(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
@@ -33,7 +33,7 @@ UA_ByteString UA_loadFile(const char *const path)
     if (f) {
         // Get the file length
         fseek(f, 0, SEEK_END);
-        fileContents.length = (size_t)ftell(f);
+        fileContents.length = (size_t) ftell(f);
 
         // Read the content of the file
         fileContents.data = (UA_Byte *) UA_malloc(fileContents.length * sizeof(UA_Byte));
@@ -48,6 +48,17 @@ UA_ByteString UA_loadFile(const char *const path)
         }
         fclose(f);
     }
+
+    // Note: By default, fseek only returns the length of the file WITHOUT the
+    // trailing zero. Yet, mbedTLS expects that the terminating character is
+    // included when trying to parse a certificate / key in the PEM format.
+    // Usually this would result in an error. This can be avoided by simply
+    // artificially increasing the file length by one after reading it with
+    // fread since in the conversion to UA_ByteString, a terminating zero is
+    // already automatically appended to the file's content (thus reading
+    // fileContents.length + 1 characters from fileContents.data will result in
+    // the actual data INCLUDING the trailing zero).
+    fileContents.length++;
 
     return fileContents;
 }

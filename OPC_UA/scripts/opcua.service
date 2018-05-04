@@ -1,0 +1,25 @@
+# opcua.service
+# Copyright 2018 Lukas Friedrichsen, Philipp Stenkamp
+# License: Apache License Version 2.0
+#
+# 2018-05-04
+
+[Unit]
+Description=Simple OPC UA-server that acts as an interface between the MPS (Modular Production System) from Festo Didactic and AWS Greengrass
+
+[Service]
+Type=simple
+Environment="OPC_UA_PATH=/home/pi/OPC_UA/opcua"
+ExecStart=/bin/bash ${OPC_UA_PATH}/build/opcua.out ${OPC_UA_PATH}/certs/server/certificate.pem.crt ${OPC_UA_PATH}/certs/server/private.pem.key ${OPC_UA_PATH}/certs/trustlist/*.crt
+
+
+------>>>> BINARY NACH USR/BIN/ ODER USR/LOCAL/BIN
+------>>>> CERTS WOANDERS HIN
+
+
+KillSignal=SIGTERM
+Restart=always
+---->>>> NOT ALWAYS
+
+[Install]
+WantedBy=multi-user.target

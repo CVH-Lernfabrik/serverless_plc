@@ -128,7 +128,7 @@ This guide describes, how to set up an OPC UA server on a
     to be implemented on an arbitrary higher layer by abstracting the actual
     hardware interactions to an API level.
 
-    1.  
+    1.
 
 10. Now the last thing to do after creating the software interface is to set
     up the actual OPC UA server:
@@ -138,6 +138,9 @@ This guide describes, how to set up an OPC UA server on a
         GitHub via
 
             git clone https://github.com/open62541/open62541
+            cd open62541
+            git submodule init
+            git submodule update
 
     2.  Follow the [Building open62541](https://open62541.org/doc/current/building.html)
         section from the official documentation to build the library. Concerning
@@ -152,3 +155,37 @@ This guide describes, how to set up an OPC UA server on a
         or higher is needed. So, if you are running on Jessy (or below), you need
         to upgrade your operating system first. An instruction on how to do so
         can e.g. be found on the [official Raspberry website](https://www.raspberrypi.org/blog/raspbian-stretch/).
+
+    3.  It is possible to define the structure of your OPC-server using an
+        externall tool like e.g. [Free OPC UA Modeler](https://github.com/FreeOpcUa/opcua-modeler)
+        and import the generated model on compile time. This makes it possible
+        to completely seperate the server as an abstract, reusable object from
+        the process logic included in the nodeset, thus simplifying
+        later changes to the latter enormously. To do so, export your model
+        as an XML file and parse it to a C-library using the open62541 XML
+        Nodeset Compiler that can be found under
+
+            ${PATH_TO_OPEN62541}/tools/nodeset_compiler/nodeset_compiler.py
+
+        An example on how to compile use the compiler can be found in
+        ./model/parse_model.sh. For further information, refer to the
+        [official documentation](https://open62541.org/doc/current/nodeset_compiler.html).
+
+    4.  Build your OPC UA-server and compile it. An example implementation can
+        be found under ./opcua/main/main.c. Again, for further information
+        besides the source code documentation refer to the
+        [official documentation](https://open62541.org/doc/current/server).
+
+        Note: It is highly recommended to use the Basic256Sha256 endpoint security
+        policy as well as the user-access plugin to prevent illicit access and to
+        be able to guarantee safe communication between server and client.
+        To generate the needed certificates and keys, execute cert_gen.sh (cf.
+        ./scripts).
+
+        Annotation: We're going to use a self signed CA-certificate. Whilst
+        this is not recommended in the world wide web, it is sufficient to
+        provide encrypted communication inside a closed sub-network.
+
+    5.  What is left to do is to make sure that our OPC-server is automatically
+        started on every boot up. This can be achieved by using Raspbians systemd
+        initialization process. Start by creating a new file opcua.service.

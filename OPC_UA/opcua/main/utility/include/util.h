@@ -19,6 +19,6 @@
 // Functions:
 //------------
 
-UA_ByteString UA_loadFile(const char *const path);
+UA_ByteString UA_loadPEMFile(const char *const path);
 
 #endif

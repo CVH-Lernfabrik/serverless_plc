@@ -185,7 +185,7 @@ static UA_ServerConfig * UA_ServerConfig_Basic256Sha256_custom(UA_UInt16 portNum
                                                                const UA_ByteString *revocationList,
                                                                size_t revocationListSize)
 {
-    if (!certificate || !privateKey || !trustList || !revocationList) {
+    if (!certificate || !privateKey) {
         UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
                      "UA_ServerConfig_Basic256Sha256_custom: Invalid transfer parameters!");
         return NULL;
@@ -365,8 +365,8 @@ int main(int argc, char* argv[])
     signal(SIGTERM, stopHandler);
 
     // Load the server certificate and private key
-    UA_ByteString certificate = UA_loadFile(argv[1]);
-    UA_ByteString privateKey = UA_loadFile(argv[2]);
+    UA_ByteString certificate = UA_loadPEMFile(argv[1]);
+    UA_ByteString privateKey = UA_loadPEMFile(argv[2]);
 
     // Initialize the trust list from the transfer parameters
     size_t trustListSize = 0;
@@ -375,7 +375,7 @@ int main(int argc, char* argv[])
     }
     UA_STACKARRAY(UA_ByteString, trustList, trustListSize);
     for (size_t i = 0; i < trustListSize; i++) {
-        trustList[i] = UA_loadFile(argv[i + 3]);
+        trustList[i] = UA_loadPEMFile(argv[i + 3]);
     }
 
     // Note: Revocation list currently unsuported in open62541 v1.04
@@ -387,6 +387,11 @@ int main(int argc, char* argv[])
                                                                     &certificate, &privateKey, \
                                                                     trustList, trustListSize, \
                                                                     revocationList, revocationListSize);
+    if (!config) {
+        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "main: Error while initializing "
+                     "the server configuration! Exiting the program!");
+        return 1;
+    }
 
     // Initialize the OPC UA-server
     UA_Server *server = UA_Server_new(config);

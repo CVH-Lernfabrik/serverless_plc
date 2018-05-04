@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # parse_model.sh
 # Copyright 2018 Lukas Friedrichsen, Philipp Stenkamp
 # License: Apache License Version 2.0
@@ -13,4 +15,3 @@ OPEN62541_PATH=/home/pi/open62541
 python ${OPEN62541_PATH}/tools/nodeset_compiler/nodeset_compiler.py --types-array=UA_TYPES \
     --existing ${OPEN62541_PATH}/deps/ua-nodeset/Schema/Opc.Ua.NodeSet2.xml \
     --xml model.xml model
-
