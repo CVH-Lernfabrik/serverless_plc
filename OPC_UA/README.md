@@ -188,4 +188,14 @@ This guide describes, how to set up an OPC UA server on a
 
     5.  What is left to do is to make sure that our OPC-server is automatically
         started on every boot up. This can be achieved by using Raspbians systemd
-        initialization process. Start by creating a new file opcua.service.
+        initialization process. Start by creating a new file opcua.service. An
+        example can be found under ./scripts/opcua.service.
+
+
+server -> /usr/local/src -------------> /usr/local/OPC-UA oder ~/OPC-UA
+softlink /usr/local/src/opcua -> /usr/local/bin
+systemd service -> /usr/local/lib/systemd/system/opcua.service
+
+
+-> IPTABLES aktivieren
+-> SYSTEMCTL ENABLE opcua.service
