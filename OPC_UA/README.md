@@ -187,15 +187,27 @@ This guide describes, how to set up an OPC UA server on a
         provide encrypted communication inside a closed sub-network.
 
     5.  What is left to do is to make sure that our OPC-server is automatically
-        started on every boot up. This can be achieved by using Raspbians systemd
-        initialization process. Start by creating a new file opcua.service. An
-        example can be found under ./scripts/opcua.service.
+        started on every boot up. This can be achieved by making use of Raspbians
+        systemd initialization process. Start by creating a new file opcua.service
+        in /usr/local/lib/systemd or /etc/systemd/usr.
+
+        Annotation: This file has to follow the usual systemd syntax conventions.
+        For further information refer to the official systemd documentation
+        (man systemd).
+
+        An example can be found under ./scripts/opcua.service. Afterwards, enable
+        the service by executing
+
+            sudo systemctl enable opcua.service
+
+        Now the OPC-server is automatically started on every boot up. It can
+        furthermore be manually controlled by
+
+            sudo systemctl start/stop/status opcua.service
+
+
 
 
 server -> /usr/local/src -------------> /usr/local/OPC-UA oder ~/OPC-UA
 softlink /usr/local/src/opcua -> /usr/local/bin
 systemd service -> /usr/local/lib/systemd/system/opcua.service
-
-
--> IPTABLES aktivieren
--> SYSTEMCTL ENABLE opcua.service
