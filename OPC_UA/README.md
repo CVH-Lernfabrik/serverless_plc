@@ -204,10 +204,3 @@ This guide describes, how to set up an OPC UA server on a
         furthermore be manually controlled by
 
             sudo systemctl start/stop/status opcua.service
-
-
-
-
-server -> /usr/local/src -------------> /usr/local/OPC-UA oder ~/OPC-UA
-softlink /usr/local/src/opcua -> /usr/local/bin
-systemd service -> /usr/local/lib/systemd/system/opcua.service

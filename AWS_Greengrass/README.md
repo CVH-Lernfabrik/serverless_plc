@@ -154,4 +154,13 @@ RPI site of the set up procedure.
 
         so if you are using an older version of Raspbian, that might be the
         command to go with).
- 
+
+    -   Optional: To be able to host AWS Lambda functions written in Node.js 6.10
+        on the GGC, it is necessary to install the respective runtime first. On
+        a Raspberry Pi, this can be done by
+
+            curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+            sudo apt-get install nodejs
+
+        Rename the executable /usr/bin/node to /usr/bin/nodejs6.10 afterwards
+        (the actual version does not matter as long as it is above 6.10).

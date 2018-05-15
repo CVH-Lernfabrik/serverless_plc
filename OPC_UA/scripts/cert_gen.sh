@@ -9,8 +9,8 @@
 # Description: Bash file to create a self-signed x509_v3 server certificate
 
 # Paths
-CA_PATH=/home/pi/OPC_UA/opcua/certs/CA
-SERVER_PATH=/home/pi/OPC_UA/opcua/certs/server
+CA_PATH=/usr/local/OPC_UA/certs/CA
+SERVER_PATH=/usr/local/OPC_UA/certs/server
 
 # Subject
 SUBJ_BASE="/C=DE/ST=Germany/L=Heiligenhaus/O=Hochschule Bochum/OU=CVH-Lernfabrik/emailAddress=lukas.friedrichsen@hs-bochum.de"
