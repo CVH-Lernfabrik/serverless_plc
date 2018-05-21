@@ -39,7 +39,7 @@ computer. The programming is usually done in the form of e.g. "Ladder Diagrams",
 with recent developments additionally enabling the support of classical
 programming languages like C, C++ or JavaScript.
 EOF
-    searchable_attributes   = { "manufacturer" }
+    searchable_attributes   = { "manufacturer", "model" }
 }
 
 resource "aws_iot_thing_type" "plant" {
@@ -66,6 +66,20 @@ Usually, a station is controlled via a PLC (Programmable Logic Controller).
 EOF
 }
 
+resource "aws_iot_thing_type" "hmi" {
+    name        = "hmi"
+    description = <<EOF
+The HMI (Human-Machine Interface) serves as a space where human-machine
+interactions can take place. Customized and individually prepared information
+for the specific use case is displayed to an operator who can then again use
+this knowledge to take appropriate situational measures. The other way round,
+the HMI serves the operator as a control interface for the respective device /
+machine / plant, e.g. to switch between work orders.
+HMIs can come in many different forms and shapes, ranging from simple buttons
+and status LEDs over SCADA plugins to fully digitized control centers.
+EOF
+}
+
 resource "aws_iot_thing_type" "sensor" {
     name                    = "sensor"
     description             = <<EOF
@@ -77,7 +91,7 @@ purpose is to read out the sensor and to move the thereby generated data to its
 designated destination (local or e.g. in the cloud), the whole unit as one can
 be referred to as "Sensor Unit".
 EOF
-    searchable_attributes   = { "type", "manufacturer" }
+    searchable_attributes   = { "manufacturer", "model", "type" }
 }
 
 resource "aws_iot_thing_type" "actor" {
@@ -91,5 +105,5 @@ the actor and (optionally) communicate the actor's state to its designated
 destination (local or e.g. in the cloud), the whole unit as one can be referred
 to as "Actor Unit".
 EOF
-    searchable_attributes   = { "type", "manufacturer" }
+    searchable_attributes   = { "manufacturer", "model", "type" }
 }

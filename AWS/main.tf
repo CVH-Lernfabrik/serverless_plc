@@ -21,3 +21,9 @@ module "iot_base" {
 module "iot_mps" {
     source = "./iot_mps"
 }
+
+# Initialize and configure the Greengrass Core device as well as the associated
+# resources (Greengrass Group, Lambdas, etc.)
+module "iot_greengrass" {
+    source = "./iot_greengrass"
+}
