@@ -4,6 +4,9 @@
 #
 # 2018-05-15
 
+# Set up the type descriptions for the different categories of IoT devices that
+# are relevant for this application
+
 resource "aws_iot_thing_type" "edge_device" {
     name        = "edge_device"
     description = <<EOF
@@ -18,33 +21,47 @@ since the processing happens locally and not in the cloud.
 EOF
 }
 
+resource "aws_iot_thing_type" "plc" {
+    name        = "plc"
+    description = <<EOF
+A PLC (Programmable Logic Controller) is a digital computer for industrial use
+which has been ruggedized and adapted for the control of manufacturing processes,
+such as assembly lines, or robotic devices, or any activity that requires high
+reliability control and ease of programming and process fault diagnosis. Usually,
+the superordinate process logic of a production plant is divided and distributed
+among multiple logically interlinked (e.g. by the means of standards like OPC UA)
+PLCs with each controlling an individual station or subtask.
+
+A PLC is designed and optimized for tasks with (hard) real-time requirements
+down to low millisecond range, thus distinguishing it from the common personal
+computer. The programming is usually done in the form of e.g. "Ladder Diagrams",
+"Functional Block Diagrams" or "Structural Text" as described in IEC 61131-3,
+with recent developments additionally enabling the support of classical
+programming languages like C, C++ or JavaScript.
+EOF
+    searchable_attributes   = { "manufacturer" }
+}
+
 resource "aws_iot_thing_type" "plant" {
     name        = "plant"
     description = <<EOF
-A plant (usually as in production plant) is a superordinate unit in a production
-resp. value creation process in general.
-
-single task
-
-usually consists of multiple stations that all complete an individual subtask
-resp. production step
-
-Usually, a production plant (as well as the subordinate stations) is controlled via one or multiple PLCs (Programmable Logic Controller).
+A plant (usually as in production plant) is a high-level unit in a production
+process in general. One plant takes over exactly one task of the superordinate
+value creation process (e.g. bottling). It usually consists of multiple
+(modularly) interliked stations, which, in turn, each complete an individual
+subtask. Normally, a production plant (as well as the subordinate stations) is
+controlled via one or multiple PLCs (Programmable Logic Controller).
 EOF
 }
 
 resource "aws_iot_thing_type" "station" {
     name        = "station"
     description = <<EOF
-A station is a (modular) part of a superordinate plant.
-
-responsible for a single subtask resp. production step of the overall production
-process
-
-smallest logical unit
-
-in an iot context, a station usually consists of multiple sensor and actor devices
-
+A station is a (modular) part of a superordinate plant that is responsible for a
+single subtask resp. production step of the overall production process. It
+represents the smallest logic unit in which the process can be broken down.
+In an IoT context, a station can usually be interpreted as a logical pooling of
+multiple sensor and actor devices that are required to solve a specific task.
 Usually, a station is controlled via a PLC (Programmable Logic Controller).
 EOF
 }
@@ -60,7 +77,7 @@ purpose is to read out the sensor and to move the thereby generated data to its
 designated destination (local or e.g. in the cloud), the whole unit as one can
 be referred to as "Sensor Unit".
 EOF
-    searchable_attributes   = { "type" }
+    searchable_attributes   = { "type", "manufacturer" }
 }
 
 resource "aws_iot_thing_type" "actor" {
@@ -74,5 +91,5 @@ the actor and (optionally) communicate the actor's state to its designated
 destination (local or e.g. in the cloud), the whole unit as one can be referred
 to as "Actor Unit".
 EOF
-    searchable_attributes   = { "type" }
+    searchable_attributes   = { "type", "manufacturer" }
 }
