@@ -48,3 +48,6 @@ resource "aws_iot_policy" "ggc_default_policy" {
 }
 EOF
 }
+output "ggc_default_policy_arn" {
+    value = "${aws_iot_policy.ggc_default_policy.arn}"
+}

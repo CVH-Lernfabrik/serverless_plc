@@ -37,8 +37,8 @@ sudo iptables -A INPUT -p tcp --sport 443 -j ACCEPT
 sudo iptables -A OUTPUT -p tcp --dport 443 -j ACCEPT
 
 # Accept connections on port 4840 (OPC UA)
-sudo iptables -A INPUT -p tcp --sport 4840 -j ACCEPT
-sudo iptables -A OUTPUT -p tcp --dport 4840 -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 4840 -j ACCEPT
+sudo iptables -A OUTPUT -p tcp --sport 4840 -j ACCEPT
 
 # Protection against some basic DDOS-attack-patterns
 iptables -A INPUT -p tcp --tcp-flags ALL NONE -j DROP
