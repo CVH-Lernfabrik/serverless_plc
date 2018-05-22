@@ -15,4 +15,6 @@ provider "aws" {
 
 # Load the Null provider to be able to use null_resource for the execution of
 # local commands or scripts
-provider "null" {}
+provider "null" {
+    version = "~> 1.0"
+}

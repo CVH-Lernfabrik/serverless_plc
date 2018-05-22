@@ -5,10 +5,16 @@
 # 2018-05-22
 
 # File in which the user credentials are stored
-variable "shared_credentials_file" {}
+variable "shared_credentials_file" {
+    default = "/home/$(whoami)/.aws/credentials"
+}
 
 # Profile to use in ${shared_credentials_file}
-variable "profile" {}
+variable "profile" {
+    default = "cvh-lernfabrik"
+}
 
 # AWS region in which the infrastructure is to be deployed
-variable "region" {}
+variable "region" {
+    default = "eu-central-1"
+}
