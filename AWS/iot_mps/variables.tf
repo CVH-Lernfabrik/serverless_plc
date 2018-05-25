@@ -19,9 +19,10 @@ variable "region" {
     default = "eu-central-1"
 }
 
-# Varbiables used to establish dependencies between the different modules
+# Redefinition of depends_on to be able to create inter-module dependencies
 # Note: This is a workaround since Terraform currently doesn't support
 # depends_on on a module level.
-variable "thing_type_plc_arn" {}
-variable "thing_type_station_arn" {}
-variable "thing_type_hmi_arn" {}
+variable "depends_on" {
+    default = [],
+    type    = "list"
+}

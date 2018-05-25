@@ -13,6 +13,11 @@ provider "aws" {
     region                  = "${var.region}"
 }
 
+# Load the TLS provider to be able to create x509_v3 certificates for the GGC
+provider "tls" {
+    version = "~> 1.1"
+}
+
 # Load the Null provider to be able to use null_resource for the execution of
 # local commands or scripts
 provider "null" {

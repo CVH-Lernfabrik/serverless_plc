@@ -18,3 +18,11 @@ variable "profile" {
 variable "region" {
     default = "eu-central-1"
 }
+
+# Redefinition of depends_on to be able to create inter-module dependencies
+# Note: This is a workaround since Terraform currently doesn't support
+# depends_on on a module level.
+variable "depends_on" {
+    default = [],
+    type    = "list"
+}

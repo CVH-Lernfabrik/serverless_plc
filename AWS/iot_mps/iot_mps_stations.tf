@@ -54,7 +54,7 @@ resource "null_resource" "iot_mps_grouping" {
     }
 
     provisioner "local-exec" {
-      command       = "iot_mps/iot_mps_grouping.sh ${var.profile} ${var.region}"
-      interpreter   = [ "bash", "-c" ]
+        command       = "iot_mps/iot_mps_grouping.sh ${var.profile} ${var.region}"
+        interpreter   = [ "bash", "-c" ]
     }
 }

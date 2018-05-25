@@ -19,7 +19,15 @@ variable "region" {
     default = "eu-central-1"
 }
 
-# Varbiables used to establish dependencies between the different modules
+# GGC policy arn
+variable "ggc_policy_arn" {
+    default = ""
+}
+
+# Redefinition of depends_on to be able to create inter-module dependencies
 # Note: This is a workaround since Terraform currently doesn't support
 # depends_on on a module level.
-variable "ggc_default_policy_arn" {}
+variable "depends_on" {
+    default = [],
+    type    = "list"
+}

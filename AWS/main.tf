@@ -22,9 +22,11 @@ module "iot_mps" {
     profile                 = "${var.profile}"
     region                  = "${var.region}"
 
-    thing_type_plc_arn      = "${module.iot_base.plc_arn}"
-    thing_type_station_arn  = "${module.iot_base.station_arn}"
-    thing_type_hmi_arn      = "${module.iot_base.hmi_arn}"
+    depends_on = [
+        "${module.iot_base.plc_arn}",
+        "${module.iot_base.station_arn}",
+        "${module.iot_base.hmi_arn}"
+    ]
 }
 
 # Initialize and configure the Greengrass Core device as well as the associated
@@ -36,5 +38,9 @@ module "iot_greengrass" {
     profile                 = "${var.profile}"
     region                  = "${var.region}"
 
-    ggc_default_policy_arn  = "${module.iot_base.ggc_default_policy_arn}"
+    ggc_policy_arn          = "${module.iot_base.ggc_default_policy_arn}"
+
+    depends_on = [
+        "${module.iot_base.edge_device_arn}"
+    ]
 }
