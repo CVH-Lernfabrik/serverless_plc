@@ -38,7 +38,8 @@ module "iot_greengrass" {
     profile                 = "${var.profile}"
     region                  = "${var.region}"
 
-    ggc_policy_arn          = "${module.iot_base.ggc_default_policy_arn}"
+    gg_service_role_arn     = "${module.iot_base.gg_default_service_role_arn}"
+    ggc_policy_name          = "${module.iot_base.ggc_default_policy_name}"
 
     depends_on = [
         "${module.iot_base.edge_device_arn}"

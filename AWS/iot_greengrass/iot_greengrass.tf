@@ -53,20 +53,56 @@ resource "aws_iot_certificate" "iot_ggc_cert" {
     }
 }
 
-# # Initialize and configure the Greengrass Group
-# # Note: This resource is triggered whenever the ARN of the GGC device changes.
-# resource "null_resource" "iot_mps_grouping" {
-#     triggers {
-#         mps_conveyor_arn    = "aws_iot_thing.iot_ggc.arn"
-#     }
-#
-#     provisioner "local-exec" {
-#         command       = "iot_greengrass/iot_greengrass.sh ${var.profile} ${var.region}"
-#         interpreter   = [ "bash", "-c" ]
-#         environment {
-#             GGC_THING_ARN   = "${aws_iot_thing.iot_ggc_thing.arn}"
-#             GGC_CERT_ARN    = "${aws_iot_certificate.iot_ggc_cert.arn}"
-#             GGC_POLICY_ARN  = "${var.ggc_policy_arn}"
-#         }
-#     }
-# }
+# Associate the certificate to the GGC
+resource "null_resource" "iot_ggc_cert_associate_cert" {
+    triggers {
+        ggc_cert_arn    = "aws_iot_certificate.iot_ggc_cert.arn"
+    }
+
+    provisioner "local-exec" {
+        command       = "aws --profile ${var.profile} --region ${var.region} iot attach-thing-principal --thing-name ${aws_iot_thing.iot_ggc_thing.name} --principal ${aws_iot_certificate.iot_ggc_cert.arn}"
+        interpreter   = [ "bash", "-c" ]
+    }
+}
+
+# Associate the GGC policy to the core's certificate
+resource "null_resource" "iot_ggc_cert_associate_policy" {
+    triggers {
+        ggc_cert_arn    = "aws_iot_certificate.iot_ggc_cert.arn"
+        ggc_policy_name = "var.ggc_policy_name"
+    }
+
+    provisioner "local-exec" {
+        command       = "aws --profile ${var.profile} --region ${var.region} iot attach-policy --target ${aws_iot_certificate.iot_ggc_cert.arn} --policy-name ${var.ggc_policy_name}"
+        interpreter   = [ "bash", "-c" ]
+    }
+}
+
+# Associate the service role w/ the necessary policies to AWS Greengrass
+resource "null_resource" "iot_gg_attach_service_role" {
+    triggers {
+        gg_service_role_arn = "var.gg_service_role_arn"
+    }
+
+    provisioner "local-exec" {
+        command       = "aws --profile ${var.profile} --region ${var.region} greengrass associate-service-role-to-account --role-arn ${var.gg_service_role_arn}"
+        interpreter   = [ "bash", "-c" ]
+    }
+}
+
+# Initialize and configure the Greengrass Group
+# Note: This resource is triggered whenever the ARN of the GGC device changes.
+resource "null_resource" "iot_greengrass_group" {
+    triggers {
+        mps_conveyor_arn    = "aws_iot_thing.iot_ggc.arn"
+    }
+
+    provisioner "local-exec" {
+        command       = "iot_greengrass/iot_greengrass.sh ${var.profile} ${var.region}"
+        interpreter   = [ "bash", "-c" ]
+        environment {
+            GGC_THING_ARN = "${aws_iot_thing.iot_ggc_thing.arn}"
+            GGC_CERT_ARN  = "${aws_iot_certificate.iot_ggc_cert.arn}"
+        }
+    }
+}

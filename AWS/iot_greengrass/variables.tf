@@ -19,8 +19,13 @@ variable "region" {
     default = "eu-central-1"
 }
 
-# GGC policy arn
-variable "ggc_policy_arn" {
+# Greengrass service role arn
+variable "gg_service_role_arn" {
+    default = ""
+}
+
+# GGC policy name
+variable "ggc_policy_name" {
     default = ""
 }
 

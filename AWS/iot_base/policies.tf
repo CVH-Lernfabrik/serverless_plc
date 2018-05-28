@@ -4,6 +4,30 @@
 #
 # 2018-05-15
 
+# Set up a default service role for AWS Greengrass role which allows access to
+# related services including AWS Lambda and AWS IoT thing shadows
+resource "aws_iam_role" "gg_default_service_role" {
+    name = "gg_default_service_role"
+    assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "greengrass.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
+}
+output "gg_default_service_role_arn" {
+    value = "${aws_iam_role.gg_default_service_role.arn}"
+}
+
 # Set up a default policy for GGC devices that enables full access to all
 # Greengrass services as well as to basic IoT Pub/Sub resp. Shadow functionalites
 resource "aws_iot_policy" "ggc_default_policy" {
@@ -48,6 +72,6 @@ resource "aws_iot_policy" "ggc_default_policy" {
 }
 EOF
 }
-output "ggc_default_policy_arn" {
-    value = "${aws_iot_policy.ggc_default_policy.arn}"
+output "ggc_default_policy_name" {
+    value = "${aws_iot_policy.ggc_default_policy.name}"
 }

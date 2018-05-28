@@ -9,15 +9,42 @@
 # Initialize and configure the Greengrass Core device as well as the associated
 # resources (Greengrass Group, Lambdas, etc.)
 
-# Delete the group if it already exists
-GGG_ID=$(aws --profile cvh-lernfabrik --region eu-central-1 greengrass list-groups | jq -r '.Groups[]  | select(.Name == "serverless-plc-group") | .Id')
+
+############
+# Deletion:
+############
+
+# Delete the Greengrass Group as well as all associated resources if it already exists
+
+# Group
+GGG_ID=$(aws --profile ${1} --region ${2} greengrass list-groups | jq -r '.Groups[]  | select(.Name == "serverless-plc-group") | .Id')
 aws --profile ${1} --region ${2} greengrass delete-group --group-id ${GGG_ID}
 
-# (Re-)Create the Greengrass Group and store the ID to be able to reference this
+# GGC definition
+GGC_DEFINITION_ARN=$(aws --profile ${1} --region ${2} greengrass list-core-definitions | jq -r '.Definitions[] | select(.Name == "serverless-plc-ggc-definition") | .Id')
+aws --profile ${1} --region ${2} greengrass delete-core-definition --core-definition-id ${GGC_DEFINITION_ARN}
+
+# Logger defintion
+GGG_LOGGER_ARN=$(aws --profile ${1} --region ${2} greengrass list-logger-definitions | jq -r '.Definitions[] | select(.Name == "serverless-plc-logger-definition") | .Id')
+aws --profile ${1} --region ${2} greengrass delete-logger-definition --logger-definition-id ${GGG_LOGGER_ARN}
+
+#################
+# (Re-)Creation:
+#################
+
+# (Re-)Create the Greengrass Group as well as all asscociated resources
+
+# Create the Greengrass Group and store the ID to be able to reference this
 # group in further operations
 GGG_ID=$(aws --profile ${1} --region ${2} greengrass create-group --name serverless-plc-group | jq -r ".Id")
 
-# (Re-)Create the GGC description
+# Create the GGC definition and store the Arn to be able to reference this
+# resource in further operations
+GGC_DEFINITION_ARN=$(aws --profile ${1} --region ${2} greengrass create-core-definition --name serverless-plc-ggc-definition --initial-version "Cores=[{CertificateArn=${GGC_CERT_ARN},Id=${GGG_ID},SyncShadow=true,ThingArn=${GGC_THING_ARN}}]" | jq -r '.LatestVersionArn')
 
+# Create the logger definition and store the Arn to be able to reference this
+# resource in further operations
+GGG_LOGGER_ARN=$(aws --profile ${1} --region ${2} greengrass create-logger-definition --name serverless-plc-logger-definition --initial-version "Loggers=[{Component=GreengrassSystem,Id="${GGG_ID}-1",Level=DEBUG,Space=4096,Type=FileSystem},{Component=GreengrassSystem,Id="${GGG_ID}-2",Level=INFO,Type=AWSCloudWatch},{Component=Lambda,Id="${GGG_ID}-3",Level=DEBUG,Space=4096,Type=FileSystem},{Component=Lambda,Id="${GGG_ID}-4",Level=INFO,Type=AWSCloudWatch}]" | jq -r '.LatestVersionArn')
 
-# Attach the necessary policies to the Greengrass Group
+# Update the Greengrass group w/ the GGC and logger definitions
+aws --profile ${1} --region ${2} greengrass create-group-version --group-id ${GGG_ID} --core-definition-version-arn ${GGC_DEFINITION_ARN} --logger-definition-version-arn ${GGG_LOGGER_ARN}
