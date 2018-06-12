@@ -4,7 +4,7 @@
 #
 # 2018-05-15
 
-# Set up a default service role for AWS Greengrass role which allows access to
+# Set up a default service role for AWS Greengrass which allows access to
 # related services including AWS Lambda and AWS IoT thing shadows
 resource "aws_iam_role" "gg_default_service_role" {
     name = "gg_default_service_role"
@@ -26,6 +26,12 @@ EOF
 }
 output "gg_default_service_role_arn" {
     value = "${aws_iam_role.gg_default_service_role.arn}"
+}
+
+# Attach the necessary (managed) policy to the Greengrass service role
+resource "aws_iam_role_policy_attachment" "gg_default_service_role_attach_policy" {
+    role       = "${aws_iam_role.gg_default_service_role.name}"
+    policy_arn = "arn:aws:iam::aws:policy/service-role/AWSGreengrassResourceAccessRolePolicy"
 }
 
 # Set up a default policy for GGC devices that enables full access to all

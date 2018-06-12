@@ -28,8 +28,9 @@ Description=AWS Greengrass Core
 After=network.target ssh.service
 
 [Service]
-Type=simple
-Environment="DAEMON=/greengrass/ggc/packages/1.3.0/greengrassd"
+Type=forking
+PIDFile=/var/run/greengrassd.pid
+Environment="DAEMON=/greengrass/ggc/packages/1.5.0/greengrassd"
 ExecStart=/bin/bash -c "${DAEMON} start"
 ExecStop=/bin/bash -c "${DAEMON} stop"
 Restart=on-failure

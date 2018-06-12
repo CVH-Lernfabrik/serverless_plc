@@ -110,31 +110,31 @@ RPI site of the set up procedure.
 7. AWS Greengrass:
     -   To set up AWS Greengrass respectively on the RPI as well as on AWS IoT,
         follow along the official [AWS tutorial](http://docs.aws.amazon.com/de_de/greengrass/latest/developerguide/gg-tutorial-rpi.html#gg-tutorial-rpi-set-up-pi).
+
     -   Once finished setting up AWS Greengrass, there are only two things left
         to do. The first one is to think of a way to make the GGC (Greengrass
         Core) software automatically start on every boot up. This is not only
         very convenient for us as users in terms of automatization, but also a
         crucial thing to do to minimize the downtime of our system (e.g. in
         cases of power outage, etc.).
-        Therefor we will use Raspbians systemv initialization process [\*].
-        Start by creating a file /etc/init.d/greengrass, that looks like the
-        provided equivalent. Make it executable via
+        Therefor we will use Raspbians systemd initialization process. Start by
+        creating a file greengrass.service in /usr/local/lib/systemd or
+        /etc/systemd/usr.
 
-            sudo chmod 755 /etc/init.d/greengrass
+        Annotation: This file has to follow the usual systemd syntax conventions.
+        For further information refer to the official systemd documentation
+        (man systemd).
 
-        After that, execute
+        An example can be found under ./scripts/greengrass.service. Afterwards,
+        enable the service by executing
 
-            sudo update-rc.d greengrass defaults
+            sudo systemctl enable greengrass.service
 
-        Now the GGC software will automatically start on every boot
-        up. Furthermore, it can be manually started and stopped via
+        Now the Greengrass software is automatically started on every boot up.
+        It can furthermore be manually controlled by
 
-            sudo service greengrass start/stop/restart
+            sudo systemctl start/stop/status greengrass.service
 
-        [\*] Annotation: On a Raspberry Pi, it would also be possible to
-        use systemd instead of systemv, but since not all Linux distributions
-        use the former yet, I decided to use systemd with regards to portability
-        and inter-platform compatibility.
     -   The absolutely last thing left to do is to manually enable the cgroup
         memory submodule. If you already tried to commit sth. from AWS IoT to
         your Greengrass Core and restart the software afterwards, you may have
@@ -142,17 +142,17 @@ RPI site of the set up procedure.
         Lambda container on the RPI isn't able to be initialized without the
         above mentioned module. To fix this, add
 
-            cgroup_memory=1
+            cgroup_enable=memory
 
         before
 
             elevator=deadline
 
-        in /boot/cmdline.txt (this was recently changed from
+        in /boot/cmdline.txt (this was intertemporarily changed to
 
-            cgroup_enable=memory,
+            cgroup_memory=1,
 
-        so if you are using an older version of Raspbian, that might be the
+        so depending on the version of Raspbian you are using, that might be the
         command to go with).
 
     -   Optional: To be able to host AWS Lambda functions written in Node.js 6.10

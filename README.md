@@ -6,7 +6,7 @@ for how a "classical" solely PLC-based control can be substituted by a in a
 serverless, decentralized context. An industrial plant w/ an OPC UA interface is
 connected to AWS IoT using AWS Greengrass on fog layer for redundancy. The
 process logic - originally implemented solely onto a single PLC - is decentralized
-and split upbetween the cloud and the edge (PLC / OPC UA) level.
+and split up between the cloud and the edge (PLC / OPC UA) level.
 
 The schematic architecture can be seen in the below illustration:
 

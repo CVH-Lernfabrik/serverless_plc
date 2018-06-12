@@ -1,0 +1,7 @@
+{
+    "name": "hello_world_template",
+    "version": "1.0.0",
+    "dependencies": {
+        "node-opcua": "^0.4.0"
+    }
+}
