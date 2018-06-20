@@ -2,14 +2,6 @@
 This case study aims to demonstrate the advantages of a serverless system architecture in the field of IoT and Industrie 4.0. 
 It is designed to serve as an example for how a traditional SCADA system can be substituted by a Linux-based PLC with connection to a cloud service via an edge gateway.
 
-This case study aims to demonstrate the advantages of modern architectural
-approaches in the field of IoT and I4.0. It is designed to serve as an example
-for how a "classical" solely PLC-based control can be substituted by a in a
-serverless, decentralized context. An industrial plant w/ an OPC UA interface is
-connected to AWS IoT using AWS Greengrass on fog layer for redundancy. The
-process logic - originally implemented solely onto a single PLC - is decentralized
-and split up between the cloud and the edge (PLC / OPC UA) level.
--
 To evaluate the technological challenges the design of this architecture imposes, the model of an industrial plant has been interfaced to a cloud-based process automation system via OPC UA. The process logic - originally implemented solely onto a single PLC - is decentralized and split up between the cloud and the edge (PLC / OPC UA) level.
 
 The core technologies utilized include Amazon Web Services (AWS) IoT as a cloud service and AWS Greengrass on the fog layer for redundancy. 
