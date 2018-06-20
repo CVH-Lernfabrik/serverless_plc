@@ -9,8 +9,7 @@ serverless, decentralized context. An industrial plant w/ an OPC UA interface is
 connected to AWS IoT using AWS Greengrass on fog layer for redundancy. The
 process logic - originally implemented solely onto a single PLC - is decentralized
 and split up between the cloud and the edge (PLC / OPC UA) level.
-
----
+-
 To evaluate the technological challenges the design of this architecture imposes, the model of an industrial plant has been interfaced to a cloud-based process automation system via OPC UA. The process logic - originally implemented solely onto a single PLC - is decentralized and split up between the cloud and the edge (PLC / OPC UA) level.
 
 The core technologies utilized include Amazon Web Services (AWS) IoT as a cloud service and AWS Greengrass on the fog layer for redundancy. 
