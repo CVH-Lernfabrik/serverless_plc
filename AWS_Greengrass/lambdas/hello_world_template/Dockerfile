@@ -12,11 +12,11 @@ RUN apt-get install zip -y
 RUN mkdir -p package/
 
 # Copy the requirements for the Lambda function into the container at /app/package
-COPY package.json /app
+COPY package.json /app/package
 
 # Install the necessary dependencies and copy local resources
 RUN npm install --prefix ./package
-COPY ../aws-greengrass-core-sdk /app/package/
+COPY aws-greengrass-core-sdk /app/package/
 COPY src/* /app/package/
 
 # Zip all dependencies

@@ -9,7 +9,7 @@
 
 # (Re-)Create the GGC device
 resource "aws_iot_thing" "iot_ggc_thing" {
-    name = "ggc_thing"
+    name            = "ggc_thing"
     thing_type_name = "edge_device"
 }
 
@@ -17,8 +17,8 @@ resource "aws_iot_thing" "iot_ggc_thing" {
 
 # Private key
 resource "tls_private_key" "iot_ggc_cert_key" {
-  algorithm   = "RSA"
-  ecdsa_curve = "4096"
+  algorithm     = "RSA"
+  ecdsa_curve   = "4096"
 
   provisioner "local-exec" {
       command       = "echo '${tls_private_key.iot_ggc_cert_key.public_key_pem}' > ../AWS_Greengrass/certs/public.pem.key; echo '${tls_private_key.iot_ggc_cert_key.private_key_pem}' > ../AWS_Greengrass/certs/private.pem.key"
@@ -28,8 +28,8 @@ resource "tls_private_key" "iot_ggc_cert_key" {
 
 # CSR
 resource "tls_cert_request" "iot_ggc_cert_csr" {
-  key_algorithm   = "RSA"
-  private_key_pem = "${tls_private_key.iot_ggc_cert_key.private_key_pem}"
+  key_algorithm     = "RSA"
+  private_key_pem   = "${tls_private_key.iot_ggc_cert_key.private_key_pem}"
 
   subject {
     common_name     = "Serverless PLC GGC"
@@ -48,8 +48,8 @@ resource "aws_iot_certificate" "iot_ggc_cert" {
     active = true
 
     provisioner "local-exec" {
-        command       = "aws --profile ${var.profile} --region ${var.region} iot describe-certificate --certificate-id $(echo ${aws_iot_certificate.iot_ggc_cert.arn} | sed -e 's#.*/##') | jq -r '.certificateDescription.certificatePem' > ../AWS_Greengrass/certs/certificate.pem.crt"
-        interpreter   = [ "bash", "-c" ]
+        command     = "aws --profile ${var.profile} --region ${var.region} iot describe-certificate --certificate-id $(echo ${aws_iot_certificate.iot_ggc_cert.arn} | sed -e 's#.*/##') | jq -r '.certificateDescription.certificatePem' > ../AWS_Greengrass/certs/certificate.pem.crt"
+        interpreter = [ "bash", "-c" ]
     }
 }
 
@@ -60,8 +60,8 @@ resource "null_resource" "iot_ggc_cert_associate_cert" {
     }
 
     provisioner "local-exec" {
-        command       = "aws --profile ${var.profile} --region ${var.region} iot attach-thing-principal --thing-name ${aws_iot_thing.iot_ggc_thing.name} --principal ${aws_iot_certificate.iot_ggc_cert.arn}"
-        interpreter   = [ "bash", "-c" ]
+        command     = "aws --profile ${var.profile} --region ${var.region} iot attach-thing-principal --thing-name ${aws_iot_thing.iot_ggc_thing.name} --principal ${aws_iot_certificate.iot_ggc_cert.arn}"
+        interpreter = [ "bash", "-c" ]
     }
 }
 
@@ -73,8 +73,8 @@ resource "null_resource" "iot_ggc_cert_associate_policy" {
     }
 
     provisioner "local-exec" {
-        command       = "aws --profile ${var.profile} --region ${var.region} iot attach-policy --target ${aws_iot_certificate.iot_ggc_cert.arn} --policy-name ${var.ggc_policy_name}"
-        interpreter   = [ "bash", "-c" ]
+        command     = "aws --profile ${var.profile} --region ${var.region} iot attach-policy --target ${aws_iot_certificate.iot_ggc_cert.arn} --policy-name ${var.ggc_policy_name}"
+        interpreter = [ "bash", "-c" ]
     }
 }
 
@@ -85,8 +85,8 @@ resource "null_resource" "iot_gg_attach_service_role" {
     }
 
     provisioner "local-exec" {
-        command       = "aws --profile ${var.profile} --region ${var.region} greengrass associate-service-role-to-account --role-arn ${var.gg_service_role_arn}"
-        interpreter   = [ "bash", "-c" ]
+        command     = "aws --profile ${var.profile} --region ${var.region} greengrass associate-service-role-to-account --role-arn ${var.gg_service_role_arn}"
+        interpreter = [ "bash", "-c" ]
     }
 }
 
@@ -98,11 +98,11 @@ resource "null_resource" "iot_greengrass_group" {
     }
 
     provisioner "local-exec" {
-        command       = "iot_greengrass/iot_greengrass.sh ${var.profile} ${var.region}"
-        interpreter   = [ "bash", "-c" ]
+        command     = "iot_greengrass/iot_greengrass.sh ${var.profile} ${var.region}"
+        interpreter = [ "bash", "-c" ]
         environment {
-            GGC_THING_ARN = "${aws_iot_thing.iot_ggc_thing.arn}"
-            GGC_CERT_ARN  = "${aws_iot_certificate.iot_ggc_cert.arn}"
+            GGC_THING_ARN   = "${aws_iot_thing.iot_ggc_thing.arn}"
+            GGC_CERT_ARN    = "${aws_iot_certificate.iot_ggc_cert.arn}"
         }
     }
 }

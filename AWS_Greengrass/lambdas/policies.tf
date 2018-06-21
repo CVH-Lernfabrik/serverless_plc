@@ -15,7 +15,7 @@ resource "aws_iam_role" "gg_lambda_default_role" {
     {
       "Action": "sts:AssumeRole",
       "Principal": {
-        "Service": "greengrass.amazonaws.com"
+        "Service": "lambda.amazonaws.com"
       },
       "Effect": "Allow",
       "Sid": ""

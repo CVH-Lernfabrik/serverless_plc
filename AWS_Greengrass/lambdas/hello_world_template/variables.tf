@@ -26,7 +26,7 @@ variable "lambda_name" {
 
 # Path to the .zip archive of the Lambda
 variable "lambda_zip_path" {
-    default = "hello_world_template.zip"
+    default = "hello_world_template/package.zip"
 }
 
 # Lambda-on-Greengrass role arn
