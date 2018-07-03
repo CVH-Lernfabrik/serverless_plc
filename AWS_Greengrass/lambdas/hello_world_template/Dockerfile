@@ -16,7 +16,7 @@ COPY package.json /app/package
 
 # Install the necessary dependencies and copy local resources
 RUN npm install --prefix ./package
-COPY aws-greengrass-core-sdk /app/package/
+COPY aws-greengrass-core-sdk /app/package/aws-greengrass-core-sdk
 COPY src/* /app/package/
 
 # Zip all dependencies

@@ -1,0 +1,19 @@
+{
+    "Server": {
+        "name": "server",
+        "url": "opc.tcp://localhost:26543"
+    },
+    "SubscriptionParameters": {
+        "requestedPublishingInterval": 100,
+        "requestedLifetimeCount": 1000,
+        "requestedMaxKeepAliveCount": 12,
+        "maxNotificationsPerPublish": 10,
+        "publishingEnabled": true,
+        "priority": 10
+    },
+    "MonitoringParameters": {
+        "samplingInterval": 250,
+        "queueSize": 10000,
+        "discardOldest": true
+    }
+}

@@ -15,9 +15,25 @@ provider "aws" {
 
 # Upload the Lambdas to S3 and deploy them to the Greengrass Core
 
-# hello_world_template
-module "hello_world_template" {
-    source = "./hello_world_template"
+# # hello_world_template
+# module "hello_world_template" {
+#     source = "./hello_world_template"
+#
+#     shared_credentials_file = "${var.shared_credentials_file}"
+#     profile                 = "${var.profile}"
+#     region                  = "${var.region}"
+#
+#     gg_lambda_role_arn      = "${aws_iam_role.gg_lambda_default_role.arn}"
+#     gg_lambda_bucket_name   = "${aws_s3_bucket.gg_lambda_bucket.id}"
+#
+#     depends_on = [
+#         "${aws_s3_bucket.gg_lambda_bucket.arn}"
+#     ]
+# }
+
+# opcua
+module "opcua" {
+    source = "./opcua"
 
     shared_credentials_file = "${var.shared_credentials_file}"
     profile                 = "${var.profile}"

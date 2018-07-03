@@ -16,23 +16,23 @@ resource "aws_s3_bucket_object" "lambda_zip" {
 
 # Create / Update the Lambda
 resource "aws_lambda_function" "lambda" {
-    function_name   = "${var.lambda_name}"
-    role            = "${var.gg_lambda_role_arn}"
-    handler         = "index.handler"
-    runtime         = "nodejs6.10"
+    function_name       = "${var.lambda_name}"
+    role                = "${var.gg_lambda_role_arn}"
+    handler             = "index.handler"
+    runtime             = "nodejs6.10"
 
-    description     = "Periodically publishs a hello-world-message from the GGC to AWS IoT"
+    description         = "Periodically publishs a hello-world-message from the GGC to AWS IoT"
 
-    s3_bucket       = "${var.gg_lambda_bucket_name}"
-    s3_key          = "${aws_s3_bucket_object.lambda_zip.id}"
+    s3_bucket           = "${var.gg_lambda_bucket_name}"
+    s3_key              = "${aws_s3_bucket_object.lambda_zip.id}"
 
-    publish         = true
-    source_code_hash = "${base64sha256(file("${var.lambda_zip_path}"))}"
+    publish             = true
+    source_code_hash    = "${base64sha256(file("${var.lambda_zip_path}"))}"
 }
 
 # Deploy the Lambda to the GGC and set up the corresponding subscriptions
 # Note: This resource is triggered whenever the ARN of the Lambda changes.
-resource "null_resource" "iot_greengrass_group" {
+resource "null_resource" "ggc_lambda_deployment" {
     triggers {
         lambda_arn  = "aws_lambda_function.lambda.qualified_arn"
     }

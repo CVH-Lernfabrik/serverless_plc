@@ -1,0 +1,8 @@
+{
+    "Subscriptions": [
+        {
+            "name": "MyPumpSpeed",
+            "nodeId": "ns=1;s=PumpSpeed"
+        },
+    ]
+}
