@@ -35,7 +35,8 @@ resource "aws_iam_role_policy_attachment" "gg_default_service_role_attach_policy
 }
 
 # Set up a default policy for GGC devices that enables full access to all
-# Greengrass services as well as to basic IoT Pub/Sub resp. Shadow functionalites
+# Greengrass services as well as to basic IoT Pub/Sub resp. Shadow and CloudWatch
+# logging functionalites
 resource "aws_iot_policy" "ggc_default_policy" {
     name = "ggc_default_policy"
     policy = <<EOF

@@ -34,15 +34,17 @@ resource "aws_lambda_function" "lambda" {
 # Note: This resource is triggered whenever the ARN of the Lambda changes.
 resource "null_resource" "ggc_lambda_deployment" {
     triggers {
-        lambda_arn  = "aws_lambda_function.lambda.qualified_arn"
+        lambda_arn  = "${aws_lambda_function.lambda.qualified_arn}"
     }
 
     provisioner "local-exec" {
         command     = "./deploy.sh ${var.profile} ${var.region}"
         interpreter = [ "bash", "-c" ]
         environment {
-            LAMBDA_ID   = "${aws_lambda_function.lambda.id}"
-            LAMBDA_ARN  = "${aws_lambda_function.lambda.qualified_arn}"
+            GGG_ROLE_ARN    = "${var.ggg_role_arn}"
+
+            LAMBDA_ID       = "${aws_lambda_function.lambda.id}"
+            LAMBDA_ARN      = "${aws_lambda_function.lambda.qualified_arn}"
         }
     }
 }

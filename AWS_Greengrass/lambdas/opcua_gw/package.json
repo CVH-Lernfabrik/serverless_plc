@@ -1,0 +1,9 @@
+{
+    "name": "opcua_gw",
+    "version": "1.0.0",
+    "dependencies": {
+        "node-opcua": "^0.4.0",
+        "cluster": "^0.7.7",
+        "requirish": "^0.3.0"
+    }
+}

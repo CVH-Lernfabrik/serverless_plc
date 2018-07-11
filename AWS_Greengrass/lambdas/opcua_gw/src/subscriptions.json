@@ -1,0 +1,24 @@
+{
+    "Subscriptions": [
+        {
+            "thingName": "mps_conveyor",
+            "propertyName": "lightBarrier_infeed",
+            "nodeId": "ns=1;s=I_9"
+        },
+        {
+            "thingName": "mps_magazine",
+            "propertyName": "ejector_extended",
+            "nodeId": "ns=1;s=I_12"
+        },
+        {
+            "thingName": "mps_magazine",
+            "propertyName": "ejector_retracted",
+            "nodeId": "ns=1;s=I_10"
+        },
+        {
+            "thingName": "mps_magazine",
+            "propertyName": "magazine_empty",
+            "nodeId": "ns=1;s=I_14"
+        }
+    ]
+}

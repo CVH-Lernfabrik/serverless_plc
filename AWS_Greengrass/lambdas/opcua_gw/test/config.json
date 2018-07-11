@@ -1,0 +1,26 @@
+{
+    "ClientParameters": {
+        "keepSessionAlive": true,
+        "connectionStrategy": {
+            "maxRetry": 1000,
+            "initialDelay": 100,
+            "maxDelay": 100000
+        }
+    },
+    "ServerParameters": {
+        "url": "opc.tcp://RevPiCore3:4840/"
+    },
+    "SubscriptionParameters": {
+        "requestedPublishingInterval": 100,
+        "requestedLifetimeCount": 1000,
+        "requestedMaxKeepAliveCount": 12,
+        "maxNotificationsPerPublish": 10,
+        "publishingEnabled": true,
+        "priority": 10
+    },
+    "MonitoringParameters": {
+        "samplingInterval": 250,
+        "queueSize": 10000,
+        "discardOldest": true
+    }
+}

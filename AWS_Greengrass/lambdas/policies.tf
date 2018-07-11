@@ -4,6 +4,35 @@
 #
 # 2018-06-12
 
+# Set up a default role for the Greengrass Group which allows access to related
+# services including AWS Cloudwatch
+resource "aws_iam_role" "ggg_default_role" {
+    name = "ggg_default_role"
+    assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "greengrass.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
+}
+
+# Attach the necessary (managed) policies to the Greengrass Group role
+
+# CloudWatchFullAccess
+resource "aws_iam_role_policy_attachment" "ggg_default_role_attach_policy_CloudWatchFullAccess" {
+    role       = "${aws_iam_role.ggg_default_role.name}"
+    policy_arn = "arn:aws:iam::aws:policy/CloudWatchFullAccess"
+}
+
 # Set up a default role for Lambdas hosted on AWS Greengrass which allows access
 # to related services including AWS IoT and AWS Cloudwatch
 resource "aws_iam_role" "gg_lambda_default_role" {
