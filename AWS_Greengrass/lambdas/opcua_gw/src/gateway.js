@@ -58,17 +58,17 @@ class OPCUAGateway {
      *                                            nodes to monitor
      */
     constructor(client, serverParameters, subscriptionParameters, monitoringParameters, listOfMonitoredItems) {
-        if ( !(client instanceof OPCUAClient)
-            || !(typeof serverParameters === 'string')
-            || !(typeof subscriptionParameters === 'string')
-            || !(typeof monitoringParameters === 'string')
-            || !(typeof listOfMonitoredItems === 'string')
+        if ( !(client instanceof Opcua.OPCUAClient)
+            || !(typeof serverParameters === 'object')
+            || !(typeof subscriptionParameters === 'object')
+            || !(typeof monitoringParameters === 'object')
+            || !(typeof listOfMonitoredItems === 'object')
         ) {
-            console.log('OPCUAGateway: Invalid transfer parameters! Exiting!');
+            console.error('OPCUAGateway: Invalid transfer parameters! Exiting!');
             process.exit(PARAM_ERR);
         }
         if ( (Opcua == null) || (IoTData == null) ) {
-            console.log('OPCUAGateway: Please set Opcua and IoTData before initializing OPCUAGateway!');
+            console.error('OPCUAGateway: Please set Opcua and IoTData before initializing OPCUAGateway!');
             process.exit(PARAM_ERR);
         }
 
@@ -114,14 +114,14 @@ class OPCUAGateway {
 
             // Watchdog callback; try to reconnect to the server if the connection
             // is lost
-            this._client.on('close') {
+            this._client.on('close', () => {
                 console.error('OPCUAGateway: Connection to the server lost! Trying to reconnect!');
 
                 this._isConnected = false;
 
                 this._client.off('close');
                 this.connect();
-            }
+            });
 
             console.log('connect: Successfully connected to the server!');
             this.emit('connect');
@@ -149,22 +149,21 @@ class OPCUAGateway {
 
             // Watchdog callbacks; try to reestablish the session if a timeout
             // occures or the server force-closes the session
-            this._session.on('keepalive_failure') {
+            this._session.on('keepalive_failure', () => {
                 console.error('OPCUAGateway: Session timed out! Trying to reestablish!');
 
                 this._isConnected = false;
 
                 this._session.off('keepalive_failure');
                 this.createSession();
-            }
-            this._session.on('session_closed') {
+            }).on('session_closed', () => {
                 console.error('OPCUAGateway: Session closed! Trying to reestablish!');
 
                 this._isConnected = false;
 
                 this._session.off('keepalive_failure');
                 this.createSession();
-            }
+            });
 
             console.log('createSession: Session created successfully!');
             console.log('createSession: SessionId: ', session.sessionId.toString());
@@ -237,16 +236,17 @@ class OPCUAGateway {
                     }
                 };
                 const payload_string = JSON.stringify(payload_json);
-                IoTData.publish(
+                IoTData.updateThingShadow(
                     {
                         thingName: monitoredNode.thingName,
                         payload: payload_string,
                     },
                     (rc) => {
                         if (rc) {
-                           console.error(monitoredItem.itemToMonitor.nodeId.toString(), ': Failed to publish ', payloadStr, ' on ', topic'. RC: ', rc);
+                           console.error(monitoredItem.itemToMonitor.nodeId.toString(), ': Failed to update shadow of thing ', monitoredNode.thingName, ' with state ', payload_string, '. RC: ', rc);
                         }
-                    });
+                    }
+                );
             });
 
             // Callback for logging errors occuring during the monitoring process
@@ -276,7 +276,7 @@ module.exports = {
         }
     },
     setIoTData: (device) => {
-        if (device instanceof IotData) {
+        if (device instanceof Object) {
             IoTData = device;
         }
         else {

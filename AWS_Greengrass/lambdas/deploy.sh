@@ -46,7 +46,7 @@ GGC_FNC_ID=$(aws --profile ${1} --region ${2} greengrass list-function-definitio
 if [ -z "${GGC_FNC_ID}" ]; then
     GGC_FNC_ID=$(aws --profile ${1} --region ${2} greengrass create-function-definition --name opcua-gw-lambda | jq -r '.Id')
 fi
-GGC_FNC_ARN=$(aws --profile cvh-lernfabrik --region eu-central-1 greengrass create-function-definition-version --function-definition-id ${GGC_FNC_ID} --functions Id="${GGC_FNC_ID}",FunctionArn="${LAMBDA_ARN}",FunctionConfiguration="{Pinned=true,Executable=index.handler,MemorySize=4096,Timeout=300,EncodingType=json}" | jq -r '.Arn')
+GGC_FNC_ARN=$(aws --profile ${1} --region ${2} greengrass create-function-definition-version --function-definition-id ${GGC_FNC_ID} --functions Id="${GGC_FNC_ID}",FunctionArn="${LAMBDA_ARN}",FunctionConfiguration="{Pinned=true,Executable=index.handler,MemorySize=65536,Timeout=300,EncodingType=json}" | jq -r '.Arn')
 
 # Create / Update the subscription definition(s) and store the Arn(s) to be able
 # to reference this (these) resource(s) in further operations

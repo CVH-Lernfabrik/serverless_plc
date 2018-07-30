@@ -18,8 +18,8 @@ require('requirish')._(module);
 const cluster       = require('cluster');
 const opcua         = require('node-opcua');
 
-const IotData       = require('aws-greengrass-core-sdk').IoTData;
-const device        = new IotData();
+const ggSDK         = require('aws-greengrass-core-sdk');
+const device        = new ggSDK.IotData();
 
 const Gateway       = require('gateway');
 const OPCUAGateway  = Gateway.OPCUAGateway;
@@ -28,24 +28,24 @@ const subscriptions = require('subscriptions.json');
 const config        = require('config.json');
 
 Gateway.setOpcua(opcua);
-Gateway.setIoTDevice(device);
+Gateway.setIoTData(device);
 
 //-------------------------
 // Cluster initialization:
 //-------------------------
 
 if (cluster.isMaster) {
-    console.log("Master with PID", process.pid, "started!");
+    console.log('Master with PID', process.pid, 'started!');
 
     cluster.fork();
 
     cluster.on('exit', (worker, code, signal) => {
-        console.log("OPC UA client with PID", worker.process.pid , "died! Restarting!");
+        console.error('OPC UA client with PID', worker.process.pid , 'died with RC:', code, '! Restarting!');
         cluster.fork();
     });
 }
 else {
-    console.log("Setting up OPC UA client!");
+    console.log('Setting up OPC UA client!');
 
     var client = new opcua.OPCUAClient(config.ClientParameters);
     var gateway = new OPCUAGateway(
@@ -57,7 +57,7 @@ else {
     );
     gateway.connect();
 
-    console.log("OPC UA client with PID", process.pid , "started!");
+    console.log('OPC UA client with PID', process.pid , 'started!');
 }
 
 //-----------------------
@@ -66,4 +66,6 @@ else {
 
 exports.handler = (event, context) => {
     console.log('--- TBA ---');
+    console.log(event);
+    console.log(context);
 };

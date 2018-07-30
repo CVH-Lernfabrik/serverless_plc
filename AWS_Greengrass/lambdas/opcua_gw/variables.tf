@@ -29,11 +29,6 @@ variable "lambda_zip_path" {
     default = "opcua_gw/package.zip"
 }
 
-# Greengrass Group role arn
-variable "ggg_role_arn" {
-    default = ""
-}
-
 # Lambda-on-Greengrass role arn
 variable "gg_lambda_role_arn" {
     default = ""
