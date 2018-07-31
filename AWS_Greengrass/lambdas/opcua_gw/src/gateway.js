@@ -223,19 +223,18 @@ class OPCUAGateway {
                 console.log('monitorNodes: Successfully initialized monitoredItem!');
             });
 
-            // Callback for synchronizing state changes w/ AWS IoT
+            // Callback for synchronizing state changes w/ the local device Shadow
             monitoredItem.on('changed', (dataValue) => {
                 const payload_json = {
-                    thingName: monitoredNode.thingName,
-                    payload: {
-                        "state": {
-                            "reported": {
-                                [monitoredNode.propertyName]: dataValue.value.value
-                            }
+                    "state": {
+                        "reported": {
+                            [monitoredNode.propertyName]: dataValue.value.value
                         }
                     }
                 };
                 const payload_string = JSON.stringify(payload_json);
+
+                // Update the local Shadow representation
                 IoTData.updateThingShadow(
                     {
                         thingName: monitoredNode.thingName,
@@ -243,7 +242,7 @@ class OPCUAGateway {
                     },
                     (rc) => {
                         if (rc) {
-                           console.error(monitoredItem.itemToMonitor.nodeId.toString(), ': Failed to update shadow of thing ', monitoredNode.thingName, ' with state ', payload_string, '. RC: ', rc);
+                           console.error(monitoredItem.itemToMonitor.nodeId.toString(), ': Failed to update local Shadow of thing', monitoredNode.thingName, 'with state', payload_string, '. RC: ', rc);
                         }
                     }
                 );

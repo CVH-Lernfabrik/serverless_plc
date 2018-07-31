@@ -1,5 +1,5 @@
 {
-    "ClientParameters": {
+    "clientParameters": {
         "keepSessionAlive": true,
         "connectionStrategy": {
             "maxRetry": 100,
@@ -7,10 +7,10 @@
             "maxDelay": 10000
         }
     },
-    "ServerParameters": {
+    "serverParameters": {
         "url": "opc.tcp://RevPiCore3:4840/"
     },
-    "SubscriptionParameters": {
+    "subscriptionParameters": {
         "requestedPublishingInterval": 100,
         "requestedLifetimeCount": 1000,
         "requestedMaxKeepAliveCount": 12,
@@ -18,7 +18,7 @@
         "publishingEnabled": true,
         "priority": 10
     },
-    "MonitoringParameters": {
+    "monitoringParameters": {
         "samplingInterval": 250,
         "queueSize": 10000,
         "discardOldest": true

@@ -30,6 +30,13 @@ const config        = require('config.json');
 Gateway.setOpcua(opcua);
 Gateway.setIoTData(device);
 
+//--------------
+// Definitions:
+//--------------
+
+let client;
+let gateway;
+
 //-------------------------
 // Cluster initialization:
 //-------------------------
@@ -47,13 +54,13 @@ if (cluster.isMaster) {
 else {
     console.log('Setting up OPC UA client!');
 
-    var client = new opcua.OPCUAClient(config.ClientParameters);
-    var gateway = new OPCUAGateway(
+    client  = new opcua.OPCUAClient(config.clientParameters);
+    gateway = new OPCUAGateway(
         client,
-        config.ServerParameters,
-        config.SubscriptionParameters,
-        config.MonitoringParameters,
-        subscriptions.Subscriptions
+        config.serverParameters,
+        config.subscriptionParameters,
+        config.monitoringParameters,
+        subscriptions.subscriptions
     );
     gateway.connect();
 
@@ -65,7 +72,27 @@ else {
 //-----------------------
 
 exports.handler = (event, context) => {
-    console.log('--- TBA ---');
-    console.log(event);
-    console.log(context);
+    console.log('Received event:', JSON.stringify(event, null, 2), 'on context:', JSON.stringify(context, null, 2));
+
+    if ( !client || !gateway ) {
+        context.fail('client and gateway need to be initialized before interacting w/ the OPC UA server!');
+    }
+    if ( !gateway.getConnectionStatus() ) {
+        context.fail('Currently no connection to the OPC UA server!');
+    }
+    if ( !event.hasOwnProperty('state') ) {
+        context.fail('Invalid event passed!');
+    }
+
+    const payload = event.state;
+
+    if ( !payload.hasOwnProperty('delta') ) {
+        context.succeed('Nothing to synchronize!');
+    }
+
+    // Try to set the OPC UA server to the desired state
+    payload.delta.forEach((thingName) => {
+        // Resolve the node ID of the OPC UA object belonging to
+    });
+
 };

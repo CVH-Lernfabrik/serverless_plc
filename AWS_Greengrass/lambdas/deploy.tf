@@ -42,7 +42,7 @@ module "opcua_gw" {
 # Note: This resource is triggered whenever the ARN of the Lambda changes.
 resource "null_resource" "ggc_lambda_deployment" {
     triggers {
-        lambda_arn  = "${module.opcua_gw.lambda_qualified_arn}"
+        opcua_gw_arn    = "${module.opcua_gw.lambda_qualified_arn}"
     }
 
     provisioner "local-exec" {
@@ -51,7 +51,7 @@ resource "null_resource" "ggc_lambda_deployment" {
         environment {
             GGG_ROLE_ARN    = "${aws_iam_role.ggg_default_role.arn}"
 
-            LAMBDA_ARN      = "${module.opcua_gw.lambda_qualified_arn}"
+            OPCUA_GW_ARN      = "${module.opcua_gw.lambda_qualified_arn}"
         }
     }
 }

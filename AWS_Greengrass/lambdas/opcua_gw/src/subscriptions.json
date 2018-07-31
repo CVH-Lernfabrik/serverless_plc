@@ -1,5 +1,5 @@
 {
-    "Subscriptions": [
+    "subscriptions": [
         {
             "thingName": "mps_conveyor",
             "propertyName": "lightBarrier_infeed",
