@@ -21,7 +21,7 @@ resource "tls_private_key" "iot_ggc_cert_key" {
   ecdsa_curve   = "4096"
 
   provisioner "local-exec" {
-      command       = "echo '${tls_private_key.iot_ggc_cert_key.public_key_pem}' > ../AWS_Greengrass/certs/public.pem.key; echo '${tls_private_key.iot_ggc_cert_key.private_key_pem}' > ../AWS_Greengrass/certs/private.pem.key"
+      command       = "echo '${tls_private_key.iot_ggc_cert_key.public_key_pem}' > ../AWS_Greengrass/certs/GGC/public.pem.key; echo '${tls_private_key.iot_ggc_cert_key.private_key_pem}' > ../AWS_Greengrass/certs/GGC/private.pem.key"
       interpreter   = [ "bash", "-c" ]
   }
 }

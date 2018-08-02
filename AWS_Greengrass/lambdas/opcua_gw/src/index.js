@@ -71,28 +71,71 @@ else {
 // Lambda event handler:
 //-----------------------
 
+/*
+ * Description: Handles events forwarded to the Lambda function by the Greengrass
+ *              Core; listenes to Shadow Delta messages and sets the OPC UA
+ *              server to the desired state
+ *
+ * @param {Object} event    - event forwarded to the Lambda function by the GGC
+ * @param {Object} context  - context of the event (incl. e.g. subject name)
+ */
 exports.handler = (event, context) => {
     console.log('Received event:', JSON.stringify(event, null, 2), 'on context:', JSON.stringify(context, null, 2));
 
     if ( !client || !gateway ) {
-        context.fail('client and gateway need to be initialized before interacting w/ the OPC UA server!');
-    }
-    if ( !gateway.getConnectionStatus() ) {
-        context.fail('Currently no connection to the OPC UA server!');
+        console.error('client and gateway need to be initialized before interacting w/ the OPC UA server!');
+        context.fail();
     }
     if ( !event.hasOwnProperty('state') ) {
-        context.fail('Invalid event passed!');
+        console.error('Invalid event passed!');
+        context.fail();
+    }
+    if ( !context.hasOwnProperty('clientContext') || !context.clientContext.hasOwnProperty('Custom') || !context.clientContext.Custom.hasOwnProperty('subject') ) {
+        console.error('Invalid context!');
+        context.fail();
     }
 
-    const payload = event.state;
+    // Extract the thing name and the payload from the event
+    const subject   = context.clientContext.Custom.subject;
+    const thingName = subject.split('/')[2];
+    const payload   = event.state;
 
-    if ( !payload.hasOwnProperty('delta') ) {
-        context.succeed('Nothing to synchronize!');
+    for (var propertyName in payload) {
+        // Resolve the ID of the OPC UA node belonging to the specified thing
+        // name + property name combination and set the respective node to the
+        // desired value
+
+        // Resolve the node(s) matching the specified pattern
+        var nodes = subscriptions.subscriptions.filter((node) => {
+            return ( (node.thingName == thingName) && node.propertyName == propertyName) );
+        });
+
+        // Annotation: The enclosing for-loop is solely for the case that the
+        // specified thing name + property name combination is not unique to
+        // one node ID. In this case, all nodes matching the pattern are set
+        // to the desired value.
+        for (var node in nodes) {
+            // Set the specified node to the desired state
+            rc = gateway.writeNode(node.nodeId, payload[propertyName]);
+            if (rc) {
+                console.error('Failed to set node', nodeId, 'to', value, '! RC:', rc);
+                context.fail();
+            }
+            else {
+                console.log('Successfully set node', nodeId, 'to', value, '!');
+                context.succeed();
+            }
+        }
     }
 
-    // Try to set the OPC UA server to the desired state
-    payload.delta.forEach((thingName) => {
-        // Resolve the node ID of the OPC UA object belonging to
-    });
+
+
+
+    TODO:
+    // 1. Network Interface -> Greengrass sporadischer Ausfall
+    // 2. Worker Killed bei Start der Gateway Lambda
+
+
+
 
 };

@@ -99,6 +99,18 @@ class OPCUAGateway {
     }
 
     /*
+     * Description: Returns the current OPC UA session w/ the server
+     */
+    getSession() {
+        if (this._isConnected) {
+            return this._session;
+        }
+        else {
+            return null;
+        }
+    }
+
+    /*
      * Description: Tries to establish a connection to the specified OPC UA server
      *
      * @fires connect
@@ -237,7 +249,7 @@ class OPCUAGateway {
                 // Update the local Shadow representation
                 IoTData.updateThingShadow(
                     {
-                        thingName: monitoredNode.thingName,
+                        topic: monitoredNode.topic,
                         payload: payload_string,
                     },
                     (rc) => {
@@ -253,6 +265,41 @@ class OPCUAGateway {
                 console.error(monitoredItem.itemToMonitor.nodeId.toString(), ': Error! RC: ', errorMessage);
             });
         });
+    }
+
+    /*
+     * Description: Sets the specified OPC UA node to the desired value
+     *
+     * @param {String} nodeId   - Unique identifier of the OPC UA node to write
+     * @param {Object} value    - Desired value to write to the specified node
+     */
+    writeNode(nodeId, value) {
+        if ( !(typeof nodeId === 'string')
+            || !(typeof value === 'object')
+        ) {
+            console.error('writeNode: Invalid transfer parameters!');
+            return PARAM_ERR;
+        }
+        if ( !this._isConnected
+            || (typeof this._session === 'undefined' && this._session)
+        ) {
+            console.error('writeNode: No active connection / session!');
+            return CONNECTION_ERR;
+        }
+
+        this._session.writeSingleNode(
+            nodeId,
+            value,
+            (err, rc) => {
+                if (err) {
+                    console.error('Error occured during write operation! Err:', err, 'RC:', rc);
+                }
+                else {
+                    console.log('Write operation successful! RC:', rc);
+                }
+                return rc;
+            }
+        );
     }
 }
 
@@ -275,7 +322,7 @@ module.exports = {
         }
     },
     setIoTData: (device) => {
-        if (device instanceof Object) {
+        if ( (device instanceof Object) && (typeof device.publish === 'function')) {
             IoTData = device;
         }
         else {

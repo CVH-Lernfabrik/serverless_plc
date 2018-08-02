@@ -1,6 +1,6 @@
 {
     "clientParameters": {
-        "keepSessionAlive": true,
+        "keepSessionAlive": false,
         "connectionStrategy": {
             "maxRetry": 100,
             "initialDelay": 1000,

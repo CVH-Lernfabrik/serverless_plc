@@ -3,21 +3,25 @@
         {
             "thingName": "mps_conveyor",
             "propertyName": "lightBarrier_infeed",
+            "topic": "$aws/things/mps_conveyor/shadow/update",
             "nodeId": "ns=1;s=I_9"
         },
         {
             "thingName": "mps_magazine",
             "propertyName": "ejector_extended",
+            "topic": "$aws/things/mps_magazine/shadow/update",
             "nodeId": "ns=1;s=I_12"
         },
         {
             "thingName": "mps_magazine",
             "propertyName": "ejector_retracted",
+            "topic": "$aws/things/mps_magazine/shadow/update",
             "nodeId": "ns=1;s=I_10"
         },
         {
             "thingName": "mps_magazine",
             "propertyName": "magazine_empty",
+            "topic": "$aws/things/mps_magazine/shadow/update",
             "nodeId": "ns=1;s=I_14"
         }
     ]
