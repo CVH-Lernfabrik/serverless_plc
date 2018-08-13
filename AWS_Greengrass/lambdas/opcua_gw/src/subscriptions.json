@@ -4,25 +4,36 @@
             "thingName": "mps_conveyor",
             "propertyName": "lightBarrier_infeed",
             "topic": "$aws/things/mps_conveyor/shadow/update",
-            "nodeId": "ns=1;s=I_9"
+            "nodeId": "ns=1;s=I_9",
+            "UADataType": "Boolean"
         },
         {
             "thingName": "mps_magazine",
             "propertyName": "ejector_extended",
             "topic": "$aws/things/mps_magazine/shadow/update",
-            "nodeId": "ns=1;s=I_12"
+            "nodeId": "ns=1;s=I_12",
+            "UADataType": "Boolean"
         },
         {
             "thingName": "mps_magazine",
             "propertyName": "ejector_retracted",
             "topic": "$aws/things/mps_magazine/shadow/update",
-            "nodeId": "ns=1;s=I_10"
+            "nodeId": "ns=1;s=I_10",
+            "UADataType": "Boolean"
         },
         {
             "thingName": "mps_magazine",
             "propertyName": "magazine_empty",
             "topic": "$aws/things/mps_magazine/shadow/update",
-            "nodeId": "ns=1;s=I_14"
+            "nodeId": "ns=1;s=I_14",
+            "UADataType": "Boolean"
+        },
+        {
+            "thingName": "mps_hmi",
+            "propertyName": "led_start",
+            "topic": "$aws/things/mps_hmi/shadow/update",
+            "nodeId": "ns=1;s=O_1",
+            "UADataType": "Boolean"
         }
     ]
 }

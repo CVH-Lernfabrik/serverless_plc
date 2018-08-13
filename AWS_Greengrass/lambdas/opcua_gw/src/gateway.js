@@ -23,6 +23,7 @@ const EventEmitter = require('events');
 //--------------
 
 // Error codes
+const STATUS_OK             = 0x00;
 const PARAM_ERR             = 0x01;
 const CONNECTION_ERR        = 0x02;
 const SESSION_CREATE_ERR    = 0x03;
@@ -131,7 +132,7 @@ class OPCUAGateway {
 
                 this._isConnected = false;
 
-                this._client.off('close');
+                this._client.removeAllListeners('close');
                 this.connect();
             });
 
@@ -166,14 +167,14 @@ class OPCUAGateway {
 
                 this._isConnected = false;
 
-                this._session.off('keepalive_failure');
+                this._session.removeAllListeners('keepalive_failure');
                 this.createSession();
             }).on('session_closed', () => {
                 console.error('OPCUAGateway: Session closed! Trying to reestablish!');
 
                 this._isConnected = false;
 
-                this._session.off('keepalive_failure');
+                this._session.removeAllListeners('session_closed');
                 this.createSession();
             });
 
@@ -247,7 +248,7 @@ class OPCUAGateway {
                 const payload_string = JSON.stringify(payload_json);
 
                 // Update the local Shadow representation
-                IoTData.updateThingShadow(
+                IoTData.publish(
                     {
                         topic: monitoredNode.topic,
                         payload: payload_string,
@@ -268,38 +269,70 @@ class OPCUAGateway {
     }
 
     /*
-     * Description: Sets the specified OPC UA node to the desired value
+     * Description: Sets the OPC UA node(s) matching the specified pattern to
+     *              the desired value
      *
-     * @param {String} nodeId   - Unique identifier of the OPC UA node to write
-     * @param {Object} value    - Desired value to write to the specified node
+     * @param {String} thingName    - Identifier of the (logically) superordinate
+     *                                instance / object of the OPC UA node to
+     *                                write, that, in combination with propertyName,
+     *                                can be resolved to the unique nodeId
+     * @param {String} propertyName - Identifier of the logical equivalent of the
+     *                                OPC UA node to write, that, in combination
+     *                                with thingName, can be resolved to the
+     *                                unique nodeId
+     * @param {Object} value        - Desired value to write to the specified node
      */
-    writeNode(nodeId, value) {
-        if ( !(typeof nodeId === 'string')
-            || !(typeof value === 'object')
+    writeNode(thingName, propertyName, value) {
+        if ( !(typeof thingName === 'string')
+            || !(typeof propertyName === 'string')
         ) {
             console.error('writeNode: Invalid transfer parameters!');
             return PARAM_ERR;
         }
         if ( !this._isConnected
-            || (typeof this._session === 'undefined' && this._session)
+            || (typeof this._session === 'undefined')
         ) {
             console.error('writeNode: No active connection / session!');
             return CONNECTION_ERR;
         }
 
-        this._session.writeSingleNode(
-            nodeId,
-            value,
-            (err, rc) => {
-                if (err) {
-                    console.error('Error occured during write operation! Err:', err, 'RC:', rc);
+        // Resolve the node(s) matching the specified pattern
+        var nodes = this._listOfMonitoredItems.filter( (node) => {
+            return ( (node.thingName == thingName) && (node.propertyName == propertyName) );
+        });
+
+        // Annotation: The enclosing for-loop is solely for the case that the
+        // specified thing name + property name combination is not unique to
+        // one node ID. In this case, all nodes matching the pattern are set
+        // to the desired value.
+        for (var idx in nodes) {
+            var nodeId      = nodes[idx].nodeId;
+            var dataType    = Opcua.DataType.enums.filter( (type) => {
+                return (type.key == nodes[idx].UADataType);
+            })[0];
+            var value       = {
+                'statusCode': Opcua.StatusCodes.Good,
+                'value': {
+                    'dataType': dataType,
+                    'value': value
                 }
-                else {
-                    console.log('Write operation successful! RC:', rc);
+            };
+
+            // Set the specified node to the desired state
+            this._session.writeSingleNode(
+                nodeId,
+                value,
+                (err, rc) => {
+                    if (err) {
+                        console.error('Error occured during write operation! Err:', err, 'RC:', rc);
+                    }
+                    else {
+                        console.log('Write operation successful! RC:', rc);
+                    }
                 }
-                return rc;
-            }
-        );
+            );
+        }
+        return STATUS_OK;
     }
 }
 

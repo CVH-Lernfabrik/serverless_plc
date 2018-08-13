@@ -82,8 +82,8 @@ else {
 exports.handler = (event, context) => {
     console.log('Received event:', JSON.stringify(event, null, 2), 'on context:', JSON.stringify(context, null, 2));
 
-    if ( !client || !gateway ) {
-        console.error('client and gateway need to be initialized before interacting w/ the OPC UA server!');
+    if ( (typeof gateway === 'undefined') ) {
+        console.error('The gateway needs to be initialized before interacting w/ the OPC UA server!');
         context.fail();
     }
     if ( !event.hasOwnProperty('state') ) {
@@ -101,41 +101,17 @@ exports.handler = (event, context) => {
     const payload   = event.state;
 
     for (var propertyName in payload) {
-        // Resolve the ID of the OPC UA node belonging to the specified thing
-        // name + property name combination and set the respective node to the
-        // desired value
+        var value = payload[propertyName];
 
-        // Resolve the node(s) matching the specified pattern
-        var nodes = subscriptions.subscriptions.filter((node) => {
-            return ( (node.thingName == thingName) && node.propertyName == propertyName) );
-        });
-
-        // Annotation: The enclosing for-loop is solely for the case that the
-        // specified thing name + property name combination is not unique to
-        // one node ID. In this case, all nodes matching the pattern are set
-        // to the desired value.
-        for (var node in nodes) {
-            // Set the specified node to the desired state
-            rc = gateway.writeNode(node.nodeId, payload[propertyName]);
-            if (rc) {
-                console.error('Failed to set node', nodeId, 'to', value, '! RC:', rc);
-                context.fail();
-            }
-            else {
-                console.log('Successfully set node', nodeId, 'to', value, '!');
-                context.succeed();
-            }
+        // Set the node(s) matching the specified pattern to the desired state
+        var rc = gateway.writeNode(thingName, propertyName, value);
+        if (rc) {
+            console.error('Failed to initiate write operation to set', thingName + '.' + propertyName, 'to', value + '! RC:', rc);
+            context.fail();
+        }
+        else {
+            console.log('Successfully initiated write operation to set', thingName + '.' + propertyName, 'to', value + '!');
+            context.succeed();
         }
     }
-
-
-
-
-    TODO:
-    // 1. Network Interface -> Greengrass sporadischer Ausfall
-    // 2. Worker Killed bei Start der Gateway Lambda
-
-
-
-
 };
