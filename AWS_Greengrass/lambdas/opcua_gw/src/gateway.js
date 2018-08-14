@@ -16,7 +16,7 @@
 require('requirish')._(module);
 
 const util = require('util');
-const EventEmitter = require('events');
+const eventEmitter = require('events');
 
 //--------------
 // Definitions:
@@ -29,8 +29,25 @@ const CONNECTION_ERR        = 0x02;
 const SESSION_CREATE_ERR    = 0x03;
 const SUBSCRIPTION_ERR      = 0x04;
 
-let Opcua;
+// Variables
+let opcua;
 let IoTData;
+
+//----------
+// Loggers:
+//----------
+
+// Annotation: Even though uppercase for an object may appear like a break w/
+// the JS style guide, this notation is retained in analogy to C / C++ macros.
+const LOGGER = {};
+['log', 'warn', 'error'].forEach( (logLevel) => {
+    LOGGER[logLevel.toUpperCase()] = function (msg) {
+        process.send({
+            'type': logLevel,
+            'msg': msg
+        });
+    };
+});
 
 //----------
 // Gateway:
@@ -41,7 +58,7 @@ let IoTData;
  *              integrated synchronization with AWS using the AWS IoT Shadow
  *              Engine.
  *
- * @augments EventEmitter
+ * @augments eventEmitter
  */
 class OPCUAGateway {
 
@@ -59,17 +76,17 @@ class OPCUAGateway {
      *                                            nodes to monitor
      */
     constructor(client, serverParameters, subscriptionParameters, monitoringParameters, listOfMonitoredItems) {
-        if ( !(client instanceof Opcua.OPCUAClient)
+        if ( !(client instanceof opcua.OPCUAClient)
             || !(typeof serverParameters === 'object')
             || !(typeof subscriptionParameters === 'object')
             || !(typeof monitoringParameters === 'object')
             || !(typeof listOfMonitoredItems === 'object')
         ) {
-            console.error('OPCUAGateway: Invalid transfer parameters! Exiting!');
+            LOGGER.ERROR('OPCUAGateway: Invalid transfer parameters! Exiting!');
             process.exit(PARAM_ERR);
         }
-        if ( (Opcua == null) || (IoTData == null) ) {
-            console.error('OPCUAGateway: Please set Opcua and IoTData before initializing OPCUAGateway!');
+        if ( (opcua == null) || (IoTData == null) ) {
+            LOGGER.ERROR('OPCUAGateway: Please set opcua and IoTData before initializing OPCUAGateway!');
             process.exit(PARAM_ERR);
         }
 
@@ -117,18 +134,18 @@ class OPCUAGateway {
      * @fires connect
      */
     connect() {
-        console.log('connect: Connecting to the server!');
+        LOGGER.LOG('connect: Connecting to the server!');
 
         this._client.connect(this._serverParameters.url, (connectError) => {
             if (connectError) {
-                console.error('connect: Failed to establish connection to ', this._serverParameters.url, '! Exiting! RC: ', connectError);
+                LOGGER.ERROR('connect: Failed to establish connection to ', this._serverParameters.url, '! Exiting! RC: ', connectError);
                 process.exit(CONNECTION_ERR);
             }
 
             // Watchdog callback; try to reconnect to the server if the connection
             // is lost
             this._client.on('close', () => {
-                console.error('OPCUAGateway: Connection to the server lost! Trying to reconnect!');
+                LOGGER.ERROR('OPCUAGateway: Connection to the server lost! Trying to reconnect!');
 
                 this._isConnected = false;
 
@@ -136,7 +153,7 @@ class OPCUAGateway {
                 this.connect();
             });
 
-            console.log('connect: Successfully connected to the server!');
+            LOGGER.LOG('connect: Successfully connected to the server!');
             this.emit('connect');
         });
     }
@@ -148,12 +165,12 @@ class OPCUAGateway {
      * @fires session_created
      */
     createSession() {
-        console.log('createSession: Establishing session!');
+        LOGGER.LOG('createSession: Establishing session!');
 
         const userIdentity = null;
         this._client.createSession(userIdentity, (createSessionError, session) => {
             if (createSessionError) {
-                console.error('createSession: Failed to create the session! Exiting! RC: ', createSessionError);
+                LOGGER.ERROR('createSession: Failed to create the session! Exiting! RC: ', createSessionError);
                 process.exit(SESSION_CREATE_ERR);
             }
 
@@ -163,14 +180,14 @@ class OPCUAGateway {
             // Watchdog callbacks; try to reestablish the session if a timeout
             // occures or the server force-closes the session
             this._session.on('keepalive_failure', () => {
-                console.error('OPCUAGateway: Session timed out! Trying to reestablish!');
+                LOGGER.ERROR('OPCUAGateway: Session timed out! Trying to reestablish!');
 
                 this._isConnected = false;
 
                 this._session.removeAllListeners('keepalive_failure');
                 this.createSession();
             }).on('session_closed', () => {
-                console.error('OPCUAGateway: Session closed! Trying to reestablish!');
+                LOGGER.ERROR('OPCUAGateway: Session closed! Trying to reestablish!');
 
                 this._isConnected = false;
 
@@ -178,8 +195,8 @@ class OPCUAGateway {
                 this.createSession();
             });
 
-            console.log('createSession: Session created successfully!');
-            console.log('createSession: SessionId: ', session.sessionId.toString());
+            LOGGER.LOG('createSession: Session created successfully!');
+            LOGGER.LOG('createSession: SessionId: ', session.sessionId.toString());
             this.emit('session_created');
         });
     }
@@ -196,16 +213,16 @@ class OPCUAGateway {
      * @fires subscribed
      */
     createSubscription() {
-        console.log('createSubscription: Initializing subscription!');
+        LOGGER.LOG('createSubscription: Initializing subscription!');
 
-        this._subscription = new Opcua.ClientSubscription(this._session, this._subscriptionParameters);
+        this._subscription = new opcua.ClientSubscription(this._session, this._subscriptionParameters);
         this._subscription.on('started', () => {
-            console.log('createSubscription: Started subscription: ', this._subscription.subscriptionId);
+            LOGGER.LOG('createSubscription: Started subscription: ', this._subscription.subscriptionId);
             this.emit('subscribed');
         }).on('status_changed', (rc, v) => {
-            console.log('createSubscription: Status changed! RC: ', rc, ' Value: ', v);
+            LOGGER.LOG('createSubscription: Status changed! RC: ', rc, ' Value: ', v);
         }).on('internal_error', (rc) => {
-            console.error('createSubscription: Internal error! Exiting! RC: ', rc.message);
+            LOGGER.ERROR('createSubscription: Internal error! Exiting! RC: ', rc.message);
             process.exit(SUBSCRIPTION_ERR);
         });
     }
@@ -221,19 +238,19 @@ class OPCUAGateway {
      */
     monitorNodes() {
         this._listOfMonitoredItems.forEach((monitoredNode) => {
-            console.log('monitorNodes: Initializing monitoring of node: ', monitoredNode.nodeId);
+            LOGGER.LOG('monitorNodes: Initializing monitoring of node: ', monitoredNode.nodeId);
 
             // Initialize the (periodical) monitoring of the specified node
             const monitoredItem = this._subscription.monitor(
                 {
                     nodeId: monitoredNode.nodeId,
-                    attributeId: Opcua.AttributeIds.Value,
+                    attributeId: opcua.AttributeIds.Value,
                 },
                 this._monitoringParameters
             );
 
             monitoredItem.on('initialized', () => {
-                console.log('monitorNodes: Successfully initialized monitoredItem!');
+                LOGGER.LOG('monitorNodes: Successfully initialized monitoredItem!');
             });
 
             // Callback for synchronizing state changes w/ the local device Shadow
@@ -255,7 +272,7 @@ class OPCUAGateway {
                     },
                     (rc) => {
                         if (rc) {
-                           console.error(monitoredItem.itemToMonitor.nodeId.toString(), ': Failed to update local Shadow of thing', monitoredNode.thingName, 'with state', payload_string, '. RC: ', rc);
+                           LOGGER.ERROR(monitoredItem.itemToMonitor.nodeId.toString(), ': Failed to update local Shadow of thing', monitoredNode.thingName, 'with state', payload_string, '. RC: ', rc);
                         }
                     }
                 );
@@ -263,7 +280,7 @@ class OPCUAGateway {
 
             // Callback for logging errors occuring during the monitoring process
             monitoredItem.on('err', (errorMessage) => {
-                console.error(monitoredItem.itemToMonitor.nodeId.toString(), ': Error! RC: ', errorMessage);
+                LOGGER.ERROR(monitoredItem.itemToMonitor.nodeId.toString(), ': Error! RC: ', errorMessage);
             });
         });
     }
@@ -281,18 +298,20 @@ class OPCUAGateway {
      *                                with thingName, can be resolved to the
      *                                unique nodeId
      * @param {Object} value        - Desired value to write to the specified node
+     *
+     * @returns {number}            - Status / Return code of the write operation
      */
     writeNode(thingName, propertyName, value) {
         if ( !(typeof thingName === 'string')
             || !(typeof propertyName === 'string')
         ) {
-            console.error('writeNode: Invalid transfer parameters!');
+            LOGGER.ERROR('writeNode: Invalid transfer parameters!');
             return PARAM_ERR;
         }
         if ( !this._isConnected
             || (typeof this._session === 'undefined')
         ) {
-            console.error('writeNode: No active connection / session!');
+            LOGGER.ERROR('writeNode: No active connection / session!');
             return CONNECTION_ERR;
         }
 
@@ -307,15 +326,12 @@ class OPCUAGateway {
         // to the desired value.
         for (var idx in nodes) {
             var nodeId      = nodes[idx].nodeId;
-            var dataType    = Opcua.DataType.enums.filter( (type) => {
+            var dataType    = opcua.DataType.enums.filter( (type) => {
                 return (type.key == nodes[idx].UADataType);
             })[0];
             var value       = {
-                'statusCode': Opcua.StatusCodes.Good,
-                'value': {
                     'dataType': dataType,
                     'value': value
-                }
             };
 
             // Set the specified node to the desired state
@@ -324,10 +340,10 @@ class OPCUAGateway {
                 value,
                 (err, rc) => {
                     if (err) {
-                        console.error('Error occured during write operation! Err:', err, 'RC:', rc);
+                        LOGGER.ERROR('Error occured during write operation! Err:', err, 'RC:', rc);
                     }
                     else {
-                        console.log('Write operation successful! RC:', rc);
+                        LOGGER.LOG('Write operation successful! RC:', rc);
                     }
                 }
             );
@@ -336,8 +352,8 @@ class OPCUAGateway {
     }
 }
 
-// Inheritance from EventEmitter to allow for a reacitve programming paradigm
-util.inherits(OPCUAGateway, EventEmitter);
+// Inheritance from eventEmitter to allow for a reacitve programming paradigm
+util.inherits(OPCUAGateway, eventEmitter);
 
 //----------
 // Exports:
@@ -345,12 +361,12 @@ util.inherits(OPCUAGateway, EventEmitter);
 
 module.exports = {
     OPCUAGateway: OPCUAGateway,
-    setOpcua: (opcua) => {
-        if (opcua instanceof Object) {
-            Opcua = opcua;
+    setOpcua: (node_opcua) => {
+        if (node_opcua instanceof Object) {
+            opcua = node_opcua;
         }
         else {
-            console.error('setOpcua: Invalid type for opcua! Exiting!');
+            LOGGER.ERROR('setOpcua: Invalid type for node_opcua! Exiting!');
             return PARAM_ERR;
         }
     },
@@ -359,7 +375,7 @@ module.exports = {
             IoTData = device;
         }
         else {
-            console.error('setIoTData: Invalid type for device! Exiting!');
+            LOGGER.ERROR('setIoTData: Invalid type for device! Exiting!');
             return PARAM_ERR;
         }
     }

@@ -2,10 +2,10 @@
 // Copyright 2018 Lukas Friedrichsen, Philipp Stenkamp
 // License: Apache License Version 2.0
 //
-// 2018-06-28
+// 2018-08-14
 //
 // Description: OPC UA gateway functionality and state synchronization w/ AWS
-// using the AWS Shadow Engine
+// using the AWS Shadow Engine -- Master process --
 
 'use strict';
 
@@ -15,57 +15,58 @@
 
 require('requirish')._(module);
 
-const cluster       = require('cluster');
-const opcua         = require('node-opcua');
-
-const ggSDK         = require('aws-greengrass-core-sdk');
-const device        = new ggSDK.IotData();
-
-const Gateway       = require('gateway');
-const OPCUAGateway  = Gateway.OPCUAGateway;
-
-const subscriptions = require('subscriptions.json');
-const config        = require('config.json');
-
-Gateway.setOpcua(opcua);
-Gateway.setIoTData(device);
+const child_process = require('child_process');
 
 //--------------
 // Definitions:
 //--------------
 
-let client;
-let gateway;
+// Variables
+let worker;
 
-//-------------------------
-// Cluster initialization:
-//-------------------------
+//----------
+// Loggers:
+//----------
 
-if (cluster.isMaster) {
-    console.log('Master with PID', process.pid, 'started!');
+// Annotation: Even though uppercase for an object may appear like a break w/
+// the JS style guide, this notation is retained in analogy to C / C++ macros.
+const LOGGER = {};
+['log', 'warn', 'error'].forEach( (logLevel) => {
+    logger[logLevel.toUpperCase()] = console[logLevel];
+});
 
-    cluster.fork();
+//------------------------
+// Worker initialization:
+//------------------------
 
-    cluster.on('exit', (worker, code, signal) => {
-        console.error('OPC UA client with PID', worker.process.pid , 'died with RC:', code, '! Restarting!');
-        cluster.fork();
-    });
-}
-else {
-    console.log('Setting up OPC UA client!');
+LOGGER.LOG('Master with PID', process.pid, 'started!');
 
-    client  = new opcua.OPCUAClient(config.clientParameters);
-    gateway = new OPCUAGateway(
-        client,
-        config.serverParameters,
-        config.subscriptionParameters,
-        config.monitoringParameters,
-        subscriptions.subscriptions
-    );
-    gateway.connect();
+worker = child_process.fork('worker.js');
 
-    console.log('OPC UA client with PID', process.pid , 'started!');
-}
+worker.on('exit', (code, signal) => {
+    LOGGER.ERROR('OPC UA client with PID', worker.pid , 'died with RC:', code, '! Restarting!');
+    worker = child_process.fork('worker.js');
+});
+
+worker.on('message', (msg) => {
+    if ( !msg.hasOwnProperty('type') || !msg.hasOwnProperty('msg') ) {
+        LOGGER.ERROR('Invalid message received from the worker process!');
+        return();
+    }
+
+    if (msg.type == 'log') {
+        LOGGER.LOG(msg.msg);
+    }
+    else if (msg.type == 'warn') {
+        LOGGER.WARN(msg.msg);
+    }
+    else if (msg.type == 'error') {
+        LOGGER.ERROR(msg.msg);
+    }
+    else {
+        LOGGER.LOG('Invalid message type!');
+    }
+});
 
 //-----------------------
 // Lambda event handler:
@@ -73,25 +74,21 @@ else {
 
 /*
  * Description: Handles events forwarded to the Lambda function by the Greengrass
- *              Core; listenes to Shadow Delta messages and sets the OPC UA
- *              server to the desired state
+ *              Core; listenes to Shadow Delta messages and initiates the write
+ *              process to set the OPC UA server to the desired state
  *
  * @param {Object} event    - event forwarded to the Lambda function by the GGC
  * @param {Object} context  - context of the event (incl. e.g. subject name)
  */
 exports.handler = (event, context) => {
-    console.log('Received event:', JSON.stringify(event, null, 2), 'on context:', JSON.stringify(context, null, 2));
+    LOGGER.LOG('Received event:', JSON.stringify(event, null, 2), 'on context:', JSON.stringify(context, null, 2));
 
-    if ( (typeof gateway === 'undefined') ) {
-        console.error('The gateway needs to be initialized before interacting w/ the OPC UA server!');
-        context.fail();
-    }
     if ( !event.hasOwnProperty('state') ) {
-        console.error('Invalid event passed!');
+        LOGGER.ERROR('Invalid event passed!');
         context.fail();
     }
     if ( !context.hasOwnProperty('clientContext') || !context.clientContext.hasOwnProperty('Custom') || !context.clientContext.Custom.hasOwnProperty('subject') ) {
-        console.error('Invalid context!');
+        LOGGER.ERROR('Invalid context!');
         context.fail();
     }
 
@@ -103,15 +100,15 @@ exports.handler = (event, context) => {
     for (var propertyName in payload) {
         var value = payload[propertyName];
 
-        // Set the node(s) matching the specified pattern to the desired state
-        var rc = gateway.writeNode(thingName, propertyName, value);
-        if (rc) {
-            console.error('Failed to initiate write operation to set', thingName + '.' + propertyName, 'to', value + '! RC:', rc);
-            context.fail();
-        }
-        else {
-            console.log('Successfully initiated write operation to set', thingName + '.' + propertyName, 'to', value + '!');
-            context.succeed();
-        }
+        LOGGER.LOG('Setting', thingName + '.' + propertyName, 'to', value + '...');
+
+        // Forward the event to the OPC UA gateway process to initiate the
+        // write operation
+        worker.send({
+            'thingName': thingName,
+            'propertyName': propertyName,
+            'value': value
+        });
     }
+    context.succeed();
 };
