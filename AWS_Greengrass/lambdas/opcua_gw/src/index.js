@@ -32,7 +32,7 @@ let worker;
 // the JS style guide, this notation is retained in analogy to C / C++ macros.
 const LOGGER = {};
 ['log', 'warn', 'error'].forEach( (logLevel) => {
-    logger[logLevel.toUpperCase()] = console[logLevel];
+    LOGGER[logLevel.toUpperCase()] = console[logLevel];
 });
 
 //------------------------
@@ -44,14 +44,24 @@ LOGGER.LOG('Master with PID', process.pid, 'started!');
 worker = child_process.fork('worker.js');
 
 worker.on('exit', (code, signal) => {
-    LOGGER.ERROR('OPC UA client with PID', worker.pid , 'died with RC:', code, '! Restarting!');
-    worker = child_process.fork('worker.js');
+    LOGGER.ERROR('OPC UA gateway with PID', worker.pid , 'died with RC:', code, '! Restarting!');
+    var worker_old  = worker;
+    worker          = child_process.fork('worker.js');
+
+    // Inherit the event listeners from the old worker process
+    worker_old.eventNames().forEach( (eventName) => {
+        if ( eventName != 'internalMessage') {
+            worker_old.listeners(eventName).forEach( (listener) => {
+                worker.on(eventName, listener);
+            });
+        }
+    });
 });
 
 worker.on('message', (msg) => {
     if ( !msg.hasOwnProperty('type') || !msg.hasOwnProperty('msg') ) {
         LOGGER.ERROR('Invalid message received from the worker process!');
-        return();
+        return;
     }
 
     if (msg.type == 'log') {

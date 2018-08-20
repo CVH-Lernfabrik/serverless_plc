@@ -55,7 +55,7 @@ LOGGER.LOG('Setting up OPC UA client and gateway!');
 const client  = new opcua.OPCUAClient(config.clientParameters);
 const gw = new OPCUAGateway(
     client,
-    config.serverParameters,
+    config.connectionParameters,
     config.subscriptionParameters,
     config.monitoringParameters,
     subscriptions.subscriptions
@@ -79,4 +79,4 @@ process.on('message', (msg) => {
 // Initiate the connection to the specified OPC UA server
 gw.connect();
 
-LOGGER.LOG('OPC UA gateway started!');
+LOGGER.LOG('OPC UA gateway with PID ' + process.pid + ' started!');

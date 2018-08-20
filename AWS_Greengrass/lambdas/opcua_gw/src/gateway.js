@@ -68,16 +68,18 @@ class OPCUAGateway {
      * @constructs OPCUAGateway
      *
      * @param {Object} client                   - OPC UA client object
-     * @param {Object} serverParameters         - Name and URL of the OPC UA
-     *                                            server to connect to
+     * @param {Object} connectionParameters     - Name and URL of the OPC UA
+     *                                            server to connect to as well
+     *                                            as potential security settings
+     *                                            for the connection
      * @param {Object} subscriptionParameters   - Subscription parameters
      * @param {Object} monitoringParameters     - Monitoring parameters
      * @param {Object} listOfMonitoredItems     - List including the server-side
      *                                            nodes to monitor
      */
-    constructor(client, serverParameters, subscriptionParameters, monitoringParameters, listOfMonitoredItems) {
+    constructor(client, connectionParameters, subscriptionParameters, monitoringParameters, listOfMonitoredItems) {
         if ( !(client instanceof opcua.OPCUAClient)
-            || !(typeof serverParameters === 'object')
+            || !(typeof connectionParameters === 'object')
             || !(typeof subscriptionParameters === 'object')
             || !(typeof monitoringParameters === 'object')
             || !(typeof listOfMonitoredItems === 'object')
@@ -91,7 +93,7 @@ class OPCUAGateway {
         }
 
         this._client                    = client;
-        this._serverParameters          = serverParameters;
+        this._connectionParameters      = connectionParameters;
         this._subscriptionParameters    = subscriptionParameters;
         this._listOfMonitoredItems      = listOfMonitoredItems;
 
@@ -136,9 +138,31 @@ class OPCUAGateway {
     connect() {
         LOGGER.LOG('connect: Connecting to the server!');
 
-        this._client.connect(this._serverParameters.url, (connectError) => {
+        // Resolve the specified security settings
+        this._client.securityMode   = opcua.MessageSecurityMode.get(this._connectionParameters.securityMode);
+        this._client.securityPolicy = opcua.SecurityPolicy.get(this._connectionParameters.securityPolicy);
+
+        // Get the server certificate if the former is self-signed and the
+        // specified security mode is higher than NONE
+        if ( this._connectionParameters.serverCertificateSelfSigned
+            && (this._connectionParameters.securityMode != 'NONE')
+        ) {
+            try {
+                this._client.serverCertificate  = opcua.crypto_utils.readCertificate(this._connectionParameters.serverCertificate);
+            }
+            catch (e) {
+                LOGGER.ERROR('Invalid server certificate specified! Exception: ' + e);
+                LOGGER.WARN('Falling back to security mode NONE!');
+
+                this._client.securityMode       = opcua.MessageSecurityMode.get('NONE');
+                this._client.securityPolicy     = opcua.SecurityPolicy.get('None');
+            }
+        }
+
+        // Try to establish a connection to the server
+        this._client.connect(this._connectionParameters.url, (connectError) => {
             if (connectError) {
-                LOGGER.ERROR('connect: Failed to establish connection to ', this._serverParameters.url, '! Exiting! RC: ', connectError);
+                LOGGER.ERROR('connect: Failed to establish connection to ' + this._connectionParameters.url + '! Exiting! RC: ' + connectError);
                 process.exit(CONNECTION_ERR);
             }
 
@@ -167,10 +191,17 @@ class OPCUAGateway {
     createSession() {
         LOGGER.LOG('createSession: Establishing session!');
 
-        const userIdentity = null;
+        var userIdentity = null;
+        if ( this._connectionParameters.username && this._connectionParameters.password ) {
+            userIdentity = {
+                userName: this._connectionParameters.username,
+                password: this._connectionParameters.password
+            };
+        }
+
         this._client.createSession(userIdentity, (createSessionError, session) => {
             if (createSessionError) {
-                LOGGER.ERROR('createSession: Failed to create the session! Exiting! RC: ', createSessionError);
+                LOGGER.ERROR('createSession: Failed to create the session! Exiting! RC: ' + createSessionError);
                 process.exit(SESSION_CREATE_ERR);
             }
 
@@ -196,7 +227,7 @@ class OPCUAGateway {
             });
 
             LOGGER.LOG('createSession: Session created successfully!');
-            LOGGER.LOG('createSession: SessionId: ', session.sessionId.toString());
+            LOGGER.LOG('createSession: SessionId: ' + session.sessionId.toString());
             this.emit('session_created');
         });
     }
@@ -217,12 +248,12 @@ class OPCUAGateway {
 
         this._subscription = new opcua.ClientSubscription(this._session, this._subscriptionParameters);
         this._subscription.on('started', () => {
-            LOGGER.LOG('createSubscription: Started subscription: ', this._subscription.subscriptionId);
+            LOGGER.LOG('createSubscription: Started subscription: ' + this._subscription.subscriptionId);
             this.emit('subscribed');
         }).on('status_changed', (rc, v) => {
-            LOGGER.LOG('createSubscription: Status changed! RC: ', rc, ' Value: ', v);
+            LOGGER.LOG('createSubscription: Status changed! RC: ' + rc + ' Value: ' + v);
         }).on('internal_error', (rc) => {
-            LOGGER.ERROR('createSubscription: Internal error! Exiting! RC: ', rc.message);
+            LOGGER.ERROR('createSubscription: Internal error! Exiting! RC: ' + rc.message);
             process.exit(SUBSCRIPTION_ERR);
         });
     }
@@ -238,7 +269,7 @@ class OPCUAGateway {
      */
     monitorNodes() {
         this._listOfMonitoredItems.forEach((monitoredNode) => {
-            LOGGER.LOG('monitorNodes: Initializing monitoring of node: ', monitoredNode.nodeId);
+            LOGGER.LOG('monitorNodes: Initializing monitoring of node: ' + monitoredNode.nodeId);
 
             // Initialize the (periodical) monitoring of the specified node
             const monitoredItem = this._subscription.monitor(
@@ -272,7 +303,10 @@ class OPCUAGateway {
                     },
                     (rc) => {
                         if (rc) {
-                           LOGGER.ERROR(monitoredItem.itemToMonitor.nodeId.toString(), ': Failed to update local Shadow of thing', monitoredNode.thingName, 'with state', payload_string, '. RC: ', rc);
+                            LOGGER.ERROR(monitoredItem.itemToMonitor.nodeId.toString() + ': Failed to update local Shadow of thing ' + monitoredNode.thingName + ' with state ' + payload_string + '. RC: ' + rc);
+                        }
+                        else {
+                            LOGGER.LOG(monitoredItem.itemToMonitor.nodeId.toString() + ': Successfully updated local Shadow of thing ' + monitoredNode.thingName + ' with  ' + payload_string + '. RC: ' + rc);
                         }
                     }
                 );
@@ -280,7 +314,7 @@ class OPCUAGateway {
 
             // Callback for logging errors occuring during the monitoring process
             monitoredItem.on('err', (errorMessage) => {
-                LOGGER.ERROR(monitoredItem.itemToMonitor.nodeId.toString(), ': Error! RC: ', errorMessage);
+                LOGGER.ERROR(monitoredItem.itemToMonitor.nodeId.toString() + ': Error! RC: ' + errorMessage);
             });
         });
     }
@@ -326,9 +360,7 @@ class OPCUAGateway {
         // to the desired value.
         for (var idx in nodes) {
             var nodeId      = nodes[idx].nodeId;
-            var dataType    = opcua.DataType.enums.filter( (type) => {
-                return (type.key == nodes[idx].UADataType);
-            })[0];
+            var dataType    = opcua.DataType.get(nodes[idx].UADataType);
             var value       = {
                     'dataType': dataType,
                     'value': value
@@ -340,10 +372,10 @@ class OPCUAGateway {
                 value,
                 (err, rc) => {
                     if (err) {
-                        LOGGER.ERROR('Error occured during write operation! Err:', err, 'RC:', rc);
+                        LOGGER.ERROR('Error occured during write operation! Err: ' + err + ' RC: ' + rc);
                     }
                     else {
-                        LOGGER.LOG('Write operation successful! RC:', rc);
+                        LOGGER.LOG('Write operation successful! RC: ' + rc);
                     }
                 }
             );

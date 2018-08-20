@@ -1,14 +1,20 @@
 {
     "clientParameters": {
-        "keepSessionAlive": false,
+        "keepSessionAlive": true,
         "connectionStrategy": {
             "maxRetry": 100,
             "initialDelay": 1000,
             "maxDelay": 10000
         }
     },
-    "serverParameters": {
-        "url": "opc.tcp://RevPiCore3:4840/"
+    "connectionParameters": {
+        "url": "opc.tcp://RevPiCore3:4840/",
+        "securityMode": "SIGNANDENCRYPT",
+        "securityPolicy": "Basic256Sha256",
+        "serverCertificate": "certs/certificate.pem.crt",
+        "serverCertificateSelfSigned": true,
+        "username": "",
+        "password": ""
     },
     "subscriptionParameters": {
         "requestedPublishingInterval": 100,

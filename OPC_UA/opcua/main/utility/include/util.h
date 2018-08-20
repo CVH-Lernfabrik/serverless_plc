@@ -13,6 +13,8 @@
 
 #include <stdio.h>
 
+#include <mbedtls/x509_crt.h>
+
 #include "open62541.h"
 
 //------------
@@ -20,5 +22,7 @@
 //------------
 
 UA_ByteString UA_loadPEMFile(const char *const path);
+UA_Boolean UA_isPEM(const UA_ByteString * const buffer);
+UA_ByteString UA_parsePEMtoDER(const UA_ByteString * const buffer_PEM);
 
 #endif

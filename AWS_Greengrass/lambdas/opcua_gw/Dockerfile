@@ -8,8 +8,8 @@ WORKDIR /app
 RUN apt-get update
 RUN apt-get install zip -y
 
-# Create the package directory
-RUN mkdir -p package/
+# Create the package and the subordinate certs directory
+RUN mkdir -p package/certs/
 
 # Copy the requirements for the Lambda function into the container at /app/package
 COPY package.json /app/package
@@ -18,6 +18,7 @@ COPY package.json /app/package
 RUN npm install --prefix ./package
 COPY aws-greengrass-core-sdk /app/package/aws-greengrass-core-sdk
 COPY src/* /app/package/
+COPY certs/* /app/package/certs/
 
 # Zip all dependencies
 RUN cd package; zip -r package.zip . -x \*.git\* \*env\* *.zip

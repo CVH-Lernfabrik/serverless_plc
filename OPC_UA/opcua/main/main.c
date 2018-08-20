@@ -368,6 +368,58 @@ int main(int argc, char* argv[])
     UA_ByteString certificate = UA_loadPEMFile(argv[1]);
     UA_ByteString privateKey = UA_loadPEMFile(argv[2]);
 
+
+
+
+
+    // Parse the certificate to DER in case it was given in PEM format
+    // Annotation: This is necessary as open62541 does currently (2018-08-18)
+    // NOT parse the server certificate on runtime. This results in a corrupted
+    // certificate thumbprint, thus preventing a secure channel between client
+    // and server to be established.
+    if (strstr(certificate.data, "-----BEGIN CERTIFICATE-----") != NULL) {
+        // Initialize the mbedTLS PEM context
+        mbedtls_pem_context pem;
+        mbedtls_pem_init(&pem);
+
+        // Parse the certificate to DER
+        rc = mbedtls_pem_read_buffer(&pem,
+                       "-----BEGIN CERTIFICATE-----",
+                       "-----END CERTIFICATE-----",
+                       certificate.data, NULL, 0, &certificate.length);
+        if (rc) {
+            UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "main: Failed " \
+                         "to parse the given certificate from PEM to DER format! " \
+                         "RC: %x", rc);
+
+            // Free the allocated resources
+            mbedtls_pem_free(&pem);
+
+            return rc;
+        }
+        else {
+            UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "main: Successfully " \
+                         "parsed the given certificate from PEM to DER format!");
+
+            UA_free(certificate.data);
+            certificate.data = (UA_Byte *) UA_malloc(pem.buflen * sizeof(UA_Byte));
+            if (certificate.data) {
+                memcpy(certificate.data, pem.buf, pem.buflen);
+                certificate.length = pem.buflen;
+            }
+            else {
+                certificate.length = 0;
+            }
+        }
+
+        // Free the allocated resources
+        mbedtls_pem_free(&pem);
+    }
+
+
+
+
+
     // Initialize the trust list from the transfer parameters
     size_t trustListSize = 0;
     if (argc > 3) {
