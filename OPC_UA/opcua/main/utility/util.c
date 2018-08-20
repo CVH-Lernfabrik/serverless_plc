@@ -127,9 +127,9 @@ UA_ByteString UA_parsePEMtoDER(const UA_ByteString * const buffer_PEM)
        }
     }
     else {
-        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "UA_parsePEMtoDER: " \
-                     "Given PEM element is neither certificate nor private key! " \
-                     "Aborting!");
+        UA_LOG_WARNING(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "UA_parsePEMtoDER: " \
+                       "Given PEM element is neither certificate nor private key! " \
+                       "Aborting!");
         rc = UA_STATUSCODE_BADUNEXPECTEDERROR;
     }
 
