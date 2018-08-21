@@ -19,10 +19,15 @@
 #include <signal.h>
 
 #include "open62541.h"
-#include "model.h"
+#include "revpi_open62541_IO_methods.h"
+
+#include "revpi.h"
+#include "methods.h"
+#include "variables.h"
 
 #include "util.h"
 #include "user_config.h"
+
 
 //--------------------------
 // Definition of functions:
@@ -352,42 +357,76 @@ static UA_ServerConfig * UA_ServerConfig_Basic256Sha256_custom(UA_UInt16 portNum
  */
 int main(int argc, char* argv[])
 {
-    if (argc < 3) {
-        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
-                     "main: Missing transfer parameters. Arguments are: " \
-                     "<certificate.pem.crt> <private.pem.key> " \
-                     "[<trustlist1.pem.crt>, ...]");
-        return 1;
-    }
+    // Default values
+    int tcpPort = 4840;
+    bool useSha256 = false;
+    UA_ServerConfig *config;
+    UA_ByteString certificate;
+    UA_ByteString privateKey;
+    size_t trustListSize = 0;
 
     // Attach the stopHandler to SIGTERM so that the OPC-server can be terminated
     // by e.g. a kill command
     signal(SIGTERM, stopHandler);
 
-    // Load the server certificate and private key
-    UA_ByteString certificate = UA_loadFile(argv[1]);
-    UA_ByteString privateKey = UA_loadFile(argv[2]);
-
-    // Parse certificate and private key to DER in case either was given in PEM
-    // format
-    // Annotation: This is necessary as open62541 does currently (2018-08-18)
-    // not parse the server certificate on runtime. This results in a corrupted
-    // certificate thumbprint, thus preventing a secure channel between client
-    // and server to be established.
-    if (UA_isPEM(&certificate)) {
-        UA_ByteString * certificate_raw = &certificate;
-        certificate = UA_parsePEMtoDER(certificate_raw);
-        UA_ByteString_delete(certificate_raw);
+    if (argc < 2) {
+        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                     "main: Missing parameters. Arguments are: " \
+                     "<tcp port> [<certificate> <privatekey> " \
+                     "<trustlist1.pem.crt>, ...] ");
+        UA_LOG_WARNING(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                     "Proceeding with default port and SecurityPolicy = None!");
+                     // useful for debugging, has to be changed for security.
+                     // running without SecurityPolicy by default is not secure!
     }
-    if (UA_isPEM(&privateKey)) {
-        UA_ByteString * privateKey_raw = &privateKey;
-        privateKey = UA_parsePEMtoDER(&privateKey_raw);
-        UA_ByteString_delete(privateKey_raw);
+
+    // Parse the argument for the tcp port
+    if (argc > 1) {
+          char* end;
+          int parsedNumber = (int)strtol(argv[1], &end, 10);
+
+          if (parsedNumber > 1024 && parsedNumber <= 65535) {
+                  tcpPort = parsedNumber;
+                  useSha256 = false;
+          } else {
+            UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                         "main: Invalid port parameter %i. Arguments are: " \
+                         "<tcp port> (1024...65535) [<certificate> <privatekey> " \
+                         "<trustlist1.pem.crt>, ...] " \
+                         , parsedNumber);
+
+            return 1;
+          }
+          UA_LOG_WARNING(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                       "Proceeding with SecurityPolicy = None!");
+    }
+
+    // Initialize the server certificate and private key
+    if (argc > 2) {
+          useSha256 = true;
+          certificate = UA_loadFile(argv[2]);
+          privateKey = UA_loadFile(argv[3]);
+
+          // Parse certificate and private key to DER in case either was given in PEM
+          // format
+          // Annotation: This is necessary as open62541 does currently (2018-08-18)
+          // not parse the server certificate on runtime. This results in a corrupted
+          // certificate thumbprint, thus preventing a secure channel between client
+          // and server to be established.
+          if (UA_isPEM(&certificate)) {
+              UA_ByteString * certificate_raw = &certificate;
+              certificate = UA_parsePEMtoDER(certificate_raw);
+              UA_ByteString_delete(certificate_raw);
+          }
+          if (UA_isPEM(&privateKey)) {
+              UA_ByteString * privateKey_raw = &privateKey;
+              privateKey = UA_parsePEMtoDER(&privateKey_raw);
+              UA_ByteString_delete(privateKey_raw);
+          }
     }
 
     // Initialize the trust list from the transfer parameters
-    size_t trustListSize = 0;
-    if (argc > 3) {
+    if (argc > 5) {
         trustListSize = (size_t) argc - 3;
     }
     UA_STACKARRAY(UA_ByteString, trustList, trustListSize);
@@ -399,11 +438,17 @@ int main(int argc, char* argv[])
     UA_ByteString *revocationList = NULL;
     size_t revocationListSize = 0;
 
-    // Create a new configuration w/ Basic256Sha256 security policy attached
-    UA_ServerConfig *config = UA_ServerConfig_Basic256Sha256_custom(4840, \
-                                                                    &certificate, &privateKey, \
-                                                                    trustList, trustListSize, \
-                                                                    revocationList, revocationListSize);
+    if (useSha256) {
+      // Create a new configuration w/ Basic256Sha256 security policy attached
+      config = UA_ServerConfig_Basic256Sha256_custom(tcpPort, \
+                                                                      &certificate, &privateKey, \
+                                                                      trustList, trustListSize, \
+                                                                      revocationList, revocationListSize);
+    } else {
+      config = UA_ServerConfig_new_minimal(tcpPort, NULL);
+    }
+
+
     if (!config) {
         UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "main: Error while initializing "
                      "the server configuration! Exiting the program!");
@@ -416,13 +461,18 @@ int main(int argc, char* argv[])
     UA_StatusCode rc;
 
     // Load the nodeset and create the nodes
-    rc = model(server);
+    rc = revpi_open62541_IO_methods(server);
     if (rc != UA_STATUSCODE_GOOD) {
         UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "main: Failed to load "
                      "the nodeset! Exiting the program!");
         rc = UA_STATUSCODE_BADUNEXPECTEDERROR;
     }
     else {
+        // Link the Nodes from the Nodeset with their resources
+        linkDataSourceVariable(server, 2, "O_1" ,false);
+        UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(2, 2014), &setIndicatorStateCallback);
+        UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(2, 2016), &getIndicatorStateCallback);
+
         // Start the OPC-server as a daemon (background process)
         rc = UA_Server_run(server, &server_running);
         if (rc != UA_STATUSCODE_GOOD) {

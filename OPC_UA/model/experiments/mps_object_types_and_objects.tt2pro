@@ -1,0 +1,25 @@
+###########################
+# UaModeler Project File  #
+# Generated at 18.08.2018 #
+###########################
+
+PROJECTNAME = mps_object_types_and_objects
+
+TEMPLATESET = ($TEMPLATES)/modeling/v1_0/t0/modeling.tt2set
+
+MODELS += ($MODELS)/Opc.Ua.NodeSet2.ua \
+    mps_object_types_and_objects.ua
+
+COLORS = ($MODELS)/Opc.Ua.NodeSet2.ua: #0000ff\
+    mps_object_types_and_objects.ua: #008000
+
+OUTPUTPATH = UaModelerCode
+
+GENERATE += mps_object_types_and_objects.ua
+
+NODEACCESSINFOROLES += Administrator \
+    SecurityAdmin \
+    ConfigurationAdmin \
+    Operator \
+    Observer
+

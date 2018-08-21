@@ -1,0 +1,25 @@
+###########################
+# UaModeler Project File  #
+# Generated at 16.08.2018 #
+###########################
+
+PROJECTNAME = objecttype_pump
+
+TEMPLATESET = ($TEMPLATES)/modeling/v1_0/t0/modeling.tt2set
+
+MODELS += ($MODELS)/Opc.Ua.NodeSet2.ua \
+    objecttype_pump.ua
+
+COLORS = ($MODELS)/Opc.Ua.NodeSet2.ua: #0000ff\
+    objecttype_pump.ua: #008000
+
+OUTPUTPATH = UaModelerCode
+
+GENERATE += objecttype_pump.ua
+
+NODEACCESSINFOROLES += Administrator \
+    SecurityAdmin \
+    ConfigurationAdmin \
+    Operator \
+    Observer
+
