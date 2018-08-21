@@ -17,8 +17,8 @@ BUILD_BASE		= main/build
 TARGET			= revpi-open62541
 
 # Which modules (subdirectories) of the project to include in compiling
-MODULES			= main main/utility model
-EXTRA_INCDIR	= main/utility/include model
+MODULES			= main main/utility ../model
+EXTRA_INCDIR	= main/utility/include ../model
 
 # Libraries used in this project
 BASE_LIBS		= mbedtls mbedx509 mbedcrypto
