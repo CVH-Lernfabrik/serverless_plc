@@ -23,7 +23,7 @@ const device        = new ggSDK.IotData();
 const gateway       = require('gateway');
 const OPCUAGateway  = gateway.OPCUAGateway;
 
-const subscriptions = require('subscriptions.json');
+const nodeset       = require('nodeset.json');
 const config        = require('config.json');
 
 gateway.setOpcua(opcua);
@@ -55,10 +55,10 @@ LOGGER.LOG('Setting up OPC UA client and gateway!');
 const client  = new opcua.OPCUAClient(config.clientParameters);
 const gw = new OPCUAGateway(
     client,
+    nodeset,
     config.connectionParameters,
     config.subscriptionParameters,
-    config.monitoringParameters,
-    subscriptions.subscriptions
+    config.monitoringParameters
 );
 
 // Register the write callback

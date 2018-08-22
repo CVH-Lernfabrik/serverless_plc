@@ -68,21 +68,22 @@ class OPCUAGateway {
      * @constructs OPCUAGateway
      *
      * @param {Object} client                   - OPC UA client object
+     * @param {Object} nodeset                  - Mapping between client- and
+     *                                            server-side representation
+     *                                            of the OPC UA nodeset
      * @param {Object} connectionParameters     - Name and URL of the OPC UA
      *                                            server to connect to as well
      *                                            as potential security settings
      *                                            for the connection
      * @param {Object} subscriptionParameters   - Subscription parameters
      * @param {Object} monitoringParameters     - Monitoring parameters
-     * @param {Object} listOfMonitoredItems     - List including the server-side
-     *                                            nodes to monitor
      */
-    constructor(client, connectionParameters, subscriptionParameters, monitoringParameters, listOfMonitoredItems) {
+    constructor(client, nodeset, connectionParameters, subscriptionParameters, monitoringParameters) {
         if ( !(client instanceof opcua.OPCUAClient)
+            || !(typeof nodeset === 'object')
             || !(typeof connectionParameters === 'object')
             || !(typeof subscriptionParameters === 'object')
             || !(typeof monitoringParameters === 'object')
-            || !(typeof listOfMonitoredItems === 'object')
         ) {
             LOGGER.ERROR('OPCUAGateway: Invalid transfer parameters! Exiting!');
             process.exit(PARAM_ERR);
@@ -93,9 +94,9 @@ class OPCUAGateway {
         }
 
         this._client                    = client;
+        this._nodeset                   = nodeset;
         this._connectionParameters      = connectionParameters;
         this._subscriptionParameters    = subscriptionParameters;
-        this._listOfMonitoredItems      = listOfMonitoredItems;
 
         this._isConnected               = false;
 
@@ -268,7 +269,9 @@ class OPCUAGateway {
      * @listens err
      */
     monitorNodes() {
-        this._listOfMonitoredItems.forEach((monitoredNode) => {
+        this._nodeset.filter( (node) => {
+            return ( node.subscribe && (node.UADataType != 'Method') );
+        }).forEach( (monitoredNode) => {
             LOGGER.LOG('monitorNodes: Initializing monitoring of node: ' + monitoredNode.nodeId);
 
             // Initialize the (periodical) monitoring of the specified node
@@ -321,17 +324,19 @@ class OPCUAGateway {
 
     /*
      * Description: Sets the OPC UA node(s) matching the specified pattern to
-     *              the desired value
+     *              the desired value resp. calls the respective OPC UA method(s)
      *
      * @param {String} thingName    - Identifier of the (logically) superordinate
      *                                instance / object of the OPC UA node to
      *                                write, that, in combination with propertyName,
      *                                can be resolved to the unique nodeId
      * @param {String} propertyName - Identifier of the logical equivalent of the
-     *                                OPC UA node to write, that, in combination
-     *                                with thingName, can be resolved to the
-     *                                unique nodeId
-     * @param {Object} value        - Desired value to write to the specified node
+     *                                OPC UA node (resp. method) to write, that,
+     *                                in combination with thingName, can be
+     *                                resolved to the unique node / method ID
+     * @param {Object} value        - Desired value to write to the specified node;
+     *                                serve(s) as input argument(s) in case the
+     *                                target is a method and no object node
      *
      * @returns {number}            - Status / Return code of the write operation
      */
@@ -350,7 +355,7 @@ class OPCUAGateway {
         }
 
         // Resolve the node(s) matching the specified pattern
-        var nodes = this._listOfMonitoredItems.filter( (node) => {
+        var nodes = this._nodeset.filter( (node) => {
             return ( (node.thingName == thingName) && (node.propertyName == propertyName) );
         });
 
@@ -359,26 +364,64 @@ class OPCUAGateway {
         // one node ID. In this case, all nodes matching the pattern are set
         // to the desired value.
         for (var idx in nodes) {
-            var nodeId      = nodes[idx].nodeId;
-            var dataType    = opcua.DataType.get(nodes[idx].UADataType);
-            var value       = {
-                    'dataType': dataType,
-                    'value': value
-            };
-
-            // Set the specified node to the desired state
-            this._session.writeSingleNode(
-                nodeId,
-                value,
-                (err, rc) => {
-                    if (err) {
-                        LOGGER.ERROR('Error occured during write operation! Err: ' + err + ' RC: ' + rc);
-                    }
-                    else {
-                        LOGGER.LOG('Write operation successful! RC: ' + rc);
-                    }
+            // The call for the write operation differs depending on whether
+            // the concerned node a method or an object node.
+            if (nodes[idx].UADataType == 'Method') {
+                if (nodes[idx].methodParameters.inputArguments.length != value.length) {
+                    LOGGER.LOG('Skipping method ' + nodes[idx].nodeId + ' as the number of given arguments does not match the required number of transfer parameters!');
+                    continue;
                 }
-            );
+
+                var objectId        = nodes[idx].methodParameters.objectId
+                var methodId        = nodes[idx].nodeId;
+                var inputArguments  = [];
+                nodes[idx].methodParameters.inputArguments.forEach( (inputArgument) => {
+                    inputArguments = inputArguments.concat({
+                        'dataType': opcua.DataType.get(inputArgument.UADataType),
+                        'value': value[nodes[idx].inputArguments.indexof(inputArgument)]
+                    });
+                });
+                var methodToCall = {
+                    'objectId': objectId,
+                    'methodId': methodId,
+                    'inputArguments': inputArguments
+                };
+
+                // Call the specified method w/ the corresponding transfer parameters
+                this._session.call(
+                    methodToCall,
+                    (err, rc) => {
+                        if (err) {
+                            LOGGER.ERROR('Error occured during method call! Err: ' + err + ' RC: ' + rc);
+                        }
+                        else {
+                            LOGGER.LOG('Method call successful! RC: ' + rc);
+                        }
+                    }
+                );
+            }
+            else {
+                var nodeId      = nodes[idx].nodeId;
+                var dataType    = opcua.DataType.get(nodes[idx].UADataType);
+                var value       = {
+                        'dataType': dataType,
+                        'value': value
+                };
+
+                // Set the specified node to the desired state
+                this._session.writeSingleNode(
+                    nodeId,
+                    value,
+                    (err, rc) => {
+                        if (err) {
+                            LOGGER.ERROR('Error occured during write operation! Err: ' + err + ' RC: ' + rc);
+                        }
+                        else {
+                            LOGGER.LOG('Write operation successful! RC: ' + rc);
+                        }
+                    }
+                );
+            }
         }
         return STATUS_OK;
     }

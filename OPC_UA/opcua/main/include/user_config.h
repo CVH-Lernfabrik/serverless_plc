@@ -53,7 +53,7 @@
     #define PRODUCT_NAME                    "Serverless PLC OPC UA-server"
     #define PRODUCT_URI                     "https://github.com/CVH-Lernfabrik/serverless_plc"
     #define APPLICATION_NAME                "open62541-based OPC UA-server"
-    #define APPLICATION_URI                 "urn:unconfigured:application"
+    #define APPLICATION_URI                 "https://github.com/CVH-Lernfabrik/serverless_plc/OPC_UA"
 
 //---------
 // Limits:

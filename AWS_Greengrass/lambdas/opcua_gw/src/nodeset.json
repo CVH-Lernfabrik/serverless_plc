@@ -1,0 +1,71 @@
+[
+    {
+        "thingName": "mps_conveyor",
+        "topic": "$aws/things/mps_conveyor/shadow/update",
+        "properties": [
+            {
+                "propertyName": "lightBarrier_infeed",
+                "nodeId": "ns=1;s=I_9",
+                "UANodeClass": "Object",
+                "UADataType": "Boolean",
+                "subscribe": true
+            }
+        ]
+    },
+    {
+        "thingName": "mps_magazine",
+        "topic": "$aws/things/mps_magazine/shadow/update",
+        "properties": [
+            {
+                "propertyName": "ejector_extended",
+                "nodeId": "ns=1;s=I_12",
+                "UANodeClass": "Object",
+                "UADataType": "Boolean",
+                "subscribe": true
+            },
+            {
+                "propertyName": "ejector_retracted",
+                "nodeId": "ns=1;s=I_10",
+                "UANodeClass": "Object",
+                "UADataType": "Boolean",
+                "subscribe": true
+            },
+            {
+                "propertyName": "magazine_empty",
+                "nodeId": "ns=1;s=I_14",
+                "UANodeClass": "Object",
+                "UADataType": "Boolean",
+                "subscribe": true
+            }
+        ]
+    },
+    {
+        "thingName": "mps_hmi",
+        "topic": "$aws/things/mps_hmi/shadow/update",
+        "properties": [
+            {
+                "propertyName": "led_start",
+                "nodeId": "ns=1;s=O_1",
+                "UANodeClass": "Object",
+                "UADataType": "Boolean",
+                "subscribe": true,
+                "properties": [
+                    {
+                        "propertyName": "getIndicatorState",
+                        "nodeId": "ns=1;i=2010",
+                        "UANodeClass": "Method",
+                        "inputArguments": []
+                    },
+                    {
+                        "propertyName": "setIndicatorState",
+                        "nodeId": "ns=1;i=2010",
+                        "UANodeClass": "Method",
+                        "inputArguments": [
+                            "Boolean"
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+]

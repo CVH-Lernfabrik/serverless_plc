@@ -334,11 +334,9 @@ static UA_ServerConfig * UA_ServerConfig_custom(UA_UInt16 portNumber,
 
     /* Security */
 
-#ifdef INSECURE_MODE
     // Initialize the access control plugin
     config->accessControl = UA_AccessControl_default(true, CREDENTIALS_SIZE, \
                                                      loginCredentials);
-#endif
 
     // Initalize the trust and revocation list
     // Note: Revocation list currently unsuported in open62541 v1.04
@@ -392,7 +390,7 @@ static UA_ServerConfig * UA_ServerConfig_custom(UA_UInt16 portNumber,
     config->endpointsSize = 2;
 #else
     config->endpointsSize = 1;
-#endif
+#endif // INSECURE_MODE
     config->endpoints = (UA_Endpoint *) UA_malloc(config->endpointsSize * sizeof(UA_Endpoint));
     if (!config->endpoints) {
         UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
@@ -429,7 +427,7 @@ static UA_ServerConfig * UA_ServerConfig_custom(UA_UInt16 portNumber,
         UA_ServerConfig_delete(config);
         return NULL;
     }
-#endif
+#endif // INSECURE_MODE
 
     return config;
 }
@@ -466,17 +464,11 @@ int main(int argc, char* argv[])
     if (UA_isPEM(&certificate)) {
         UA_ByteString certificate_raw = certificate;
         certificate = UA_parsePEMtoDER(&certificate_raw);
-        for (int i = 0; i < certificate.length; i++) {
-            printf("%x", certificate.data[i]);
-        }
         UA_ByteString_deleteMembers(&certificate_raw);
     }
     if (UA_isPEM(&privateKey)) {
         UA_ByteString privateKey_raw = privateKey;
         privateKey = UA_parsePEMtoDER(&privateKey_raw);
-        for (int i = 0; i < privateKey.length; i++) {
-            printf("%x", privateKey.data[i]);
-        }
         UA_ByteString_deleteMembers(&privateKey_raw);
     }
 
