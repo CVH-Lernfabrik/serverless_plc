@@ -102,24 +102,24 @@ UA_ByteString UA_parsePEMtoDER(const UA_ByteString * const buffer_PEM)
     mbedtls_pem_init(&pem);
 
     // Determine the type of the PEM element and parse it to DER
-    if (strstr(buffer_PEM->data, "-----BEGIN CERTIFICATE-----") != NULL) {
+    if (strstr((const char *) buffer_PEM->data, "-----BEGIN CERTIFICATE-----") != NULL) {
         // Parse the certificate to DER
         rc = mbedtls_pem_read_buffer(&pem,
                        "-----BEGIN CERTIFICATE-----",
                        "-----END CERTIFICATE-----",
-                       buffer_PEM->data, NULL, 0, &buffer_PEM->length);
+                       buffer_PEM->data, NULL, 0, (size_t *) &buffer_PEM->length);
         if (rc) {
             UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "UA_parsePEMtoDER: " \
                          "Failed to parse the given certificate from PEM to DER " \
                          "format! RC: %x", rc);
         }
     }
-    else if (strstr(buffer_PEM->data, "-----BEGIN PRIVATE KEY-----") != NULL) {
+    else if (strstr((const char *) buffer_PEM->data, "-----BEGIN PRIVATE KEY-----") != NULL) {
         // Parse the private key to DER
         rc = mbedtls_pem_read_buffer(&pem,
                        "-----BEGIN PRIVATE KEY-----",
                        "-----END PRIVATE KEY-----",
-                       buffer_PEM->data, NULL, 0, &buffer_PEM->length);
+                       buffer_PEM->data, NULL, 0, (size_t *) &buffer_PEM->length);
        if (rc) {
            UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "UA_parsePEMtoDER: " \
                         "Failed to parse the given private key from PEM to DER " \

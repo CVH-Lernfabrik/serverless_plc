@@ -1,6 +1,56 @@
 #include <stdbool.h>
+#include <string.h>
 #include "open62541.h"
 #include "methods.h"
+
+extern char *String_fromUA_String(UA_String *uastring){
+  // without malloc the returned string is NULL.
+  // with malloc, the memory never gets freed, if not done so externally.
+  // Alternatives?
+  char *string = (char*)malloc(sizeof(uastring->length + 1));
+
+  for (int i = 0; i < uastring->length; i++)
+    string[i] = uastring->data[i];
+
+  string[uastring->length] = NULL;
+  return string;
+}
+
+extern UA_NodeId UA_NodeId_fromString(char *string){
+  // pattern: "ns=1;s=O_1" or "ns=1;i=1001"
+  if (!(string[0] == 'n' && string[1] == 's' && string[2] == '='))
+    return UA_NODEID_NULL;
+
+  char* end;
+  int namespace = (int)strtol(&string[3], &end, 10);
+
+  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+             "namespace = %i", namespace);
+
+  if (!(end[0] == ';' && end[2] == '='))
+    return UA_NODEID_NULL;
+
+  if (end[1] == 'i') {
+    int nodeId = (int)strtol(&end[3], NULL, 10);
+
+    UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+               "nodeId = %i", nodeId);
+
+    return UA_NODEID_NUMERIC(namespace, nodeId);
+  }
+  else if (end[1] == 's') {
+    UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+               "nodeId = %s", &end[3]);
+
+    return UA_NODEID_STRING(namespace, &end[3]);
+  }
+  else
+    return UA_NODEID_NULL;
+}
+
+extern UA_NodeId UA_NodeId_fromUA_String(UA_String *uastring){
+  return UA_NodeId_fromString(String_fromUA_String(uastring));
+}
 
 extern UA_StatusCode
 getIndicatorStateCallback(UA_Server *server,
@@ -10,17 +60,61 @@ getIndicatorStateCallback(UA_Server *server,
                          size_t inputSize, const UA_Variant *input,
                          size_t outputSize, UA_Variant *output) {
 
-UA_BrowseDescription browseForProperty;
-//browseForProperty.
+    UA_BrowseDescription bd;
+    UA_BrowseDescription_init(&bd);
+
+    bd.nodeId = *objectId;
+    //bd.referenceTypeId = UA_NODEID_NUMERIC(0, UA_NS0ID_AGGREGATES);
+    bd.includeSubtypes = true;
+    bd.browseDirection = UA_BROWSEDIRECTION_FORWARD;
+    bd.nodeClassMask = UA_NODECLASS_VARIABLE;
+    bd.resultMask = UA_BROWSERESULTMASK_BROWSENAME;
+
+    UA_BrowseResult br;
+    UA_BrowseResult_init(&br);
+
+    br = UA_Server_browse(server, 10, &bd); // TODO: check if 2nd argument is ok!
+
+    UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+               "UA_Server_browse returned StatusCode %s", UA_StatusCode_name(br.statusCode));
+
+    if(br.statusCode != UA_STATUSCODE_GOOD)
+        return br.statusCode;
+
+    UA_StatusCode retval = UA_STATUSCODE_BADNOTFOUND;
+    UA_Variant outputPinVar;
+    UA_String outputPinName = UA_String_fromChars("OutputPin");
+    UA_NodeId outputPinType;
+
+    for(size_t i = 0; i < br.referencesSize; ++i) {
+        UA_ReferenceDescription *rd = &br.references[i];
 
 
-//UA_Server_read
 
-    char *outputPin = "O_1";
+        UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                   "UA_Server_browse result %i: %s", i, String_fromUA_String(&rd->browseName.name));
 
-    UA_Server_readValue(server, UA_NODEID_STRING(2, outputPin), output);
 
-    return UA_STATUSCODE_GOOD;
+        if(rd->browseName.namespaceIndex == objectId->namespaceIndex &&
+           UA_String_equal(&rd->browseName.name, &outputPinName)) {
+              retval = UA_Server_readDataType(server, rd->nodeId.nodeId, &outputPinType);
+              UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                         "outputPinType %i", outputPinType.identifier);
+              //if (outputPinType == UA_NODEID_STRING)
+                retval = UA_Server_readValue(server, rd->nodeId.nodeId, &outputPinVar);
+                UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                           "outputPinData %s", String_fromUA_String(outputPinVar.data));
+
+                retval = UA_Server_readValue(server, UA_NodeId_fromUA_String(outputPinVar.data), output);
+
+              //if (outputPinVar.type
+              //String_fromUA_String(&(UA_NodeId)(outputPinVar.data).string);
+
+            break;
+        }
+    }
+
+    return retval;
 }
 
 extern UA_StatusCode
@@ -31,11 +125,63 @@ setIndicatorStateCallback(UA_Server *server,
                          size_t inputSize, const UA_Variant *input,
                          size_t outputSize, UA_Variant *output) {
 
-    char *outputPin = "O_1";
+                           UA_BrowseDescription bd;
+                           UA_BrowseDescription_init(&bd);
 
-    UA_Server_writeValue(server, UA_NODEID_STRING(2, outputPin), *input);
+                           bd.nodeId = *objectId;
+                           //bd.referenceTypeId = UA_NODEID_NUMERIC(0, UA_NS0ID_AGGREGATES);
+                           bd.includeSubtypes = true;
+                           bd.browseDirection = UA_BROWSEDIRECTION_FORWARD;
+                           bd.nodeClassMask = UA_NODECLASS_VARIABLE;
+                           bd.resultMask = UA_BROWSERESULTMASK_BROWSENAME;
 
-    return UA_STATUSCODE_GOOD;
+                           UA_BrowseResult br;
+                           UA_BrowseResult_init(&br);
+
+                           br = UA_Server_browse(server, 10, &bd); // TODO: check if 2nd argument is ok!
+
+                           UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                                      "UA_Server_browse returned StatusCode %s", UA_StatusCode_name(br.statusCode));
+
+                           if(br.statusCode != UA_STATUSCODE_GOOD)
+                               return br.statusCode;
+
+                           UA_StatusCode retval = UA_STATUSCODE_BADNOTFOUND;
+                           UA_Variant outputPinVar;
+                           UA_String outputPinName = UA_String_fromChars("OutputPin");
+                           UA_NodeId outputPinType;
+
+                           for(size_t i = 0; i < br.referencesSize; ++i) {
+                               UA_ReferenceDescription *rd = &br.references[i];
+
+
+
+                               UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                                          "UA_Server_browse result %i: %s", i, String_fromUA_String(&rd->browseName.name));
+
+
+                               if(rd->browseName.namespaceIndex == objectId->namespaceIndex &&
+                                  UA_String_equal(&rd->browseName.name, &outputPinName)) {
+                                     retval = UA_Server_readDataType(server, rd->nodeId.nodeId, &outputPinType);
+                                     UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                                                "outputPinType %i", outputPinType.identifier);
+                                     //if (outputPinType == UA_NODEID_STRING)
+                                       retval = UA_Server_readValue(server, rd->nodeId.nodeId, &outputPinVar);
+                                       UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                                                  "outputPinData %s", String_fromUA_String(outputPinVar.data));
+
+                                       retval = UA_Server_writeValue(server, UA_NodeId_fromUA_String(outputPinVar.data), *input);
+
+                                     //if (outputPinVar.type
+                                     //String_fromUA_String(&(UA_NodeId)(outputPinVar.data).string);
+
+                                   break;
+                               }
+                           }
+
+
+
+    return retval;
 }
 
 extern UA_StatusCode
