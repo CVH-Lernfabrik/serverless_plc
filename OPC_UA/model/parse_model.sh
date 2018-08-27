@@ -10,7 +10,7 @@
 # nodeset compiler
 
 # Path to open62541
-OPEN62541_PATH=/home/pi/open62541
+OPEN62541_PATH=/usr/local/OPC_UA/open62541
 
 python ${OPEN62541_PATH}/tools/nodeset_compiler/nodeset_compiler.py --types-array=UA_TYPES \
     --existing ${OPEN62541_PATH}/deps/ua-nodeset/Schema/Opc.Ua.NodeSet2.xml \

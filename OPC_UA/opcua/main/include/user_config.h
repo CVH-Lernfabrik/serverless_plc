@@ -17,6 +17,13 @@
 // Login credentials:
 //--------------------
 
+    // To enable login via credentials, uncomment the following line
+    // Attention: It is generally advised AGAINST doing so besides for testing
+    // purposes as OPC UA does not support simultaneous credentials based
+    // authentication and message encryption. The default Basic256Sha256
+    // endpoint will stay active in parallel.
+    #define INSECURE_MODE
+
     #define CREDENTIALS_SIZE                2
 
     // Set the login credentials clients can use to access the server
@@ -46,7 +53,7 @@
     #define PRODUCT_NAME                    "Serverless PLC OPC UA-server"
     #define PRODUCT_URI                     "https://github.com/CVH-Lernfabrik/serverless_plc"
     #define APPLICATION_NAME                "open62541-based OPC UA-server"
-    #define APPLICATION_URI                 "urn:unconfigured:application"
+    #define APPLICATION_URI                 "https://github.com/CVH-Lernfabrik/serverless_plc/OPC_UA"
 
 //---------
 // Limits:

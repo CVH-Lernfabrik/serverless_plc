@@ -32,18 +32,22 @@
 static void stopHandler(int sig);
 
 // Initialization and configuration:
+static UA_StatusCode createSecurityPolicyNoneEndpoint(UA_ServerConfig *const config,
+                                                      UA_Endpoint *endpoint,
+                                                      UA_MessageSecurityMode securityMode,
+                                                      const UA_ByteString certificate);
 static UA_StatusCode createSecurityPolicyBasic256Sha256Endpoint(UA_ServerConfig *const conf,
                                                                 UA_Endpoint *endpoint,
                                                                 UA_MessageSecurityMode securityMode,
                                                                 const UA_ByteString certificate,
                                                                 const UA_ByteString privateKey);
-static UA_ServerConfig * UA_ServerConfig_Basic256Sha256_custom(UA_UInt16 portNumber,
-                                                               const UA_ByteString *certificate,
-                                                               const UA_ByteString *privateKey,
-                                                               const UA_ByteString *trustList,
-                                                               size_t trustListSize,
-                                                               const UA_ByteString *revocationList,
-                                                               size_t revocationListSize);
+static UA_ServerConfig * UA_ServerConfig_custom(UA_UInt16 portNumber,
+                                                const UA_ByteString *certificate,
+                                                const UA_ByteString *privateKey,
+                                                const UA_ByteString *trustList,
+                                                size_t trustListSize,
+                                                const UA_ByteString *revocationList,
+                                                size_t revocationListSize);
 int main(int argc, char* argv[]);
 
 //---------
@@ -97,6 +101,74 @@ static void stopHandler(int sig)
 //-----------------------------------
 
 /**
+ * Creates a new endpoint with credentials based authentication
+ * Attention: Insecure! Connections established with this endpoint are not
+ * signed or encrypted. Should only be used for testing purposes!
+ *
+ * @param   config          server configuration
+ * @param   endpoint        server endpoint (usually config->endpoint)
+ * @param   securityMode    UA security mode
+ * @param   certificate     server certificate
+ * @return                  status code
+ */
+static UA_StatusCode createSecurityPolicyNoneEndpoint(UA_ServerConfig *const config,
+                                                      UA_Endpoint *endpoint,
+                                                      UA_MessageSecurityMode securityMode,
+                                                      const UA_ByteString certificate)
+{
+    if (!config || !endpoint || sizeof(certificate) == 0) {
+        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                     "createSecurityPolicyNoneEndpoint: Invalid transfer parameters!");
+        return UA_STATUSCODE_BADINTERNALERROR;
+    }
+
+    UA_StatusCode rc;
+
+    // Initialize the endpoint description
+    UA_EndpointDescription_init(&endpoint->endpointDescription);
+
+    // Create a new None security policy and attach it to the endpoint
+    rc = UA_SecurityPolicy_None(&endpoint->securityPolicy,
+                                &config->certificateVerification,
+                                certificate,
+                                config->logger);
+    if (rc != UA_STATUSCODE_GOOD) {
+        endpoint->securityPolicy.deleteMembers(&endpoint->securityPolicy);
+        return rc;
+    }
+
+    // Set the security mode
+    endpoint->endpointDescription.securityMode = securityMode;
+
+    // Set the URIs for the security policy as well as for the transport profile
+    endpoint->endpointDescription.securityPolicyUri =
+        UA_STRING_ALLOC("http://opcfoundation.org/UA/SecurityPolicy#None");
+    endpoint->endpointDescription.transportProfileUri =
+        UA_STRING_ALLOC("http://opcfoundation.org/UA-Profile/Transport/uatcp-uasc-uabinary");
+
+    // Enable login mechanisms from the access control plugin
+    rc = UA_Array_copy(config->accessControl.userTokenPolicies,
+                       config->accessControl.userTokenPoliciesSize,
+                       (void **) &endpoint->endpointDescription.userIdentityTokens,
+                       &UA_TYPES[UA_TYPES_USERTOKENPOLICY]);
+    if (rc != UA_STATUSCODE_GOOD) {
+        return rc;
+    }
+    endpoint->endpointDescription.userIdentityTokensSize =
+        config->accessControl.userTokenPoliciesSize;
+
+    // Attach the server certificate to the endpoint
+    UA_String_copy(&certificate, &endpoint->endpointDescription.serverCertificate);
+
+    // Copy the application description deposited in the configuration to the
+    // endpoint description
+    UA_ApplicationDescription_copy(&config->applicationDescription,
+                                   &endpoint->endpointDescription.server);
+
+    return UA_STATUSCODE_GOOD;
+ }
+
+/**
  * Creates a new Basic256Sha256-secured endpoint
  *
  * @param   config          server configuration
@@ -142,17 +214,6 @@ static UA_StatusCode createSecurityPolicyBasic256Sha256Endpoint(UA_ServerConfig 
     endpoint->endpointDescription.transportProfileUri =
         UA_STRING_ALLOC("http://opcfoundation.org/UA-Profile/Transport/uatcp-uasc-uabinary");
 
-    // Enable login mechanisms from the access control plugin
-    rc = UA_Array_copy(config->accessControl.userTokenPolicies,
-                       config->accessControl.userTokenPoliciesSize,
-                       (void **) &endpoint->endpointDescription.userIdentityTokens,
-                       &UA_TYPES[UA_TYPES_USERTOKENPOLICY]);
-    if (rc != UA_STATUSCODE_GOOD) {
-        return rc;
-    }
-    endpoint->endpointDescription.userIdentityTokensSize =
-        config->accessControl.userTokenPoliciesSize;
-
     // Attach the server certificate to the endpoint
     UA_String_copy(&certificate, &endpoint->endpointDescription.serverCertificate);
 
@@ -177,17 +238,17 @@ static UA_StatusCode createSecurityPolicyBasic256Sha256Endpoint(UA_ServerConfig 
   * @param  revocationListSize  number of entries in the revocation list
   * @return                     status code
   */
-static UA_ServerConfig * UA_ServerConfig_Basic256Sha256_custom(UA_UInt16 portNumber,
-                                                               const UA_ByteString *certificate,
-                                                               const UA_ByteString *privateKey,
-                                                               const UA_ByteString *trustList,
-                                                               size_t trustListSize,
-                                                               const UA_ByteString *revocationList,
-                                                               size_t revocationListSize)
+static UA_ServerConfig * UA_ServerConfig_custom(UA_UInt16 portNumber,
+                                                const UA_ByteString *certificate,
+                                                const UA_ByteString *privateKey,
+                                                const UA_ByteString *trustList,
+                                                size_t trustListSize,
+                                                const UA_ByteString *revocationList,
+                                                size_t revocationListSize)
 {
     if (!certificate || !privateKey) {
         UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
-                     "UA_ServerConfig_Basic256Sha256_custom: Invalid transfer parameters!");
+                     "UA_ServerConfig_custom: Invalid transfer parameters!");
         return NULL;
     }
 
@@ -196,8 +257,9 @@ static UA_ServerConfig * UA_ServerConfig_Basic256Sha256_custom(UA_UInt16 portNum
     // Allocate memory for the server configuration
     UA_ServerConfig *config = (UA_ServerConfig *) UA_malloc(sizeof(UA_ServerConfig));
     if(!config) {
-        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "UA_ServerConfig_Basic256Sha256_custom: " \
-                     "Error while initializing the server configuration! Aborting!");
+        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                     "UA_ServerConfig_custom: Error while initializing the server " \
+                     "configuration! Aborting!");
 
         return NULL;
     }
@@ -217,8 +279,9 @@ static UA_ServerConfig * UA_ServerConfig_Basic256Sha256_custom(UA_UInt16 portNum
 
     rc = UA_Nodestore_default_new(&config->nodestore);
     if (rc != UA_STATUSCODE_GOOD) {
-        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "UA_ServerConfig_Basic256Sha256_custom: " \
-                     "Error while initializing the nodestore! Aborting configuration!");
+        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                     "UA_ServerConfig_custom: Error while initializing the " \
+                     "nodestore! Aborting configuration!");
 
         UA_ServerConfig_delete(config);
         return NULL;
@@ -281,16 +344,18 @@ static UA_ServerConfig * UA_ServerConfig_Basic256Sha256_custom(UA_UInt16 portNum
                                               trustList, trustListSize,
                                               revocationList, revocationListSize);
     if (rc != UA_STATUSCODE_GOOD) {
-        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "UA_ServerConfig_Basic256Sha256_custom: " \
-                     "Error while initializing the trust and revocation list! Aborting configuration!");
+        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                     "UA_ServerConfig_custom: Error while initializing the trust " \
+                     "and revocation list! Aborting configuration!");
 
         UA_ServerConfig_delete(config);
         return NULL;
     }
 
     if (trustListSize == 0) {
-        UA_LOG_WARNING(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "No CA trust-list " \
-                       "provided. Any remote certificate will be accepted.");
+        UA_LOG_WARNING(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                       "UA_ServerConfig_custom: No CA trust-list provided. Any " \
+                       "remote certificate will be accepted.");
     }
 
     /* Networking */
@@ -312,35 +377,57 @@ static UA_ServerConfig * UA_ServerConfig_Basic256Sha256_custom(UA_UInt16 portNum
         config->networkLayersSize = 1;
     }
     else {
-        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "UA_ServerConfig_Basic256Sha256_custom: " \
-                     "Error while adding network layer! Aborting configuration!");
+        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                     "UA_ServerConfig_custom: Error while adding network layer! " \
+                     "Aborting configuration!");
 
         UA_ServerConfig_delete(config);
         return NULL;
     }
 
-    // Allocate the endpoint
+    // Allocate the endpoints
+#ifdef INSECURE_MODE
+    config->endpointsSize = 2;
+#else
     config->endpointsSize = 1;
-    config->endpoints = (UA_Endpoint *) UA_malloc(sizeof(UA_Endpoint));
+#endif // INSECURE_MODE
+    config->endpoints = (UA_Endpoint *) UA_malloc(config->endpointsSize * sizeof(UA_Endpoint));
     if (!config->endpoints) {
-        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "UA_ServerConfig_Basic256Sha256_custom: " \
-                     "Error while initializing the endpoint! Aborting configuration!");
+        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                     "UA_ServerConfig_custom: Error while initializing the " \
+                     "endpoints! Aborting configuration!");
 
         UA_ServerConfig_delete(config);
         return NULL;
     }
 
     // Create a new endpoint with Basic256Sha256 security policy attached
-    rc = createSecurityPolicyBasic256Sha256Endpoint(config, config->endpoints,
+    rc = createSecurityPolicyBasic256Sha256Endpoint(config, &config->endpoints[0],
                                                     UA_MESSAGESECURITYMODE_SIGNANDENCRYPT,
                                                     *certificate, *privateKey);
     if (rc != UA_STATUSCODE_GOOD) {
-        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "UA_ServerConfig_Basic256Sha256_custom: " \
-                     "Error while creating the Basic256Sha256 endpoint! Aborting configuration!");
+        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                     "UA_ServerConfig_custom: Error while creating the " \
+                     "Basic256Sha256 endpoint! Aborting configuration!");
 
         UA_ServerConfig_delete(config);
         return NULL;
     }
+
+#ifdef INSECURE_MODE
+    // Create a new endpoint with credentials based authentication
+    rc = createSecurityPolicyNoneEndpoint(config, &config->endpoints[1],
+                                          UA_MESSAGESECURITYMODE_NONE,
+                                          *certificate);
+    if (rc != UA_STATUSCODE_GOOD) {
+        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                     "UA_ServerConfig_custom: Error while creating the " \
+                     "None endpoint! Aborting configuration!");
+
+        UA_ServerConfig_delete(config);
+        return NULL;
+    }
+#endif // INSECURE_MODE
 
     return config;
 }
@@ -375,14 +462,14 @@ int main(int argc, char* argv[])
     // certificate thumbprint, thus preventing a secure channel between client
     // and server to be established.
     if (UA_isPEM(&certificate)) {
-        UA_ByteString * certificate_raw = &certificate;
-        certificate = UA_parsePEMtoDER(certificate_raw);
-        UA_ByteString_delete(certificate_raw);
+        UA_ByteString certificate_raw = certificate;
+        certificate = UA_parsePEMtoDER(&certificate_raw);
+        UA_ByteString_deleteMembers(&certificate_raw);
     }
     if (UA_isPEM(&privateKey)) {
-        UA_ByteString * privateKey_raw = &privateKey;
+        UA_ByteString privateKey_raw = privateKey;
         privateKey = UA_parsePEMtoDER(&privateKey_raw);
-        UA_ByteString_delete(privateKey_raw);
+        UA_ByteString_deleteMembers(&privateKey_raw);
     }
 
     // Initialize the trust list from the transfer parameters
@@ -400,13 +487,14 @@ int main(int argc, char* argv[])
     size_t revocationListSize = 0;
 
     // Create a new configuration w/ Basic256Sha256 security policy attached
-    UA_ServerConfig *config = UA_ServerConfig_Basic256Sha256_custom(4840, \
-                                                                    &certificate, &privateKey, \
-                                                                    trustList, trustListSize, \
-                                                                    revocationList, revocationListSize);
+    UA_ServerConfig *config = UA_ServerConfig_custom(4840, \
+                                                     &certificate, &privateKey, \
+                                                     trustList, trustListSize, \
+                                                     revocationList, revocationListSize);
     if (!config) {
-        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "main: Error while initializing "
-                     "the server configuration! Exiting the program!");
+        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
+                     "main: Error while initializing the server configuration! " \
+                     "Exiting the program!");
         return 1;
     }
 
@@ -418,16 +506,16 @@ int main(int argc, char* argv[])
     // Load the nodeset and create the nodes
     rc = model(server);
     if (rc != UA_STATUSCODE_GOOD) {
-        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "main: Failed to load "
-                     "the nodeset! Exiting the program!");
+        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
+                     "main: Failed to load the nodeset! Exiting the program!");
         rc = UA_STATUSCODE_BADUNEXPECTEDERROR;
     }
     else {
         // Start the OPC-server as a daemon (background process)
         rc = UA_Server_run(server, &server_running);
         if (rc != UA_STATUSCODE_GOOD) {
-            UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "main: Failed to " \
-                         "start the OPC-server! RC: %x", rc);
+            UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER,
+                         "main: Failed to start the OPC-server! RC: %x", rc);
         }
     }
 

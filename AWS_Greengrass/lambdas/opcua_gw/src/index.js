@@ -50,7 +50,7 @@ worker.on('exit', (code, signal) => {
 
     // Inherit the event listeners from the old worker process
     worker_old.eventNames().forEach( (eventName) => {
-        if ( eventName != 'internalMessage') {
+        if ( eventName != 'internalMessage' ) {
             worker_old.listeners(eventName).forEach( (listener) => {
                 worker.on(eventName, listener);
             });
