@@ -20,7 +20,7 @@
 
 #include "open62541.h"
 //#include "revpi_open62541_IO_methods.h"
-#include "merged.h"
+#include "rpi_and_mps_object_types_objects_methods.h"
 
 #include "revpi.h"
 #include "methods.h"
@@ -29,6 +29,7 @@
 #include "util.h"
 #include "user_config.h"
 
+#define DEBUG
 
 //--------------------------
 // Definition of functions:
@@ -548,7 +549,7 @@ int main(int argc, char* argv[])
     UA_StatusCode rc;
 
     // Load the nodeset and create the nodes
-    rc = merged(server);
+    rc = rpi_and_mps_object_types_objects_methods(server);
     if (rc != UA_STATUSCODE_GOOD) {
         UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "main: Failed to load "
                      "the nodeset! Exiting the program! RC: %s", UA_StatusCode_name(rc));
@@ -556,23 +557,39 @@ int main(int argc, char* argv[])
     }
     //else {
         // Link the Nodes from the Nodeset with their resources
+        for (int i = 0; i < 16; i++){
+          // Link the Variable "Value" with its Input Pin for all 16 Digital Inputs
+          // For this nodeset, the NodeIds of the Input "Value" Variables increment by 5
+          linkDataSourceVariable(server, UA_NODEID_NUMERIC(1, 2041 + i * 5));
+          UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(1, 2039 + i * 5), &universalSetGetCallback);
 
-        linkDataSourceVariable(server, UA_NODEID_NUMERIC(1, 2037), false);
-        /*
-        linkDataSourceVariable(server, 1, "O_3" ,false);
-        linkDataSourceVariable(server, 1, "O_5" ,false);
-        linkDataSourceVariable(server, 1, "O_7" ,false);
-        UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(1, 2014), &setIndicatorStateCallback);
-        UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(1, 2016), &getIndicatorStateCallback);
-        UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(1, 2022), &setIndicatorStateCallback);
-        UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(1, 2024), &getIndicatorStateCallback);
-        UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(1, 2028), &setIndicatorStateCallback);
-        UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(1, 2030), &getIndicatorStateCallback);
-        UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(1, 2034), &setIndicatorStateCallback);
-        UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(1, 2036), &getIndicatorStateCallback);
+          // Link the Variable "Value" with its Output Pin for all 16 Digital Outputs
+          // For this nodeset, the NodeIds of the Output "Value" Variables increment by 7
+          linkDataSourceVariable(server, UA_NODEID_NUMERIC(1, 2122 + i * 7));
+          UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(1, 2120 + i * 7), &universalSetGetCallback);
+          UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(1, 2123 + i * 7), &universalSetGetCallback);
+        }
 
-        browseMethods(server, UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER));
-*/
+        UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(1, 2018), &universalSetGetCallback);
+        UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(1, 2021), &universalSetGetCallback);
+        UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(1, 2271), &universalSetGetCallback);
+        UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(1, 2276), &universalSetGetCallback);
+        UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(1, 2279), &universalSetGetCallback);
+        UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(1, 2283), &universalSetGetCallback);
+        UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(1, 2286), &universalSetGetCallback);
+        UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(1, 2290), &universalSetGetCallback);
+        UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(1, 2302), &universalSetGetCallback);
+        UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(1, 2314), &universalSetGetCallback);
+        UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(1, 2231), &universalSetGetCallback);
+        UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(1, 2238), &universalSetGetCallback);
+        UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(1, 2243), &universalSetGetCallback);
+        UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(1, 2246), &universalSetGetCallback);
+        UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(1, 2251), &universalSetGetCallback);
+        UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(1, 2262), &universalSetGetCallback);
+        UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(1, 2267), &universalSetGetCallback);
+
+        //linkStateWithIO(server, UA_NODEID_NUMERIC(1, 2281));
+
         // Start the OPC-server as a daemon (background process)
         rc = UA_Server_run(server, &server_running);
         if (rc != UA_STATUSCODE_GOOD) {
