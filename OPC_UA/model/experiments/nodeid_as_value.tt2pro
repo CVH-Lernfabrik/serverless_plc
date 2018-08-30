@@ -1,21 +1,21 @@
 ###########################
 # UaModeler Project File  #
-# Generated at 13.08.2018 #
+# Generated at 22.08.2018 #
 ###########################
 
-PROJECTNAME = mps_object_types_first10
+PROJECTNAME = nodeid as value
 
 TEMPLATESET = ($TEMPLATES)/modeling/v1_0/t0/modeling.tt2set
 
 MODELS += ($MODELS)/Opc.Ua.NodeSet2.ua \
-    mps_object_types_first10.ua
+    nodeid_as_value.ua
 
 COLORS = ($MODELS)/Opc.Ua.NodeSet2.ua: #0000ff\
-    mps_object_types_first10.ua: #008000
+    nodeid_as_value.ua: #008000
 
-OUTPUTPATH = UaModelerCode
+OUTPUTPATH = 
 
-GENERATE += mps_object_types_first10.ua
+GENERATE += nodeid_as_value.ua
 
 NODEACCESSINFOROLES += Administrator \
     SecurityAdmin \

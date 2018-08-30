@@ -78,7 +78,7 @@
 
 
 /*
- * This file defines five types of data structures: singly-linked lists, 
+ * This file defines five types of data structures: singly-linked lists,
  * lists, simple queues, tail queues, and circular queues.
  *
  *
@@ -137,7 +137,7 @@
 struct name {								\
     struct type *slh_first;	/* first element */			\
 }
- 
+
 #define	SLIST_HEAD_INITIALIZER(head)					\
     { NULL }
 
@@ -150,7 +150,7 @@ struct name {								\
 struct {								\
     struct type *sle_next;	/* next element */			\
 }
- 
+
 /*
  * Singly-linked List access methods.
  */
@@ -442,7 +442,7 @@ struct {								\
             XSIMPLEQ_XOR(head, &(elm)->field.sqx_next);		\
 } while (0)
 
-            
+
 /*
  * Tail queue definitions.
  */
@@ -461,8 +461,8 @@ struct {								\
     struct type **tqe_prev;	/* address of previous next element */	\
 }
 
-/* 
- * tail queue access methods 
+/*
+ * tail queue access methods
  */
 #define	TAILQ_FIRST(head)		((head)->tqh_first)
 #define	TAILQ_END(head)			NULL
@@ -582,7 +582,7 @@ struct {								\
 }
 
 /*
- * Circular queue access methods 
+ * Circular queue access methods
  */
 #define	CIRCLEQ_FIRST(head)		((head)->cqh_first)
 #define	CIRCLEQ_LAST(head)		((head)->cqh_last)
@@ -764,7 +764,7 @@ int __secs_to_tm(long long t, struct mytm *tm);
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2014-2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2014, 2017 (c) Florian Palm
@@ -4741,7 +4741,7 @@ UA_SecureConversationMessageHeader_decodeBinary(const UA_ByteString *src, size_t
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2016-2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2016-2017 (c) Stefan Profanter, fortiss GmbH
@@ -4818,7 +4818,7 @@ void UA_Connection_attachSecureChannel(UA_Connection *connection,
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2014-2018 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2017 (c) Florian Palm
@@ -5071,7 +5071,7 @@ UA_SecureChannel_processChunk(UA_SecureChannel *channel, UA_ByteString *chunk,
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2017 (c) Stefan Profanter, fortiss GmbH
@@ -5153,7 +5153,7 @@ void UA_Timer_deleteMembers(UA_Timer *t);
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2018 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  */
@@ -5320,7 +5320,7 @@ UA_PublishResponseEntry* UA_Session_dequeuePublishReq(UA_Session *session);
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2015-2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2015 (c) Chris Iatrou
@@ -5496,7 +5496,7 @@ UA_Boolean UA_Subscription_reachedPublishReqLimit(UA_Server *server,  UA_Session
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2014-2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2014, 2017 (c) Florian Palm
@@ -5556,7 +5556,7 @@ UA_SessionManager_getSessionById(UA_SessionManager *sm, const UA_NodeId *session
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2014-2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2014, 2017 (c) Florian Palm
@@ -5626,7 +5626,7 @@ UA_SecureChannelManager_close(UA_SecureChannelManager *cm, UA_UInt32 channelId);
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2014-2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2014, 2017 (c) Florian Palm
@@ -6001,7 +6001,7 @@ UA_StatusCode UA_Server_initNS0(UA_Server *server);
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2014-2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2014-2017 (c) Florian Palm
@@ -6543,7 +6543,7 @@ extern UA_StatusCode ua_namespace0(UA_Server *server);
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2015-2016 (c) Sten Grüner
  *    Copyright 2015-2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
@@ -6697,7 +6697,7 @@ receiveServiceResponse(UA_Client *client, void *response, const UA_DataType *res
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2014-2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2014, 2016-2017 (c) Florian Palm
@@ -7775,7 +7775,7 @@ UA_Array_delete(void *p, size_t size, const UA_DataType *type) {
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2014-2018 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2014-2017 (c) Florian Palm
@@ -18885,7 +18885,7 @@ const char * UA_StatusCode_name(UA_StatusCode code) {
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2014, 2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2014 (c) Florian Palm
@@ -18979,7 +18979,7 @@ UA_parseEndpointUrl(const UA_String *endpointUrl, UA_String *outHostname,
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2017 (c) Stefan Profanter, fortiss GmbH
@@ -19341,7 +19341,7 @@ UA_Timer_deleteMembers(UA_Timer *t) {
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2014-2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2014, 2016-2017 (c) Florian Palm
@@ -20675,7 +20675,7 @@ UA_SecurityPolicy_getRemoteAsymEncryptionBufferLengthOverhead(const UA_SecurityP
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2018 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2018 (c) Thomas Stalder, Blue Time Concept SA
@@ -20859,7 +20859,7 @@ UA_Session_queuePublishReq(UA_Session *session, UA_PublishResponseEntry* entry, 
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2015-2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2015-2016 (c) Sten Grüner
@@ -21468,7 +21468,7 @@ void UA_Node_deleteReferences(UA_Node *node) {
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2014-2018 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2014-2017 (c) Florian Palm
@@ -21776,7 +21776,7 @@ UA_Server_removeRepeatedCallback(UA_Server *server, UA_UInt64 callbackId) {
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2017 (c) Stefan Profanter, fortiss GmbH
@@ -22548,7 +22548,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_0_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 344)
 );
 }
@@ -22574,7 +22574,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_1_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 51)
 );
 }
@@ -22600,7 +22600,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_2_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 29)
 );
 }
@@ -22625,7 +22625,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_3_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 859)
 );
 }
@@ -22651,7 +22651,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_4_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 53)
 );
 }
@@ -22676,7 +22676,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_5_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 25)
 );
 }
@@ -22701,7 +22701,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_6_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 120)
 );
 }
@@ -22726,7 +22726,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_7_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 23)
 );
 }
@@ -22751,7 +22751,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_8_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 7594)
 );
 }
@@ -22777,7 +22777,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_9_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 52)
 );
 }
@@ -22802,7 +22802,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_10_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 338)
 );
 }
@@ -22827,7 +22827,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_11_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 296)
 );
 }
@@ -22853,7 +22853,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_12_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 56)
 );
 }
@@ -22878,7 +22878,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_13_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 852)
 );
 }
@@ -22904,7 +22904,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_14_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 30)
 );
 }
@@ -22929,7 +22929,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_15_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 862)
 );
 }
@@ -22955,7 +22955,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_16_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 54)
 );
 }
@@ -22980,7 +22980,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_17_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 851)
 );
 }
@@ -23007,7 +23007,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_18_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2150)
 );
 }
@@ -23034,7 +23034,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_19_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 72)
 );
 }
@@ -23061,7 +23061,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_20_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 68)
 );
 }
@@ -23094,7 +23094,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_21_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2161)
 );
 }
@@ -23127,7 +23127,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_22_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2162)
 );
 }
@@ -23160,7 +23160,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_23_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2157)
 );
 }
@@ -23185,7 +23185,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_24_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2013)
 );
 }
@@ -23210,7 +23210,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_25_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 76)
 );
 }
@@ -23243,7 +23243,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_26_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2153)
 );
 }
@@ -23276,7 +23276,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_27_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2154)
 );
 }
@@ -23303,7 +23303,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_28_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 69)
 );
 }
@@ -23328,7 +23328,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_29_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 11564)
 );
 }
@@ -23361,7 +23361,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_30_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 104)
 );
 }
@@ -23386,7 +23386,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_31_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 11551)
 );
 }
@@ -23419,7 +23419,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_32_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 11569)
 );
 }
@@ -23446,7 +23446,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_33_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2138)
 );
 }
@@ -23473,7 +23473,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_34_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 3051)
 );
 }
@@ -23515,7 +23515,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_35_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 7611)
 );
 }
@@ -23548,7 +23548,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_36_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2151)
 );
 }
@@ -23581,7 +23581,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_37_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 11572)
 );
 }
@@ -23614,7 +23614,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_38_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 11573)
 );
 }
@@ -23743,7 +23743,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_39_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 12169)
 );
 }
@@ -23776,7 +23776,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_40_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2155)
 );
 }
@@ -23809,7 +23809,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_41_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 107)
 );
 }
@@ -23834,7 +23834,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_42_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2004)
 );
 }
@@ -23859,7 +23859,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_43_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2020)
 );
 }
@@ -23884,7 +23884,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_44_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2033)
 );
 }
@@ -23917,7 +23917,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_45_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 106)
 );
 }
@@ -23950,7 +23950,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_46_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 105)
 );
 }
@@ -23975,7 +23975,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_47_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2034)
 );
 }
@@ -24008,7 +24008,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_48_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2159)
 );
 }
@@ -24041,7 +24041,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_49_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2160)
 );
 }
@@ -24074,7 +24074,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_50_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 11565)
 );
 }
@@ -24107,7 +24107,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_51_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2156)
 );
 }
@@ -24140,7 +24140,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_52_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2152)
 );
 }
@@ -24165,7 +24165,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_53_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 75)
 );
 }
@@ -24190,7 +24190,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_54_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 3062)
 );
 }
@@ -24223,7 +24223,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_55_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2163)
 );
 }
@@ -24248,7 +24248,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_56_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 3063)
 );
 }
@@ -24273,7 +24273,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_57_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 77)
 );
 }
@@ -24299,7 +24299,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_58_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 8251)
 );
 }
@@ -24332,7 +24332,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_59_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2035)
 );
 }
@@ -24365,7 +24365,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_60_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 11574)
 );
 }
@@ -24398,7 +24398,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_61_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 11570)
 );
 }
@@ -24431,7 +24431,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_62_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 11571)
 );
 }
@@ -24457,7 +24457,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_63_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 298)
 );
 }
@@ -24483,7 +24483,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_64_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2253)
 );
 }
@@ -24508,7 +24508,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_65_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2011)
 );
 }
@@ -24541,7 +24541,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_66_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2994)
 );
 }
@@ -24574,7 +24574,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_67_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 11567)
 );
 }
@@ -24608,7 +24608,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_68_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 111)
 );
 }
@@ -24641,7 +24641,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_69_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2256)
 );
 }
@@ -24673,7 +24673,7 @@ return UA_STATUSCODE_GOOD;
 
 static UA_StatusCode function_ua_namespace0_70_finish(UA_Server *server, UA_UInt16* ns) {
 #ifdef UA_ENABLE_METHODCALLS
-return UA_Server_addMethodNode_finish(server, 
+return UA_Server_addMethodNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 11492)
 , NULL, 0, NULL, 0, NULL);
 #else
@@ -24709,7 +24709,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_71_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2259)
 );
 }
@@ -24742,7 +24742,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_72_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2257)
 );
 }
@@ -24784,7 +24784,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_73_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 78)
 );
 }
@@ -24817,7 +24817,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_74_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2992)
 );
 }
@@ -24842,7 +24842,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_75_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2295)
 );
 }
@@ -24919,7 +24919,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_76_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 11493)
 );
 }
@@ -24952,7 +24952,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_77_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2260)
 );
 }
@@ -24987,7 +24987,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_78_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2254)
 );
 }
@@ -25012,7 +25012,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_79_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2268)
 );
 }
@@ -25130,7 +25130,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_80_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 11494)
 );
 }
@@ -25164,7 +25164,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_81_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 112)
 );
 }
@@ -25189,7 +25189,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_82_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2296)
 );
 }
@@ -25214,7 +25214,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_83_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 93)
 );
 }
@@ -25252,7 +25252,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_84_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 80)
 );
 }
@@ -25277,7 +25277,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_85_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2274)
 );
 }
@@ -25312,7 +25312,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_86_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 3704)
 );
 }
@@ -25345,7 +25345,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_87_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 3709)
 );
 }
@@ -25379,7 +25379,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_88_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 113)
 );
 }
@@ -25412,7 +25412,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_89_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2993)
 );
 }
@@ -25445,7 +25445,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_90_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2272)
 );
 }
@@ -25470,7 +25470,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_91_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 11704)
 );
 }
@@ -25503,7 +25503,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_92_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2264)
 );
 }
@@ -25536,7 +25536,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_93_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2267)
 );
 }
@@ -25569,7 +25569,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_94_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 11707)
 );
 }
@@ -25602,7 +25602,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_95_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 11710)
 );
 }
@@ -25627,7 +25627,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_96_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2996)
 );
 }
@@ -25662,7 +25662,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_97_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2255)
 );
 }
@@ -25695,7 +25695,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_98_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2735)
 );
 }
@@ -25728,7 +25728,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_99_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2265)
 );
 }
@@ -25761,7 +25761,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_100_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2258)
 );
 }
@@ -25794,7 +25794,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_101_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 11712)
 );
 }
@@ -25827,7 +25827,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_102_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2266)
 );
 }
@@ -25860,7 +25860,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_103_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 11713)
 );
 }
@@ -25893,7 +25893,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_104_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 11714)
 );
 }
@@ -25926,7 +25926,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_105_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2262)
 );
 }
@@ -25959,7 +25959,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_106_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2294)
 );
 }
@@ -25992,7 +25992,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_107_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2736)
 );
 }
@@ -26025,7 +26025,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_108_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2261)
 );
 }
@@ -26060,7 +26060,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_109_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2269)
 );
 }
@@ -26093,7 +26093,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_110_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2275)
 );
 }
@@ -26126,7 +26126,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_111_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 11705)
 );
 }
@@ -26159,7 +26159,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_112_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2263)
 );
 }
@@ -26192,7 +26192,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_113_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2286)
 );
 }
@@ -26217,7 +26217,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_114_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2997)
 );
 }
@@ -26250,7 +26250,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_115_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 11711)
 );
 }
@@ -26283,7 +26283,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_116_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2737)
 );
 }
@@ -26318,7 +26318,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_117_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2271)
 );
 }
@@ -26351,7 +26351,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_118_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2282)
 );
 }
@@ -26385,7 +26385,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_119_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 7617)
 );
 }
@@ -26420,7 +26420,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_120_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 7650)
 );
 }
@@ -26453,7 +26453,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_121_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2281)
 );
 }
@@ -26486,7 +26486,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_122_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 11709)
 );
 }
@@ -26519,7 +26519,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_123_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2278)
 );
 }
@@ -26552,7 +26552,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_124_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2287)
 );
 }
@@ -26585,7 +26585,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_125_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2279)
 );
 }
@@ -26618,7 +26618,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_126_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2288)
 );
 }
@@ -26651,7 +26651,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_127_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2284)
 );
 }
@@ -26684,7 +26684,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_128_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2285)
 );
 }
@@ -26719,7 +26719,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_129_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 7656)
 );
 }
@@ -26752,7 +26752,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_130_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2276)
 );
 }
@@ -26785,7 +26785,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_131_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 2277)
 );
 }
@@ -26818,7 +26818,7 @@ return retVal;
 }
 
 static UA_StatusCode function_ua_namespace0_132_finish(UA_Server *server, UA_UInt16* ns) {
-return UA_Server_addNode_finish(server, 
+return UA_Server_addNode_finish(server,
 UA_NODEID_NUMERIC(ns[0], 3705)
 );
 }
@@ -27101,7 +27101,7 @@ return retVal;
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2014-2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2014-2016 (c) Sten Grüner
@@ -27905,7 +27905,7 @@ UA_Server_removeConnection(UA_Server *server, UA_Connection *connection) {
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2016-2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2016 (c) Lorenz Haas
@@ -28404,7 +28404,7 @@ const UA_ViewAttributes UA_ViewAttributes_default = {
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2014-2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2014-2016 (c) Sten Grüner
@@ -28870,7 +28870,7 @@ UA_Server_run(UA_Server *server, volatile UA_Boolean *running) {
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2017 (c) Stefan Profanter, fortiss GmbH
@@ -28999,7 +28999,7 @@ UA_Server_unregister_discovery(UA_Server *server, UA_Client *client) {
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2014-2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2014-2017 (c) Florian Palm
@@ -29251,7 +29251,7 @@ UA_SecureChannelManager_close(UA_SecureChannelManager *cm, UA_UInt32 channelId) 
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2014-2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2014, 2017 (c) Florian Palm
@@ -29425,7 +29425,7 @@ UA_SessionManager_removeSession(UA_SessionManager *sm, const UA_NodeId *token) {
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2015-2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2015 (c) Chris Iatrou
@@ -29898,7 +29898,7 @@ UA_Subscription_answerPublishRequestsNoSubscription(UA_Server *server, UA_Sessio
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2017 (c) Stefan Profanter, fortiss GmbH
@@ -30250,7 +30250,7 @@ MonitoredItem_unregisterSampleCallback(UA_Server *server, UA_MonitoredItem *mon)
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2014-2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2014-2017 (c) Florian Palm
@@ -31008,7 +31008,7 @@ void Service_UnregisterNodes(UA_Server *server, UA_Session *session,
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2015 (c) Chris Iatrou
  *    Copyright 2015-2017 (c) Florian Palm
@@ -31165,7 +31165,7 @@ callWithMethodAndObject(UA_Server *server, UA_Session *session,
     UA_Boolean executable = method->executable;
     if(session != &adminSession)
         executable = executable &&
-            server->config.accessControl.getUserExecutableOnObject(server, 
+            server->config.accessControl.getUserExecutableOnObject(server,
                            &server->config.accessControl, &session->sessionId,
                            session->sessionHandle, &request->methodId, method->context,
                            &request->objectId, object->context);
@@ -31275,7 +31275,7 @@ UA_Server_call(UA_Server *server, const UA_CallMethodRequest *request) {
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2014-2018 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2014, 2017 (c) Florian Palm
@@ -31570,7 +31570,7 @@ Service_CloseSession(UA_Server *server, UA_Session *session,
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2014-2018 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2015-2016 (c) Sten Grüner
@@ -32914,7 +32914,7 @@ __UA_Server_write(UA_Server *server, const UA_NodeId *nodeId,
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2014-2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2014-2016 (c) Sten Grüner
@@ -33685,7 +33685,7 @@ UA_Server_setRegisterServerCallback(UA_Server *server,
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2014-2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2016-2017 (c) Florian Palm
@@ -34388,7 +34388,7 @@ Service_Republish(UA_Server *server, UA_Session *session, const UA_RepublishRequ
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2014-2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2014, 2017 (c) Florian Palm
@@ -34452,7 +34452,7 @@ Service_CloseSecureChannel(UA_Server *server, UA_SecureChannel *channel) {
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2014-2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2014-2017 (c) Florian Palm
@@ -35401,14 +35401,21 @@ Operation_addNode_begin(UA_Server *server, UA_Session *session, void *nodeContex
 
     /* Create the node and add it to the nodestore */
     UA_StatusCode retval = AddNode_raw(server, session, nodeContext, item, outNewNodeId);
-    if(retval != UA_STATUSCODE_GOOD)
-        return retval;
+    if(retval != UA_STATUSCODE_GOOD){
+      UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                 "AddNode_raw: newNodeId = %i, parentNodeId = %i", outNewNodeId->identifier, parentNodeId->identifier);
+      return retval;
+    }
+
 
     /* Typecheck and add references to parent and type definition */
     retval = AddNode_typeCheckAddRefs(server, session, outNewNodeId, parentNodeId,
                                       referenceTypeId, &item->typeDefinition.nodeId);
-    if(retval != UA_STATUSCODE_GOOD)
-        UA_Server_deleteNode(server, *outNewNodeId, UA_TRUE);
+    if(retval != UA_STATUSCODE_GOOD){
+      UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                 "AddNode_typeCheckAddRefs: newNodeId = %i, parentNodeId = %i", outNewNodeId->identifier, parentNodeId->identifier);
+                     UA_Server_deleteNode(server, *outNewNodeId, UA_TRUE);
+    }
     if(outNewNodeId == &newId)
         UA_NodeId_deleteMembers(&newId);
     return retval;
@@ -35421,8 +35428,12 @@ Operation_addNode_finish(UA_Server *server, UA_Session *session, const UA_NodeId
 
     /* Get the node */
     const UA_Node *node = UA_Nodestore_get(server, nodeId);
-    if(!node)
+    if(!node){
+      UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                 "UA_Nodestore_get: NodeId = %i",  nodeId->identifier);
         return UA_STATUSCODE_BADNODEIDUNKNOWN;
+    }
+
 
     const UA_Node *type = NULL;
 
@@ -36059,6 +36070,8 @@ UA_Server_addMethodNodeEx_finish(UA_Server *server, const UA_NodeId nodeId,
 
     UA_StatusCode retval = br.statusCode;
     if(retval != UA_STATUSCODE_GOOD) {
+      UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                 "UA_Server_addMethodNodeEx_finish: NodeId = %i",  nodeId.identifier);
         UA_Server_deleteNode(server, nodeId, true);
         UA_BrowseResult_deleteMembers(&br);
         return retval;
@@ -36239,7 +36252,7 @@ UA_Server_setNodeTypeLifecycle(UA_Server *server, UA_NodeId nodeId,
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2017 (c) Stefan Profanter, fortiss GmbH
  *    Copyright 2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
@@ -36889,7 +36902,7 @@ iterateMulticastDiscoveryServer(UA_Server* server, UA_DateTime *nextRepeat,
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2015-2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2015-2016 (c) Sten Grüner
@@ -38224,7 +38237,7 @@ UA_Client_close(UA_Client *client) {
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2017 (c) Mark Giraud, Fraunhofer IOSB
@@ -38361,7 +38374,7 @@ UA_Client_findServersOnNetwork(UA_Client *client, const char *serverUrl,
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2015-2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2015 (c) Oleksiy Vasylyev
@@ -38817,7 +38830,7 @@ UA_Client_readArrayDimensionsAttribute(UA_Client *client, const UA_NodeId nodeId
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2015-2018 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2015 (c) Oleksiy Vasylyev
@@ -38843,7 +38856,7 @@ UA_Client_Subscriptions_create(UA_Client *client,
                                UA_Client_DeleteSubscriptionCallback deleteCallback) {
     UA_CreateSubscriptionResponse response;
     UA_CreateSubscriptionResponse_init(&response);
-    
+
     /* Allocate the internal representation */
     UA_Client_Subscription *newSub = (UA_Client_Subscription*)
         UA_malloc(sizeof(UA_Client_Subscription));
@@ -38897,7 +38910,7 @@ UA_Client_Subscriptions_modify(UA_Client *client, const UA_ModifySubscriptionReq
         response.responseHeader.serviceResult = UA_STATUSCODE_BADSUBSCRIPTIONIDINVALID;
         return response;
     }
-    
+
     /* Call the service */
     __UA_Client_Service(client,
                         &request, &UA_TYPES[UA_TYPES_MODIFYSUBSCRIPTIONREQUEST],
@@ -38988,7 +39001,7 @@ UA_Client_Subscriptions_deleteSingle(UA_Client *client, UA_UInt32 subscriptionId
     UA_DeleteSubscriptionsRequest_init(&request);
     request.subscriptionIds = &subscriptionId;
     request.subscriptionIdsSize = 1;
-    
+
     UA_DeleteSubscriptionsResponse response =
         UA_Client_Subscriptions_delete(client, request);
 
@@ -39038,7 +39051,7 @@ __UA_Client_MonitoredItems_create(UA_Client *client,
     /* Fix clang warning */
     size_t itemsToCreateSize = request->itemsToCreateSize;
     UA_Client_Subscription *sub = NULL;
-    
+
     /* Allocate the memory for internal representations */
     UA_STACKARRAY(UA_Client_MonitoredItem*, mis, itemsToCreateSize);
     memset(mis, 0, sizeof(void*) * itemsToCreateSize);
@@ -39081,7 +39094,7 @@ __UA_Client_MonitoredItems_create(UA_Client *client,
             mis[i] = NULL;
             continue;
         }
-            
+
         UA_Client_MonitoredItem *newMon = mis[i];
         newMon->clientHandle = request->itemsToCreate[i].requestedParameters.clientHandle;
         newMon->monitoredItemId = response->results[i].monitoredItemId;
@@ -39135,7 +39148,7 @@ UA_Client_MonitoredItems_createDataChange(UA_Client *client, UA_UInt32 subscript
     request.timestampsToReturn = timestampsToReturn;
     request.itemsToCreate = (UA_MonitoredItemCreateRequest*)(uintptr_t)&item;
     request.itemsToCreateSize = 1;
-    UA_CreateMonitoredItemsResponse response = 
+    UA_CreateMonitoredItemsResponse response =
        UA_Client_MonitoredItems_createDataChanges(client, request, &context,
                                                    &callback, &deleteCallback);
     UA_MonitoredItemCreateResult result;
@@ -39146,7 +39159,7 @@ UA_Client_MonitoredItems_createDataChange(UA_Client *client, UA_UInt32 subscript
     if(result.statusCode == UA_STATUSCODE_GOOD &&
        response.resultsSize != 1)
         result.statusCode = UA_STATUSCODE_BADINTERNALERROR;
-    
+
     if(result.statusCode == UA_STATUSCODE_GOOD)
        UA_MonitoredItemCreateResult_copy(&response.results[0] , &result);
     UA_CreateMonitoredItemsResponse_deleteMembers(&response);
@@ -39175,7 +39188,7 @@ UA_Client_MonitoredItems_createEvent(UA_Client *client, UA_UInt32 subscriptionId
     request.timestampsToReturn = timestampsToReturn;
     request.itemsToCreate = (UA_MonitoredItemCreateRequest*)(uintptr_t)&item;
     request.itemsToCreateSize = 1;
-    UA_CreateMonitoredItemsResponse response = 
+    UA_CreateMonitoredItemsResponse response =
        UA_Client_MonitoredItems_createEvents(client, request, &context,
                                              &callback, &deleteCallback);
     UA_MonitoredItemCreateResult result;
@@ -39480,12 +39493,12 @@ UA_Client_Subscriptions_processPublishResponse(UA_Client *client, UA_PublishRequ
                            "Not enough memory to store the acknowledgement for a publish "
                            "message on subscription %u", sub->subscriptionId);
             break;
-        }   
+        }
         tmpAck->subAck.sequenceNumber = msg->sequenceNumber;
         tmpAck->subAck.subscriptionId = sub->subscriptionId;
         LIST_INSERT_HEAD(&client->pendingNotificationsAcks, tmpAck, listEntry);
         break;
-    } 
+    }
 }
 
 static void
@@ -39564,7 +39577,7 @@ UA_Client_Subscriptions_backgroundPublish(UA_Client *client) {
             UA_PublishRequest_delete(request);
             return retval;
         }
-    
+
         UA_UInt32 requestId;
         client->currentlyOutStandingPublishRequests++;
         retval = __UA_Client_AsyncService(client, request, &UA_TYPES[UA_TYPES_PUBLISHREQUEST],
@@ -39712,7 +39725,7 @@ uint32_t pcg32_random_r(pcg32_random_t* rng) {
 /*********************************** amalgamated original file "/home/pi/open62541/plugins/ua_network_tcp.c" ***********************************/
 
 /* This work is licensed under a Creative Commons CCZero 1.0 Universal License.
- * See http://creativecommons.org/publicdomain/zero/1.0/ for more information. 
+ * See http://creativecommons.org/publicdomain/zero/1.0/ for more information.
  *
  *    Copyright 2016-2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2016-2017 (c) Stefan Profanter, fortiss GmbH
@@ -40704,7 +40717,7 @@ UA_ClientConnectionTCP(UA_ConnectionConfig conf,
 /*********************************** amalgamated original file "/home/pi/open62541/plugins/ua_clock.c" ***********************************/
 
 /* This work is licensed under a Creative Commons CCZero 1.0 Universal License.
- * See http://creativecommons.org/publicdomain/zero/1.0/ for more information. 
+ * See http://creativecommons.org/publicdomain/zero/1.0/ for more information.
  *
  *    Copyright 2016-2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2017 (c) Stefan Profanter, fortiss GmbH
@@ -40832,7 +40845,7 @@ UA_DateTime UA_DateTime_nowMonotonic(void) {
 /*********************************** amalgamated original file "/home/pi/open62541/plugins/ua_log_stdout.c" ***********************************/
 
 /* This work is licensed under a Creative Commons CCZero 1.0 Universal License.
- * See http://creativecommons.org/publicdomain/zero/1.0/ for more information. 
+ * See http://creativecommons.org/publicdomain/zero/1.0/ for more information.
  *
  *    Copyright 2016-2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2017 (c) Thomas Stalder, Blue Time Concept SA
@@ -40902,7 +40915,7 @@ UA_Log_Stdout(UA_LogLevel level, UA_LogCategory category,
 /*********************************** amalgamated original file "/home/pi/open62541/plugins/ua_accesscontrol_default.c" ***********************************/
 
 /* This work is licensed under a Creative Commons CCZero 1.0 Universal License.
- * See http://creativecommons.org/publicdomain/zero/1.0/ for more information. 
+ * See http://creativecommons.org/publicdomain/zero/1.0/ for more information.
  *
  *    Copyright 2016-2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2017 (c) Stefan Profanter, fortiss GmbH
@@ -41156,7 +41169,7 @@ UA_AccessControl_default(UA_Boolean allowAnonymous, size_t usernamePasswordLogin
 /*********************************** amalgamated original file "/home/pi/open62541/plugins/ua_pki_certificate.c" ***********************************/
 
 /* This work is licensed under a Creative Commons CCZero 1.0 Universal License.
- * See http://creativecommons.org/publicdomain/zero/1.0/ for more information. 
+ * See http://creativecommons.org/publicdomain/zero/1.0/ for more information.
  *
  *    Copyright 2018 (c) Mark Giraud, Fraunhofer IOSB
  */
@@ -41306,7 +41319,7 @@ UA_CertificateVerification_Trustlist(UA_CertificateVerification *cv,
 /*********************************** amalgamated original file "/home/pi/open62541/plugins/ua_nodestore_default.c" ***********************************/
 
 /* This work is licensed under a Creative Commons CCZero 1.0 Universal License.
- * See http://creativecommons.org/publicdomain/zero/1.0/ for more information. 
+ * See http://creativecommons.org/publicdomain/zero/1.0/ for more information.
  *
  *    Copyright 2014-2017 (c) Fraunhofer IOSB (Author: Julius Pfrommer)
  *    Copyright 2017 (c) Julian Grothoff
@@ -41666,7 +41679,7 @@ UA_NodeMap_insertNode(void *context, UA_Node *node,
             if(identifier >= size)
                 identifier -= size;
         } while((UA_UInt32)identifier != startId);
-        
+
         if (!slot) {
             END_CRITSECT(ns);
             return UA_STATUSCODE_BADOUTOFMEMORY;
@@ -42443,7 +42456,7 @@ const UA_ClientConfig UA_ClientConfig_default = {
 /*********************************** amalgamated original file "/home/pi/open62541/plugins/ua_securitypolicy_none.c" ***********************************/
 
 /* This work is licensed under a Creative Commons CCZero 1.0 Universal License.
- * See http://creativecommons.org/publicdomain/zero/1.0/ for more information. 
+ * See http://creativecommons.org/publicdomain/zero/1.0/ for more information.
  *
  *    Copyright 2017-2018 (c) Mark Giraud, Fraunhofer IOSB
  *    Copyright 2017 (c) Stefan Profanter, fortiss GmbH
@@ -42618,7 +42631,7 @@ UA_SecurityPolicy_None(UA_SecurityPolicy *policy, UA_CertificateVerification *ce
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  *    Copyright 2018 (c) Mark Giraud, Fraunhofer IOSB
  */

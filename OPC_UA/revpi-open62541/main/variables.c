@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include "open62541.h"
 #include "variables.h"
+#include "util.h"
 
 extern void
 updateVariable(UA_Server *server, char *pszVariableName, bool verbose) {
@@ -11,29 +12,6 @@ updateVariable(UA_Server *server, char *pszVariableName, bool verbose) {
     UA_Variant_setScalar(&value, &bit, &UA_TYPES[UA_TYPES_BOOLEAN]);
     UA_NodeId currentNodeId = UA_NODEID_STRING(1, pszVariableName);
     UA_Server_writeValue(server, currentNodeId, value);
-}
-
-extern void
-addVariable(UA_Server *server, char *pszVariableName, bool readonly, bool verbose) {
-    UA_Boolean bit = UA_FALSE;
-    UA_VariableAttributes attr = UA_VariableAttributes_default;
-    attr.displayName = UA_LOCALIZEDTEXT("en-US", pszVariableName);
-    attr.dataType = UA_TYPES[UA_TYPES_BOOLEAN].typeId;
-    attr.accessLevel = UA_ACCESSLEVELMASK_READ;
-    if (!readonly)
-      attr.accessLevel |= UA_ACCESSLEVELMASK_WRITE;
-    UA_Variant_setScalar(&attr.value, &bit, &UA_TYPES[UA_TYPES_BOOLEAN]);
-
-    UA_NodeId currentNodeId = UA_NODEID_STRING(1, pszVariableName);
-    UA_QualifiedName currentName = UA_QUALIFIEDNAME(1, pszVariableName);
-    UA_NodeId parentNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER);
-    UA_NodeId parentReferenceNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES);
-    UA_NodeId variableTypeNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE);
-    UA_Server_addVariableNode(server, currentNodeId, parentNodeId,
-                              parentReferenceNodeId, currentName,
-                              variableTypeNodeId, attr, NULL, NULL);
-
-    updateVariable(server, pszVariableName, verbose);
 }
 
 /**
@@ -90,20 +68,20 @@ addVariable(UA_Server *server, char *pszVariableName, bool readonly, bool verbos
                   memcpy(convert, uaString.data, uaString.length);
                   convert[uaString.length] = '\0';
 
-                  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                  UA_LOG_DEBUG(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
                               "afterWriteVariable nach copy: %s", convert);
 
                   UA_Boolean bit;
                   UA_Boolean_copy(*(&data->value.data), &bit);
 
-                  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                  UA_LOG_DEBUG(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
                               "bit value: %i", bit);
 
 
                   //Hier gehört unbedingt noch eine Typabfrage bzw. ein try-catch rein, falls Daten in einem unerwarteten Typ übergeben werden!
                   PI_writeSingleIO(convert, &bit, false);
 
-                  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                  UA_LOG_DEBUG(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
                               "afterWriteVariable %s: value  %i",convert,bit);
  }
 
@@ -120,7 +98,7 @@ addVariable(UA_Server *server, char *pszVariableName, bool readonly, bool verbos
                   memcpy(convert, uaString.data, uaString.length);
                   convert[uaString.length] = '\0';
 
-                  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                  UA_LOG_DEBUG(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
                               "Variable %s is readonly",convert);
  }
 
@@ -153,17 +131,26 @@ addVariable(UA_Server *server, char *pszVariableName, bool readonly, bool verbos
                  UA_Boolean sourceTimeStamp, const UA_NumericRange *range,
                  UA_DataValue *dataValue) {
 
-                   UA_String uaString;
-                   UA_String_copy(&nodeId->identifier.string, &uaString);
+                   UA_StatusCode retval = UA_STATUSCODE_GOOD;
+                   UA_NodeId *nameNodeId = UA_malloc(sizeof(UA_NodeId)); //Ohne Malloc rennt findChildByBrowsename in den SegFault!
+                   UA_QualifiedName nameQN = UA_QUALIFIEDNAME(1, "Name");
 
-                   char* convert = (char*)UA_malloc(sizeof(char)*uaString.length+1);
-                   memcpy(convert, uaString.data, uaString.length);
-                   convert[uaString.length] = '\0';
 
-                   UA_Boolean bit;
+                   retval = findSiblingByBrowsename(server, nodeId, &nameQN, nameNodeId);
+
+                  UA_LOG_DEBUG(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                    "findSiblingByBrowsename returned StatusCode %s - node id: %i", UA_StatusCode_name(retval), nameNodeId->identifier.numeric);
+
+
+                   UA_Variant nameVar;
+                   retval = UA_Server_readValue(server, *nameNodeId, &nameVar);
+                   UA_LOG_DEBUG(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                              "name %s", String_fromUA_String(nameVar.data));
+
                    UA_Variant value;
+                   UA_Boolean bit;
 
-                   PI_readSingleIO(convert, &bit, false);
+                   PI_readSingleIO(String_fromUA_String(nameVar.data), &bit, false);
 
      UA_Variant_setScalarCopy(&dataValue->value, &bit,
                               &UA_TYPES[UA_TYPES_BOOLEAN]);
@@ -171,7 +158,7 @@ addVariable(UA_Server *server, char *pszVariableName, bool readonly, bool verbos
 
      //UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
      //             "readDataSourceVariable %s: value  %i", convert, bit);
-     return UA_STATUSCODE_GOOD;
+     return retval;
  }
 
  extern UA_StatusCode
@@ -180,12 +167,25 @@ addVariable(UA_Server *server, char *pszVariableName, bool readonly, bool verbos
                   const UA_NodeId *nodeId, void *nodeContext,
                   const UA_NumericRange *range, const UA_DataValue *dataValue) {
 
-                  UA_String uaString;
-                  UA_String_copy(&nodeId->identifier.string, &uaString);
 
-                  char* convert = (char*)UA_malloc(sizeof(char)*uaString.length+1);
-                  memcpy(convert, uaString.data, uaString.length);
-                  convert[uaString.length] = '\0';
+                   UA_StatusCode retval = UA_STATUSCODE_GOOD;
+                   UA_NodeId *nameNodeId = UA_malloc(sizeof(UA_NodeId)); //Ohne Malloc rennt findChildByBrowsename in den SegFault!
+                   UA_QualifiedName nameQN = UA_QUALIFIEDNAME(1, "Name");
+
+
+                   retval = findSiblingByBrowsename(server, nodeId, &nameQN, nameNodeId);
+
+                  UA_LOG_DEBUG(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                      "findSiblingByBrowsename returned StatusCode %s - node id: %i", UA_StatusCode_name(retval), nameNodeId->identifier.numeric);
+
+
+                   UA_Variant nameVar;
+                   retval = UA_Server_readValue(server, *nameNodeId, &nameVar);
+                   UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                              "name %s", String_fromUA_String(nameVar.data));
+
+
+
 
                   UA_Boolean bit;
 
@@ -197,16 +197,17 @@ addVariable(UA_Server *server, char *pszVariableName, bool readonly, bool verbos
                                sizeof(*dataValue->value.data), sizeof(UA_Boolean), dataValue->value.data);
                                */
                   //if (sizeof(*dataValue->value.data) == sizeof(UA_Boolean))
-                    UA_Boolean_copy(dataValue->value.data, &bit);
+                    retval = UA_Boolean_copy(dataValue->value.data, &bit);
 
 
 
-                  PI_writeSingleIO(convert, &bit, false);
+                  PI_writeSingleIO(String_fromUA_String(nameVar.data), &bit, false);
 
-    UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
-                "writeDataSourceVariable %s: value  %i",convert ,bit);
+    UA_LOG_DEBUG(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                "writeDataSourceVariable %s: value  %i", String_fromUA_String(nameVar.data) ,bit);
+                free(nameNodeId);
 
-    return UA_STATUSCODE_GOOD;
+    return retval;
  }
 
  extern UA_StatusCode
@@ -215,72 +216,25 @@ addVariable(UA_Server *server, char *pszVariableName, bool readonly, bool verbos
                   const UA_NodeId *nodeId, void *nodeContext,
                   const UA_NumericRange *range, const UA_DataValue *dataValue) {
 
-                  UA_String uaString;
-                  UA_String_copy(&nodeId->identifier.string, &uaString);
+    #if UA_LOGLEVEL <= 200
+        UA_String uaString;
+        UA_String_copy(&nodeId->identifier.string, &uaString);
 
-                  char* convert = (char*)UA_malloc(sizeof(char)*uaString.length+1);
-                  memcpy(convert, uaString.data, uaString.length);
-                  convert[uaString.length] = '\0';
+        char* convert = (char*)UA_malloc(sizeof(char)*uaString.length+1);
+        memcpy(convert, uaString.data, uaString.length);
+        convert[uaString.length] = '\0';
 
-                  //UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
-                  //            "writeReadonlyDataSourceVariable %s - type is %u / %u, should be  %u \n value is %u",
-                  //            convert, dataValue->value.type, *(dataValue->value.type), UA_TYPES_BOOLEAN, dataValue->value.data);
-
-
-                  UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
-                    "writeReadonlyDataSourceVariable %s - variable is readonly!",convert);
-
-    return UA_STATUSCODE_GOOD;
+        UA_LOG_DEBUG(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+          "writeReadonlyDataSourceVariable %s - variable is readonly!",convert);
+    #endif
+    return UA_STATUSCODE_BADNOTWRITABLE;
  }
 
-
- extern void
- addDataSourceVariable(UA_Server *server, char *pszVariableName, bool readonly, bool verbose) {
-     UA_VariableAttributes attr = UA_VariableAttributes_default;
-     attr.displayName = UA_LOCALIZEDTEXT("en-US", pszVariableName);
-     attr.dataType = UA_TYPES[UA_TYPES_BOOLEAN].typeId;
-     attr.accessLevel = UA_ACCESSLEVELMASK_READ;
-     if (!readonly)
-       attr.accessLevel |= UA_ACCESSLEVELMASK_WRITE;
-
-     UA_NodeId currentNodeId = UA_NODEID_STRING(1, pszVariableName);
-     UA_QualifiedName currentName = UA_QUALIFIEDNAME(1, pszVariableName);
-     UA_NodeId parentNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER);
-     UA_NodeId parentReferenceNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES);
-     UA_NodeId variableTypeNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE);
-
-     UA_DataSource dataSourceVariable;
-     dataSourceVariable.read = readDataSourceVariable;
-     if (!readonly)
-        dataSourceVariable.write = writeDataSourceVariable;
-     else
-        dataSourceVariable.write = writeReadonlyDataSourceVariable;
-
-     UA_Server_addDataSourceVariableNode(server, currentNodeId, parentNodeId,
-                                         parentReferenceNodeId, currentName,
-                                         variableTypeNodeId, attr,
-                                         dataSourceVariable, NULL, NULL);
-}
-
-extern void
-linkDataSourceVariable(UA_Server *server, int namespace, char *pszVariableName, bool verbose) {
-    UA_NodeId currentNodeId = UA_NODEID_STRING(namespace, pszVariableName);
+extern UA_StatusCode
+linkDataSourceVariable(UA_Server *server, UA_NodeId nodeId) {
     bool readonly = false;
-
     UA_DataSource dataSourceVariable;
     UA_StatusCode rc;
-
-    //getUserAccessLevel(server, const UA_Session *session, const UA_VariableNode *node)
-
-    dataSourceVariable.read = readDataSourceVariable;
-    if (!readonly)
-       dataSourceVariable.write = writeDataSourceVariable;
-    else
-       dataSourceVariable.write = writeReadonlyDataSourceVariable;
-
-    rc = UA_Server_setVariableNode_dataSource(server, currentNodeId, dataSourceVariable);
-    UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
-               "setVariableNode_dataSource returned %s", UA_StatusCode_name(rc));
 
     /*
     UA_VariableAttributes attr = UA_VariableAttributes_default;
@@ -290,4 +244,40 @@ linkDataSourceVariable(UA_Server *server, int namespace, char *pszVariableName, 
     if (!readonly)
       attr.accessLevel |= UA_ACCESSLEVELMASK_WRITE;
     */
+
+    //getUserAccessLevel(server, const UA_Session *session, const UA_VariableNode *node)
+
+    dataSourceVariable.read = readDataSourceVariable;
+    if (!readonly)
+       dataSourceVariable.write = writeDataSourceVariable;
+    else
+       dataSourceVariable.write = writeReadonlyDataSourceVariable;
+
+    return UA_Server_setVariableNode_dataSource(server, nodeId, dataSourceVariable);
+}
+
+extern UA_StatusCode
+linkStateWithIO(UA_Server *server, UA_NodeId nodeId) {
+    bool readonly = false;
+    UA_DataSource dataSourceVariable;
+    UA_StatusCode rc;
+
+    /*
+    UA_VariableAttributes attr = UA_VariableAttributes_default;
+    attr.displayName = UA_LOCALIZEDTEXT("en-US", pszVariableName);
+    attr.dataType = UA_TYPES[UA_TYPES_BOOLEAN].typeId;
+    attr.accessLevel = UA_ACCESSLEVELMASK_READ;
+    if (!readonly)
+      attr.accessLevel |= UA_ACCESSLEVELMASK_WRITE;
+    */
+
+    //getUserAccessLevel(server, const UA_Session *session, const UA_VariableNode *node)
+
+    dataSourceVariable.read = universalSetGetCallback;
+    if (!readonly)
+       dataSourceVariable.write = universalSetGetCallback;
+    else
+       dataSourceVariable.write = writeReadonlyDataSourceVariable;
+
+    return UA_Server_setVariableNode_dataSource(server, nodeId, dataSourceVariable);
 }

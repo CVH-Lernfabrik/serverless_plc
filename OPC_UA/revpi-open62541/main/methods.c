@@ -1,215 +1,142 @@
 #include <stdbool.h>
+#include <string.h>
 #include "open62541.h"
+#include "util.h"
 #include "methods.h"
 
+
+
 extern UA_StatusCode
-getIndicatorStateCallback(UA_Server *server,
+universalSetGetCallback(UA_Server *server,
                          const UA_NodeId *sessionId, void *sessionHandle,
                          const UA_NodeId *methodId, void *methodContext,
                          const UA_NodeId *objectId, void *objectContext,
                          size_t inputSize, const UA_Variant *input,
                          size_t outputSize, UA_Variant *output) {
 
-UA_BrowseDescription browseForProperty;
-//browseForProperty.
+    UA_StatusCode retval = UA_STATUSCODE_GOOD;
+    UA_QualifiedName *methodQN = UA_malloc(sizeof(UA_QualifiedName));
+    UA_QualifiedName valueQN;
+    retval |= UA_Server_readBrowseName(server, *methodId, methodQN);
+    if (retval != UA_STATUSCODE_GOOD)
+      return retval;
 
 
-//UA_Server_read
+    char *methodName = String_fromUA_String(&methodQN->name);
+    UA_LOG_DEBUG(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "readBrowseName returned: %s, methodName: %s", UA_StatusCode_name(retval), methodName);
 
-    char *outputPin = "O_1";
+    bool writeValue = false;
 
-    UA_Server_readValue(server, UA_NODEID_STRING(2, outputPin), output);
-
-    return UA_STATUSCODE_GOOD;
-}
-
-extern UA_StatusCode
-setIndicatorStateCallback(UA_Server *server,
-                         const UA_NodeId *sessionId, void *sessionHandle,
-                         const UA_NodeId *methodId, void *methodContext,
-                         const UA_NodeId *objectId, void *objectContext,
-                         size_t inputSize, const UA_Variant *input,
-                         size_t outputSize, UA_Variant *output) {
-
-    char *outputPin = "O_1";
-
-    UA_Server_writeValue(server, UA_NODEID_STRING(2, outputPin), *input);
-
-    return UA_STATUSCODE_GOOD;
-}
-
-extern UA_StatusCode
-stackMagazineMethodCallback(UA_Server *server,
-                         const UA_NodeId *sessionId, void *sessionHandle,
-                         const UA_NodeId *methodId, void *methodContext,
-                         const UA_NodeId *objectId, void *objectContext,
-                         size_t inputSize, const UA_Variant *input,
-                         size_t outputSize, UA_Variant *output) {
-    char *sensorExtended = "I_12", *sensorRetracted = "I_10", *sensorStatus = "I_14",
-            *valveExtend = "O_10",    *valveRetract = "O_12";
-
-    bool verbose = true, tr = true, fa = false;
-
-    UA_Boolean currentPosition, targetPosition; //true = extended
-    UA_Variant value;
-    UA_NodeId currentNodeId;
-
-    UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "DataType %i - should be %i or %i", input->type, UA_TYPES[UA_TYPES_BOOLEAN].typeId, UA_TYPES_BOOLEAN);
-    //if (*((int *)input->type) == UA_TYPES_BOOLEAN){
-      targetPosition = (UA_Boolean)*((int *)input->data);
-    //}else{
-    //  return UA_STATUSCODE_BADTYPEMISMATCH;
-    //}
-
-    if(PI_readSingleIO(sensorExtended, NULL, verbose) && !PI_readSingleIO(sensorRetracted, NULL, verbose)){
-      currentPosition = true;
-    }else if(!PI_readSingleIO(sensorExtended, NULL, verbose) && PI_readSingleIO(sensorRetracted, NULL, verbose)){
-      currentPosition = false;
-    }else{
-      return UA_STATUSCODE_BADDEVICEFAILURE;
+    if (strlen(methodName) > 5 && methodName[0] == 'w' && methodName[1] == 'r'
+                               && methodName[2] == 'i' && methodName[3] == 't' && methodName[4] == 'e') {
+      valueQN = UA_QUALIFIEDNAME(1, &methodName[5]);
+      writeValue = true;
     }
-    if ((currentPosition != targetPosition) && PI_readSingleIO(sensorStatus, NULL, verbose)){
-      if(targetPosition == true){
-        UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "Extend Cylinder");
-
-        UA_Variant_setScalar(&value, &fa, &UA_TYPES[UA_TYPES_BOOLEAN]);
-        currentNodeId = UA_NODEID_STRING(1, valveRetract);
-        UA_Server_writeValue(server, currentNodeId, value);
-
-        UA_Variant_setScalar(&value, &tr, &UA_TYPES[UA_TYPES_BOOLEAN]);
-        currentNodeId = UA_NODEID_STRING(1, valveExtend);
-        UA_Server_writeValue(server, currentNodeId, value);
-
-        currentPosition = true;
-      }else{
-        UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "Retract Cylinder");
-        currentPosition = false;
-
-        UA_Variant_setScalar(&value, &fa, &UA_TYPES[UA_TYPES_BOOLEAN]);
-        currentNodeId = UA_NODEID_STRING(1, valveExtend);
-        UA_Server_writeValue(server, currentNodeId, value);
-
-        UA_Variant_setScalar(&value, &tr, &UA_TYPES[UA_TYPES_BOOLEAN]);
-        currentNodeId = UA_NODEID_STRING(1, valveRetract);
-        UA_Server_writeValue(server, currentNodeId, value);
-      }
+    else if (strlen(methodName) > 4 && methodName[0] == 'r' && methodName[1] == 'e'
+                                    && methodName[2] == 'a' && methodName[3] == 'd') {
+      valueQN = UA_QUALIFIEDNAME(1, &methodName[4]);
+      writeValue = false;
+    }
+    else if (strlen(methodName) > 3 && methodName[0] == 's' && methodName[1] == 'e'
+                                    && methodName[2] == 't') {
+      valueQN = UA_QUALIFIEDNAME(1, &methodName[3]);
+      writeValue = true;
     }
 
-    UA_Variant_setScalarCopy(output, &currentPosition, &UA_TYPES[UA_TYPES_BOOLEAN]);
-    return UA_STATUSCODE_GOOD;
+    else if (strlen(methodName) > 3 && methodName[0] == 'g' && methodName[1] == 'e'
+                                    && methodName[2] == 't') {
+      valueQN = UA_QUALIFIEDNAME(1, &methodName[3]);
+      writeValue = false;
+    }
+
+    UA_NodeId *valueNodeId = UA_malloc(sizeof(UA_NodeId)); //Ohne Malloc rennt findChildByBrowsename in den SegFault!
+    retval |= findChildByBrowsename(server, objectId, &valueQN, valueNodeId);
+
+    if (retval != UA_STATUSCODE_GOOD)
+      return retval;
+
+    if (writeValue)
+      retval |= UA_Server_writeValue(server, *valueNodeId, *input);
+    else
+      retval |= UA_Server_readValue(server, *valueNodeId, output);
+
+    free(methodQN);
+    free(valueNodeId);
+    return retval;
 }
 
 extern UA_StatusCode
-ejectorMethodCallback(UA_Server *server,
+readValueCallback(UA_Server *server,
                          const UA_NodeId *sessionId, void *sessionHandle,
                          const UA_NodeId *methodId, void *methodContext,
                          const UA_NodeId *objectId, void *objectContext,
                          size_t inputSize, const UA_Variant *input,
                          size_t outputSize, UA_Variant *output) {
-    char *sensorInduction = "I_4", *sensorPresence = "I_8",
-         *sensorRetracted = "I_2",   *sensorStatus = "I_6",
-             *valveExtend = "O_2",   *valveRetract = "O_4";
 
-    bool verbose = true, tr = true, fa = false;
+    UA_StatusCode retval = UA_STATUSCODE_GOOD;
+    UA_NodeId *valueNodeId = UA_malloc(sizeof(UA_NodeId)); //Ohne Malloc rennt findChildByBrowsename in den SegFault!
+    UA_QualifiedName valueQN = UA_QUALIFIEDNAME(1, "Value");
 
-    UA_Boolean currentPosition, targetPosition; //true = extended
-    UA_Variant value;
-    UA_NodeId currentNodeId;
+    retval |= findChildByBrowsename(server, objectId, &valueQN, valueNodeId);
+    retval |= UA_Server_readValue(server, *valueNodeId, output);
 
-    UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "DataType %i - should be %i or %i", input->type, UA_TYPES[UA_TYPES_BOOLEAN].typeId, UA_TYPES_BOOLEAN);
-    //if (*((int *)input->type) == UA_TYPES_BOOLEAN){
-      targetPosition = (UA_Boolean)*((int *)input->data);
-    //}else{
-    //  return UA_STATUSCODE_BADTYPEMISMATCH;
-    //}
-
-    currentPosition = PI_readSingleIO(sensorRetracted, NULL, verbose);
-
-    if ((currentPosition != targetPosition)){
-      if(targetPosition == true){
-        UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "Extend Cylinder");
-
-        UA_Variant_setScalar(&value, &fa, &UA_TYPES[UA_TYPES_BOOLEAN]);
-        currentNodeId = UA_NODEID_STRING(1, valveRetract);
-        UA_Server_writeValue(server, currentNodeId, value);
-
-        UA_Variant_setScalar(&value, &tr, &UA_TYPES[UA_TYPES_BOOLEAN]);
-        currentNodeId = UA_NODEID_STRING(1, valveExtend);
-        UA_Server_writeValue(server, currentNodeId, value);
-
-        currentPosition = true;
-      }else{
-        UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "Retract Cylinder");
-        currentPosition = false;
-
-        UA_Variant_setScalar(&value, &fa, &UA_TYPES[UA_TYPES_BOOLEAN]);
-        currentNodeId = UA_NODEID_STRING(1, valveExtend);
-        UA_Server_writeValue(server, currentNodeId, value);
-
-        UA_Variant_setScalar(&value, &tr, &UA_TYPES[UA_TYPES_BOOLEAN]);
-        currentNodeId = UA_NODEID_STRING(1, valveRetract);
-        UA_Server_writeValue(server, currentNodeId, value);
-      }
-    }
-
-    UA_Variant_setScalarCopy(output, &currentPosition, &UA_TYPES[UA_TYPES_BOOLEAN]);
-    return UA_STATUSCODE_GOOD;
+    free(valueNodeId);
+    return retval;
 }
 
-static void
-addStackMagazineMethod(UA_Server *server) {
-    UA_Argument inputArgument;
-    UA_Argument_init(&inputArgument);
-    inputArgument.description = UA_LOCALIZEDTEXT("en-US", "Target position: 1/TRUE (extended), 0/FALSE (retracted)");
-    inputArgument.name = UA_STRING("position");
-    inputArgument.dataType = UA_TYPES[UA_TYPES_BOOLEAN].typeId;
-    inputArgument.valueRank = -1; /* scalar */
+extern UA_StatusCode
+writeValueCallback(UA_Server *server,
+                         const UA_NodeId *sessionId, void *sessionHandle,
+                         const UA_NodeId *methodId, void *methodContext,
+                         const UA_NodeId *objectId, void *objectContext,
+                         size_t inputSize, const UA_Variant *input,
+                         size_t outputSize, UA_Variant *output) {
 
-    UA_Argument outputArgument;
-    UA_Argument_init(&outputArgument);
-    outputArgument.description = UA_LOCALIZEDTEXT("en-US", "Actual position: 1/TRUE (extended), 0/FALSE (retracted)");
-    outputArgument.name = UA_STRING("position");
-    outputArgument.dataType = UA_TYPES[UA_TYPES_BOOLEAN].typeId;
-    outputArgument.valueRank = -1; /* scalar */
+    UA_StatusCode retval = UA_STATUSCODE_GOOD;
+    UA_NodeId *valueNodeId = UA_malloc(sizeof(UA_NodeId)); //Ohne Malloc rennt findChildByBrowsename in den SegFault!
+    UA_QualifiedName valueQN = UA_QUALIFIEDNAME(1, "Value");
 
-    UA_MethodAttributes helloAttr = UA_MethodAttributes_default;
-    helloAttr.description = UA_LOCALIZEDTEXT("en-US","Supplies a part from the Magazine");
-    helloAttr.displayName = UA_LOCALIZEDTEXT("en-US","Stack Magazine");
-    helloAttr.executable = true;
-    helloAttr.userExecutable = true;
-    UA_Server_addMethodNode(server, UA_NODEID_STRING(1,"stackMagazine"),
-                            UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER),
-                            UA_NODEID_NUMERIC(0, UA_NS0ID_HASORDEREDCOMPONENT),
-                            UA_QUALIFIEDNAME(1, "stack magazine"),
-                            helloAttr, &stackMagazineMethodCallback,
-                            1, &inputArgument, 1, &outputArgument, NULL, NULL);
+    retval |= findChildByBrowsename(server, objectId, &valueQN, valueNodeId);
+    retval |= UA_Server_writeValue(server, *valueNodeId, *input);
+
+    free(valueNodeId);
+    return retval;
 }
 
-static void
-addEjectorMethod(UA_Server *server) {
-    UA_Argument inputArgument;
-    UA_Argument_init(&inputArgument);
-    inputArgument.description = UA_LOCALIZEDTEXT("en-US", "Target position: 1/TRUE (extended), 0/FALSE (retracted)");
-    inputArgument.name = UA_STRING("position");
-    inputArgument.dataType = UA_TYPES[UA_TYPES_BOOLEAN].typeId;
-    inputArgument.valueRank = -1; /* scalar */
+extern UA_StatusCode
+setStateCallback(UA_Server *server,
+                         const UA_NodeId *sessionId, void *sessionHandle,
+                         const UA_NodeId *methodId, void *methodContext,
+                         const UA_NodeId *objectId, void *objectContext,
+                         size_t inputSize, const UA_Variant *input,
+                         size_t outputSize, UA_Variant *output) {
 
-    UA_Argument outputArgument;
-    UA_Argument_init(&outputArgument);
-    outputArgument.description = UA_LOCALIZEDTEXT("en-US", "Actual position: 1/TRUE (extended), 0/FALSE (retracted)");
-    outputArgument.name = UA_STRING("position");
-    outputArgument.dataType = UA_TYPES[UA_TYPES_BOOLEAN].typeId;
-    outputArgument.valueRank = -1; /* scalar */
+    UA_StatusCode retval = UA_STATUSCODE_GOOD;
+    UA_NodeId *valueNodeId = UA_malloc(sizeof(UA_NodeId)); //Ohne Malloc rennt findChildByBrowsename in den SegFault!
+    UA_QualifiedName valueQN = UA_QUALIFIEDNAME(1, "State");
 
-    UA_MethodAttributes helloAttr = UA_MethodAttributes_default;
-    helloAttr.description = UA_LOCALIZEDTEXT("en-US","Ejects a Part");
-    helloAttr.displayName = UA_LOCALIZEDTEXT("en-US","Ejector");
-    helloAttr.executable = true;
-    helloAttr.userExecutable = true;
-    UA_Server_addMethodNode(server, UA_NODEID_STRING(1,"ejector"),
-                            UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER),
-                            UA_NODEID_NUMERIC(0, UA_NS0ID_HASORDEREDCOMPONENT),
-                            UA_QUALIFIEDNAME(1, "ejector"),
-                            helloAttr, &ejectorMethodCallback,
-                            1, &inputArgument, 1, &outputArgument, NULL, NULL);
+    retval |= findChildByBrowsename(server, objectId, &valueQN, valueNodeId);
+    retval |= UA_Server_writeValue(server, *valueNodeId, *input);
+
+    free(valueNodeId);
+    return retval;
+}
+
+extern UA_StatusCode
+getStateCallback(UA_Server *server,
+                         const UA_NodeId *sessionId, void *sessionHandle,
+                         const UA_NodeId *methodId, void *methodContext,
+                         const UA_NodeId *objectId, void *objectContext,
+                         size_t inputSize, const UA_Variant *input,
+                         size_t outputSize, UA_Variant *output) {
+
+    UA_StatusCode retval = UA_STATUSCODE_GOOD;
+    UA_NodeId *valueNodeId = UA_malloc(sizeof(UA_NodeId)); //Ohne Malloc rennt findChildByBrowsename in den SegFault!
+    UA_QualifiedName valueQN = UA_QUALIFIEDNAME(1, "State");
+
+    retval |= findChildByBrowsename(server, objectId, &valueQN, valueNodeId);
+    retval |= UA_Server_readValue(server, *valueNodeId, output);
+
+    free(valueNodeId);
+    return retval;
 }

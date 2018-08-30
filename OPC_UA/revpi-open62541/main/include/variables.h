@@ -47,7 +47,7 @@ extern UA_StatusCode writeReadonlyDataSourceVariable(UA_Server *server,
 
 extern void addDataSourceVariable(UA_Server *server, char *pszVariableName, bool readonly, bool verbose);
 
-extern void linkDataSourceVariable(UA_Server *server, int namespace, char *pszVariableName, bool verbose);
+extern UA_StatusCode linkStateWithIO(UA_Server *server, UA_NodeId nodeId);
 
 #ifdef __cplusplus
 }
