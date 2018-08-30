@@ -18,6 +18,8 @@ require('requirish')._(module);
 const util = require('util');
 const eventEmitter = require('events');
 
+require('json_utils');
+
 //--------------
 // Definitions:
 //--------------
@@ -71,6 +73,7 @@ class OPCUAGateway {
      * @param {Object} nodeset                  - Mapping between client- and
      *                                            server-side representation
      *                                            of the OPC UA nodeset
+     * @param {Object} monitoredNodes           - List of OPC UA nodes to monitor
      * @param {Object} connectionParameters     - Name and URL of the OPC UA
      *                                            server to connect to as well
      *                                            as potential security settings
@@ -78,9 +81,10 @@ class OPCUAGateway {
      * @param {Object} subscriptionParameters   - Subscription parameters
      * @param {Object} monitoringParameters     - Monitoring parameters
      */
-    constructor(client, nodeset, connectionParameters, subscriptionParameters, monitoringParameters) {
+    constructor(client, nodeset, monitoredNodes, connectionParameters, subscriptionParameters, monitoringParameters) {
         if ( !(client instanceof opcua.OPCUAClient)
             || !(typeof nodeset === 'object')
+            || !(typeof monitoredNodes === 'object')
             || !(typeof connectionParameters === 'object')
             || !(typeof subscriptionParameters === 'object')
             || !(typeof monitoringParameters === 'object')
@@ -88,13 +92,16 @@ class OPCUAGateway {
             LOGGER.ERROR('OPCUAGateway: Invalid transfer parameters! Exiting!');
             process.exit(PARAM_ERR);
         }
-        if ( (opcua == null) || (IoTData == null) ) {
+        if ( (opcua == null)
+            || (IoTData == null)
+        ) {
             LOGGER.ERROR('OPCUAGateway: Please set opcua and IoTData before initializing OPCUAGateway!');
             process.exit(PARAM_ERR);
         }
 
         this._client                    = client;
         this._nodeset                   = nodeset;
+        this._monitoredNodes            = monitoredNodes;
         this._connectionParameters      = connectionParameters;
         this._subscriptionParameters    = subscriptionParameters;
 
@@ -193,7 +200,9 @@ class OPCUAGateway {
         LOGGER.LOG('createSession: Establishing session!');
 
         var userIdentity = null;
-        if ( this._connectionParameters.username && this._connectionParameters.password ) {
+        if ( this._connectionParameters.username
+            && this._connectionParameters.password
+        ) {
             userIdentity = {
                 userName: this._connectionParameters.username,
                 password: this._connectionParameters.password
@@ -245,6 +254,11 @@ class OPCUAGateway {
      * @fires subscribed
      */
     createSubscription() {
+        if ( !(this._session instanceof opcua.ClientSession) ) {
+            LOGGER.ERROR('createSubscription: No active session!');
+            return SESSION_CREATE_ERR;
+        }
+
         LOGGER.LOG('createSubscription: Initializing subscription!');
 
         this._subscription = new opcua.ClientSubscription(this._session, this._subscriptionParameters);
@@ -269,55 +283,89 @@ class OPCUAGateway {
      * @listens err
      */
     monitorNodes() {
-        this._nodeset.filter( (node) => {
-            return ( node.subscribe && (node.UADataType != 'Method') );
-        }).forEach( (monitoredNode) => {
-            LOGGER.LOG('monitorNodes: Initializing monitoring of node: ' + monitoredNode.nodeId);
+        if ( !this._isConnected
+            || !(this._subscription instanceof opcua.ClientSubscription)
+        ) {
+            LOGGER.ERROR('monitorNodes: No active connection / subscription!');
+            return CONNECTION_ERR;
+        }
 
-            // Initialize the (periodical) monitoring of the specified node
-            const monitoredItem = this._subscription.monitor(
-                {
-                    nodeId: monitoredNode.nodeId,
-                    attributeId: opcua.AttributeIds.Value,
-                },
-                this._monitoringParameters
-            );
+        this._monitoredNodes.forEach( (element) => {
+            // Parse the format in case the absolute path was specified
+            if (typeof element === 'string') {
+                var absPath = element.split('.');
+                element = {
+                    "thingName": absPath[0];
+                    "subscriptions": [absPath.slice(2, absPath.length)];
+                }
+            }
 
-            monitoredItem.on('initialized', () => {
-                LOGGER.LOG('monitorNodes: Successfully initialized monitoredItem!');
+            // Resolve the superordinate thing by thingName
+            var thing = this._nodeset.filter( (thing) => {
+                return (thing.thingName == element.thingName);
             });
+            if (!thing) {
+                LOGGER.WARN('monitorNodes: Invalid thing specified: ' + element.thingName);
+                continue;
+            }
 
-            // Callback for synchronizing state changes w/ the local device Shadow
-            monitoredItem.on('changed', (dataValue) => {
-                const payload_json = {
-                    "state": {
-                        "reported": {
-                            [monitoredNode.propertyName]: dataValue.value.value
-                        }
-                    }
-                };
-                const payload_string = JSON.stringify(payload_json);
+            element.subscriptions.forEach( (path) => {
+                // Resolve the node to subscribe by path
+                var monitoredNode = JSON.getObjectByPath(thing.components, path);
+                if ( !monitoredNode
+                    || (monitoredNode.UANodeClass != 'Object')
+                ) {
+                    LOGGER.WARN('monitorNodes: Invalid item specified: ' + path);
+                    continue;
+                }
 
-                // Update the local Shadow representation
-                IoTData.publish(
+                LOGGER.LOG('monitorNodes: Initializing monitoring of node: ' + monitoredNode.nodeId);
+
+                // Initialize the (periodical) monitoring of the specified node
+                const monitoredItem = this._subscription.monitor(
                     {
-                        topic: monitoredNode.topic,
-                        payload: payload_string,
+                        nodeId: monitoredNode.nodeId,
+                        attributeId: opcua.AttributeIds.Value,
                     },
-                    (rc) => {
-                        if (rc) {
-                            LOGGER.ERROR(monitoredItem.itemToMonitor.nodeId.toString() + ': Failed to update local Shadow of thing ' + monitoredNode.thingName + ' with state ' + payload_string + '. RC: ' + rc);
-                        }
-                        else {
-                            LOGGER.LOG(monitoredItem.itemToMonitor.nodeId.toString() + ': Successfully updated local Shadow of thing ' + monitoredNode.thingName + ' with  ' + payload_string + '. RC: ' + rc);
-                        }
-                    }
+                    this._monitoringParameters
                 );
-            });
 
-            // Callback for logging errors occuring during the monitoring process
-            monitoredItem.on('err', (errorMessage) => {
-                LOGGER.ERROR(monitoredItem.itemToMonitor.nodeId.toString() + ': Error! RC: ' + errorMessage);
+                monitoredItem.on('initialized', () => {
+                    LOGGER.LOG('monitorNodes: Successfully initialized monitoredItem!');
+                });
+
+                // Callback for synchronizing state changes w/ the local device Shadow
+                monitoredItem.on('changed', (dataValue) => {
+                    const payload_json = {
+                        "state": {
+                            "reported": {
+                                [monitoredNode.propertyName]: dataValue.value.value
+                            }
+                        }
+                    };
+                    const payload_string = JSON.stringify(payload_json);
+
+                    // Update the local Shadow representation
+                    IoTData.publish(
+                        {
+                            topic: thing.topic,
+                            payload: payload_string,
+                        },
+                        (rc) => {
+                            if (rc) {
+                                LOGGER.ERROR(monitoredItem.itemToMonitor.nodeId.toString() + ': Failed to update local Shadow of thing ' + thing.thingName + ' with state ' + payload_string + '. RC: ' + rc);
+                            }
+                            else {
+                                LOGGER.LOG(monitoredItem.itemToMonitor.nodeId.toString() + ': Successfully updated local Shadow of thing ' + thing.thingName + ' with  ' + payload_string + '. RC: ' + rc);
+                            }
+                        }
+                    );
+                });
+
+                // Callback for logging errors occuring during the monitoring process
+                monitoredItem.on('err', (errorMessage) => {
+                    LOGGER.ERROR(monitoredItem.itemToMonitor.nodeId.toString() + ': Error! RC: ' + errorMessage);
+                });
             });
         });
     }
@@ -348,26 +396,34 @@ class OPCUAGateway {
             return PARAM_ERR;
         }
         if ( !this._isConnected
-            || (typeof this._session === 'undefined')
+            || !(this._session instanceof opcua.ClientSession)
         ) {
             LOGGER.ERROR('writeNode: No active connection / session!');
             return CONNECTION_ERR;
         }
 
-        // Resolve the node(s) matching the specified pattern
-        var nodes = this._nodeset.filter( (node) => {
-            return ( (node.thingName == thingName) && (node.propertyName == propertyName) );
+        // Resolve the thing(s) matching the specified name
+        var things = this._nodeset.filter( (thing) => {
+            return (thing.thingName == thingName);
         });
 
         // Annotation: The enclosing for-loop is solely for the case that the
-        // specified thing name + property name combination is not unique to
-        // one node ID. In this case, all nodes matching the pattern are set
-        // to the desired value.
-        for (var idx in nodes) {
+        // thing name is not unique. In this case, all things w/ the respective
+        // name are queried for the specified property and the desired operation
+        // is applied to all (!) matching elements.
+        for (var idx in things) {
+            // Search the current thing for the specified property
+
+
+
+
+
+
+
             // The call for the write operation differs depending on whether
             // the concerned node a method or an object node.
-            if (nodes[idx].UADataType == 'Method') {
-                if (nodes[idx].methodParameters.inputArguments.length != value.length) {
+            if ( nodes[idx].UANodeClass == 'Method' ) {
+                if ( nodes[idx].methodParameters.inputArguments.length != value.length ) {
                     LOGGER.LOG('Skipping method ' + nodes[idx].nodeId + ' as the number of given arguments does not match the required number of transfer parameters!');
                     continue;
                 }
@@ -437,7 +493,7 @@ util.inherits(OPCUAGateway, eventEmitter);
 module.exports = {
     OPCUAGateway: OPCUAGateway,
     setOpcua: (node_opcua) => {
-        if (node_opcua instanceof Object) {
+        if ( node_opcua instanceof Object ) {
             opcua = node_opcua;
         }
         else {
@@ -446,7 +502,9 @@ module.exports = {
         }
     },
     setIoTData: (device) => {
-        if ( (device instanceof Object) && (typeof device.publish === 'function')) {
+        if ( (device instanceof Object)
+            && (typeof device.publish === 'function')
+        ) {
             IoTData = device;
         }
         else {

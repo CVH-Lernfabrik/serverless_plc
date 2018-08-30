@@ -1,0 +1,22 @@
+[
+    {
+        "thingName": "mps_conveyor",
+        "subscriptions": [
+            "lightBarrier_infeed"
+        ]
+    },
+    {
+        "thingName": "mps_hmi",
+        "subscriptions": [
+            "led_start"
+        ]
+    },
+    {
+        "thingName": "mps_magazine",
+        "subscriptions": [
+            "ejector_extended",
+            "ejector_retracted",
+            "magazine_empty"
+        ]
+    }
+]

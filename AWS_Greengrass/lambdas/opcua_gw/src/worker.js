@@ -24,6 +24,7 @@ const gateway       = require('gateway');
 const OPCUAGateway  = gateway.OPCUAGateway;
 
 const nodeset       = require('nodeset.json');
+const subscriptions = require('subscriptions.json');
 const config        = require('config.json');
 
 gateway.setOpcua(opcua);
@@ -56,6 +57,7 @@ const client  = new opcua.OPCUAClient(config.clientParameters);
 const gw = new OPCUAGateway(
     client,
     nodeset,
+    subscriptions,
     config.connectionParameters,
     config.subscriptionParameters,
     config.monitoringParameters
@@ -63,17 +65,20 @@ const gw = new OPCUAGateway(
 
 // Register the write callback
 process.on('message', (msg) => {
-    if ( !msg.hasOwnProperty('thingName') || !msg.hasOwnProperty('propertyName') || !msg.hasOwnProperty('value') ) {
+    if ( !msg.hasOwnProperty('thingName')
+        || !msg.hasOwnProperty('path')
+        || !msg.hasOwnProperty('value')
+    ) {
         LOGGER.ERROR('Invalid message received from the master process!');
         return;
     }
 
     var thingName       = msg.thingName;
-    var propertyName    = msg.propertyName;
+    var path            = msg.path;
     var value           = msg.value;
 
     // Set the node(s) matching the specified pattern to the desired state
-    gw.writeNode(thingName, propertyName, value);
+    gw.writeNode(thingName, path, value);
 });
 
 // Initiate the connection to the specified OPC UA server

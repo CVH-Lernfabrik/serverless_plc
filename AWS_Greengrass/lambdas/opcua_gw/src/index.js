@@ -59,18 +59,20 @@ worker.on('exit', (code, signal) => {
 });
 
 worker.on('message', (msg) => {
-    if ( !msg.hasOwnProperty('type') || !msg.hasOwnProperty('msg') ) {
+    if ( !msg.hasOwnProperty('type')
+        || !msg.hasOwnProperty('msg')
+    ) {
         LOGGER.ERROR('Invalid message received from the worker process!');
         return;
     }
 
-    if (msg.type == 'log') {
+    if ( msg.type == 'log' ) {
         LOGGER.LOG(msg.msg);
     }
-    else if (msg.type == 'warn') {
+    else if ( msg.type == 'warn' ) {
         LOGGER.WARN(msg.msg);
     }
-    else if (msg.type == 'error') {
+    else if ( msg.type == 'error' ) {
         LOGGER.ERROR(msg.msg);
     }
     else {
@@ -97,7 +99,10 @@ exports.handler = (event, context) => {
         LOGGER.ERROR('Invalid event passed!');
         context.fail();
     }
-    if ( !context.hasOwnProperty('clientContext') || !context.clientContext.hasOwnProperty('Custom') || !context.clientContext.Custom.hasOwnProperty('subject') ) {
+    if ( !context.hasOwnProperty('clientContext')
+        || !context.clientContext.hasOwnProperty('Custom')
+        || !context.clientContext.Custom.hasOwnProperty('subject')
+    ) {
         LOGGER.ERROR('Invalid context!');
         context.fail();
     }
@@ -107,16 +112,16 @@ exports.handler = (event, context) => {
     const thingName = subject.split('/')[2];
     const payload   = event.state;
 
-    for (var propertyName in payload) {
-        var value = payload[propertyName];
+    for (var path in payload) {
+        var value = payload[path];
 
-        LOGGER.LOG('Setting', thingName + '.' + propertyName, 'to', value + '...');
+        LOGGER.LOG('Setting', thingName + '.' + path, 'to', value + '...');
 
         // Forward the event to the OPC UA gateway process to initiate the
         // write operation
         worker.send({
             'thingName': thingName,
-            'propertyName': propertyName,
+            'path': path,
             'value': value
         });
     }
