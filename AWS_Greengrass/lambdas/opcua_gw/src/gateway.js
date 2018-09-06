@@ -30,6 +30,7 @@ const PARAM_ERR             = 0x01;
 const CONNECTION_ERR        = 0x02;
 const SESSION_CREATE_ERR    = 0x03;
 const SUBSCRIPTION_ERR      = 0x04;
+const WRITE_ERR             = 0x05;
 
 // Variables
 let opcua;
@@ -295,31 +296,35 @@ class OPCUAGateway {
             if (typeof element === 'string') {
                 var absPath = element.split('.');
                 element = {
-                    "thingName": absPath[0];
-                    "subscriptions": [absPath.slice(2, absPath.length)];
+                    "thingName": absPath[0],
+                    "subscriptions": [absPath.slice(2, absPath.length)]
                 }
             }
 
             // Resolve the superordinate thing by thingName
             var thing = this._nodeset.filter( (thing) => {
                 return (thing.thingName == element.thingName);
-            });
+            })[0];
             if (!thing) {
                 LOGGER.WARN('monitorNodes: Invalid thing specified: ' + element.thingName);
-                continue;
+                return;
             }
 
             element.subscriptions.forEach( (path) => {
                 // Resolve the node to subscribe by path
-                var monitoredNode = JSON.getObjectByPath(thing.components, path);
+                const monitoredNode = JSON.getObjectByPath(thing.UANodes, path);
                 if ( !monitoredNode
                     || (monitoredNode.UANodeClass != 'Object')
+                    || !(Object.prototype.hasOwnProperty.call(monitoredNode, 'nodeId'))
                 ) {
                     LOGGER.WARN('monitorNodes: Invalid item specified: ' + path);
-                    continue;
+                    return;
                 }
 
-                LOGGER.LOG('monitorNodes: Initializing monitoring of node: ' + monitoredNode.nodeId);
+                // Resolve name of the specified node from the path
+                const monitoredNodeName = path.split('.').slice(-1)[0];
+
+                LOGGER.LOG('monitorNodes: Initializing monitoring of node: ' + monitoredNodeName + ' (' + monitoredNode.nodeId + ')');
 
                 // Initialize the (periodical) monitoring of the specified node
                 const monitoredItem = this._subscription.monitor(
@@ -339,7 +344,7 @@ class OPCUAGateway {
                     const payload_json = {
                         "state": {
                             "reported": {
-                                [monitoredNode.propertyName]: dataValue.value.value
+                                monitoredNodeName: dataValue.value.value
                             }
                         }
                     };
@@ -376,21 +381,23 @@ class OPCUAGateway {
      *
      * @param {String} thingName    - Identifier of the (logically) superordinate
      *                                instance / object of the OPC UA node to
-     *                                write, that, in combination with propertyName,
+     *                                write, that, in combination with path,
      *                                can be resolved to the unique nodeId
-     * @param {String} propertyName - Identifier of the logical equivalent of the
-     *                                OPC UA node (resp. method) to write, that,
-     *                                in combination with thingName, can be
-     *                                resolved to the unique node / method ID
+     * @param {String} path         - Unique identifier of the logical equivalent
+     *                                of the OPC UA node (resp. method) to write
+     *                                in the form of the object path within the
+     *                                nodeset hierarchy, that, in combination
+     *                                with thingName, can be resolved to the
+     *                                unique node / method ID
      * @param {Object} value        - Desired value to write to the specified node;
      *                                serve(s) as input argument(s) in case the
      *                                target is a method and no object node
      *
      * @returns {number}            - Status / Return code of the write operation
      */
-    writeNode(thingName, propertyName, value) {
+    writeNode(thingName, path, value) {
         if ( !(typeof thingName === 'string')
-            || !(typeof propertyName === 'string')
+            || !(typeof path === 'string')
         ) {
             LOGGER.ERROR('writeNode: Invalid transfer parameters!');
             return PARAM_ERR;
@@ -402,82 +409,90 @@ class OPCUAGateway {
             return CONNECTION_ERR;
         }
 
-        // Resolve the thing(s) matching the specified name
-        var things = this._nodeset.filter( (thing) => {
+        // Resolve the thing matching the specified name
+        var thing = this._nodeset.filter( (thing) => {
             return (thing.thingName == thingName);
-        });
+        })[0];
 
-        // Annotation: The enclosing for-loop is solely for the case that the
-        // thing name is not unique. In this case, all things w/ the respective
-        // name are queried for the specified property and the desired operation
-        // is applied to all (!) matching elements.
-        for (var idx in things) {
-            // Search the current thing for the specified property
+        // Resolve the node to write resp. the method to call by path
+        const node = JSON.getObjectByPath(thing.UANodes, path);
+        if ( !node
+            || !(Object.prototype.hasOwnProperty.call(node, 'nodeId'))
+        ) {
+            LOGGER.WARN('writeNode: Invalid item specified: ' + path);
+            return PARAM_ERR;
+        }
 
+        // The call for the write operation differs depending on whether
+        // the concerned node is a method or an object node.
+        if ( node.UANodeClass == 'Method' ) {
+            if ( node.methodParameters.inputArguments.length != value.length ) {
+                LOGGER.WARN('Skipping method ' + node.nodeId + ' as the number of given arguments does not match the required number of transfer parameters!');
+                return PARAM_ERR;
+            }
 
+            // Get the parent node of the method (resp. the superordinate object
+            // the method is an element of)
+            // Annotation: Assumes that no methods may be located on the highest
+            // hierarchy level of the nodeset
+            const parentPath    = path.split('.').slice(0, -2).join('.');
+            const parent        = JSON.getObjectByPath(parentPath);
+            if ( !parent
+                || !(Object.prototype.hasOwnProperty.call(parent, 'nodeId'))
+            ) {
+                LOGGER.WARN('Skipping method ' + node.nodeId + ' as no valid parent node could be found!');
+                WRITE_ERR;
+            }
 
-
-
-
-
-            // The call for the write operation differs depending on whether
-            // the concerned node a method or an object node.
-            if ( nodes[idx].UANodeClass == 'Method' ) {
-                if ( nodes[idx].methodParameters.inputArguments.length != value.length ) {
-                    LOGGER.LOG('Skipping method ' + nodes[idx].nodeId + ' as the number of given arguments does not match the required number of transfer parameters!');
-                    continue;
-                }
-
-                var objectId        = nodes[idx].methodParameters.objectId
-                var methodId        = nodes[idx].nodeId;
-                var inputArguments  = [];
-                nodes[idx].methodParameters.inputArguments.forEach( (inputArgument) => {
-                    inputArguments = inputArguments.concat({
-                        'dataType': opcua.DataType.get(inputArgument.UADataType),
-                        'value': value[nodes[idx].inputArguments.indexof(inputArgument)]
-                    });
+            var objectId        = parent.nodeId
+            var methodId        = node.nodeId;
+            var inputArguments  = [];
+            node.methodParameters.inputArguments.forEach( (inputArgument) => {
+                inputArguments = inputArguments.concat({
+                    'dataType': opcua.DataType.get(inputArgument.UADataType),
+                    'value': value[node.inputArguments.indexof(inputArgument)]
                 });
-                var methodToCall = {
-                    'objectId': objectId,
-                    'methodId': methodId,
-                    'inputArguments': inputArguments
-                };
+            });
+            const methodToCall = {
+                'objectId': objectId,
+                'methodId': methodId,
+                'inputArguments': inputArguments
+            };
 
-                // Call the specified method w/ the corresponding transfer parameters
-                this._session.call(
-                    methodToCall,
-                    (err, rc) => {
-                        if (err) {
-                            LOGGER.ERROR('Error occured during method call! Err: ' + err + ' RC: ' + rc);
-                        }
-                        else {
-                            LOGGER.LOG('Method call successful! RC: ' + rc);
-                        }
+            // Call the specified method w/ the corresponding transfer parameters
+            this._session.call(
+                methodToCall,
+                (err, rc) => {
+                    if (err) {
+                        LOGGER.ERROR('Error occured during method call! Err: ' + err + ' RC: ' + rc);
                     }
-                );
-            }
-            else {
-                var nodeId      = nodes[idx].nodeId;
-                var dataType    = opcua.DataType.get(nodes[idx].UADataType);
-                var value       = {
-                        'dataType': dataType,
-                        'value': value
-                };
+                    else {
+                        LOGGER.LOG('Method call successful! RC: ' + rc);
+                    }
+                }
+            );
+        }
+        else {
+            var nodeId      = node.nodeId;
+            var dataType    = opcua.DataType.get(node.UADataType);
+            var value       = {
+                    'dataType': dataType,
+                    'value': value
+            };
 
-                // Set the specified node to the desired state
-                this._session.writeSingleNode(
-                    nodeId,
-                    value,
-                    (err, rc) => {
-                        if (err) {
-                            LOGGER.ERROR('Error occured during write operation! Err: ' + err + ' RC: ' + rc);
-                        }
-                        else {
-                            LOGGER.LOG('Write operation successful! RC: ' + rc);
-                        }
+            // Set the specified node to the desired state
+            this._session.writeSingleNode(
+                nodeId,
+                value,
+                (err, rc) => {
+                    if (err) {
+                        LOGGER.ERROR('Error occured during write operation! Err: ' + err + ' RC: ' + rc);
                     }
-                );
-            }
+                    else {
+                        LOGGER.LOG('Write operation successful! RC: ' + rc);
+                    }
+                }
+            );
         }
         return STATUS_OK;
     }

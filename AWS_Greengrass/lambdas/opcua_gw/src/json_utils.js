@@ -13,63 +13,63 @@
 /*
  * Description: Retrieve a nested object from a JSON structure by its path
  *
- * @param {Object} obj      - Object / JSON structure to filter
- * @param {String} path     - Absolute path to the object to retrieve
- * @param {Object} default  - Default return value in case the operation fails
- *                            (e.g. because of a faulty path)
+ * @param {Object} obj          - Object / JSON structure to filter
+ * @param {String} path         - Absolute path to the object to retrieve
+ * @param {Object} defaultValue - Default return value in case the operation
+ *                                fails (e.g. because of a faulty path)
  *
  * @returns {Object}        - Status / Return code of the write operation
  */
-function getObjectByPath (obj, path, default) {
+function getObjectByPath(obj, path, defaultValue) {
     if (!obj) {
-      return default;
+        return defaultValue;
     }
     if ( !path
-        || (path.length === 0)
+        || (path.length == 0)
     ) {
-      return obj;
+        return obj;
     }
 
     // Resolve the path in case it was specified in form of an array index or a
     // concatenated string
-    if (typeof path === 'number') {
-      path = [path];
+    if ( typeof path === 'number' ) {
+        path = [path];
     }
-    if (typeof path === 'string') {
-      return getObjectByPath(obj, path.split('.'), default);
+    if ( typeof path === 'string' ) {
+        return getObjectByPath(obj, path.split('.'), defaultValue);
     }
 
     // Get the next path element
     var key = path[0];
     var intKey = parseInt(key);
-    if (intKey.toString() === key) {
-      key = intKey;
+    if ( intKey.toString() === key ) {
+        key = intKey;
     }
 
     // Get the nested object specified by the current path element
-    if ( ( (typeof prop === 'number') && Array.isArray(obj) )
+    if ( ((typeof prop === 'number') && Array.isArray(obj))
         || Object.prototype.hasOwnProperty.call(obj, key)
     ) {
         var nextObj = obj[key];
     }
     if (nextObj === void 0) {
-      return default;
+        return defaultValue;
     }
 
     // Return the object specified by the given path
-    if (path.length === 1) {
-      return nextObj;
+    if ( path.length === 1 ) {
+        return nextObj;
     }
 
     // Recursively pass through the object until either the destination or a
     // "dead end" are reached
     return getObjectByPath(nextObj, path.slice(1), defaultValue);
-  };
+};
 
 //----------
 // Exports:
 //----------
 
 module.exports = {
-     JSON.getObjectByPath: getObjectByPath
+     [JSON.getObjectByPath]: getObjectByPath
 };

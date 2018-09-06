@@ -107,9 +107,16 @@ exports.handler = (event, context) => {
         context.fail();
     }
 
-    // Extract the thing name and the payload from the event
-    const subject   = context.clientContext.Custom.subject;
-    const thingName = subject.split('/')[2];
+    // Extract the subject from the event and check if it matches the
+    // necessary pattern ('opcua_gw/thing/+')
+    const subject = context.clientContext.Custom.subject;
+    if ( subject.indexOf('opcua_gw/thing/') != 0 ) {
+        LOGGER.WARN('Event passed on an invalid topic! Skipping!');
+        context.fail();
+    }
+
+    // Resolve the thing name and the payload
+    const thingName = subject.split('/')[3];
     const payload   = event.state;
 
     for (var path in payload) {

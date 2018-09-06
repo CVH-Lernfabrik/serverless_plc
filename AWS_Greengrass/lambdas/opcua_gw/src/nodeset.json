@@ -2,7 +2,7 @@
     {
         "thingName": "mps_conveyor",
         "topic": "$aws/things/mps_conveyor/shadow/update",
-        "components": {
+        "UANodes": {
             "lightBarrier_infeed": {
                 "nodeId": "ns=1;s=I_9",
                 "UANodeClass": "Object",
@@ -13,7 +13,7 @@
     {
         "thingName": "mps_hmi",
         "topic": "$aws/things/mps_hmi/shadow/update",
-        "components": {
+        "UANodes": {
             "led_start": {
                 "nodeId": "ns=1;s=O_1",
                 "UANodeClass": "Object",
@@ -38,7 +38,7 @@
     {
         "thingName": "mps_magazine",
         "topic": "$aws/things/mps_magazine/shadow/update",
-        "components": {
+        "UANodes": {
             "ejector_extended": {
                 "nodeId": "ns=1;s=I_12",
                 "UANodeClass": "Object",
