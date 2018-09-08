@@ -314,17 +314,14 @@ class OPCUAGateway {
                 // Resolve the node to subscribe by path
                 const monitoredNode = JSON.getObjectByPath(thing.UANodes, path);
                 if ( !monitoredNode
-                    || (monitoredNode.UANodeClass != 'Object')
+                    || (monitoredNode.UANodeClass != 'Variable')
                     || !(Object.prototype.hasOwnProperty.call(monitoredNode, 'nodeId'))
                 ) {
                     LOGGER.WARN('monitorNodes: Invalid item specified: ' + path);
                     return;
                 }
 
-                // Resolve name of the specified node from the path
-                const monitoredNodeName = path.split('.').slice(-1)[0];
-
-                LOGGER.LOG('monitorNodes: Initializing monitoring of node: ' + monitoredNodeName + ' (' + monitoredNode.nodeId + ')');
+                LOGGER.LOG('monitorNodes: Initializing monitoring of node: ' + monitoredNode.nodeId);
 
                 // Initialize the (periodical) monitoring of the specified node
                 const monitoredItem = this._subscription.monitor(
@@ -343,9 +340,7 @@ class OPCUAGateway {
                 monitoredItem.on('changed', (dataValue) => {
                     const payload_json = {
                         "state": {
-                            "reported": {
-                                monitoredNodeName: dataValue.value.value
-                            }
+                            "reported": JSON.createObjectFromPath(path, dataValue.value.value)
                         }
                     };
                     const payload_string = JSON.stringify(payload_json);
@@ -426,7 +421,7 @@ class OPCUAGateway {
         // The call for the write operation differs depending on whether
         // the concerned node is a method or an object node.
         if ( node.UANodeClass == 'Method' ) {
-            if ( node.methodParameters.inputArguments.length != value.length ) {
+            if ( node.inputArguments.length != value.length ) {
                 LOGGER.WARN('Skipping method ' + node.nodeId + ' as the number of given arguments does not match the required number of transfer parameters!');
                 return PARAM_ERR;
             }
@@ -436,21 +431,21 @@ class OPCUAGateway {
             // Annotation: Assumes that no methods may be located on the highest
             // hierarchy level of the nodeset
             const parentPath    = path.split('.').slice(0, -2).join('.');
-            const parent        = JSON.getObjectByPath(parentPath);
+            const parent        = JSON.getObjectByPath(thing.UANodes, parentPath);
             if ( !parent
                 || !(Object.prototype.hasOwnProperty.call(parent, 'nodeId'))
             ) {
                 LOGGER.WARN('Skipping method ' + node.nodeId + ' as no valid parent node could be found!');
-                WRITE_ERR;
+                return WRITE_ERR;
             }
 
             var objectId        = parent.nodeId
             var methodId        = node.nodeId;
             var inputArguments  = [];
-            node.methodParameters.inputArguments.forEach( (inputArgument) => {
+            node.inputArguments.forEach( (inputArgument) => {
                 inputArguments = inputArguments.concat({
                     'dataType': opcua.DataType.get(inputArgument.UADataType),
-                    'value': value[node.inputArguments.indexof(inputArgument)]
+                    'value': value[node.inputArguments.indexOf(inputArgument)]
                 });
             });
             const methodToCall = {

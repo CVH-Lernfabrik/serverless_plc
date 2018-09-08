@@ -77,7 +77,7 @@ GGC_SUB_ID=$(aws --profile ${1} --region ${2} greengrass list-subscription-defin
 if [ -z "${GGC_SUB_ID}" ]; then
     GGC_SUB_ID=$(aws --profile ${1} --region ${2} greengrass create-subscription-definition --name opcua-gw-subscription | jq -r '.Id')
 fi
-GGC_SUB_ARN=$(aws --profile ${1} --region ${2} greengrass create-subscription-definition-version --subscription-definition-id ${GGC_SUB_ID} --subscriptions Id="${GGC_SUB_ID}-1",Source="GGShadowService",Subject="\$aws/things/+/shadow/update/delta",Target="${OPCUA_GW_ARN}" | jq -r '.Arn')
+GGC_SUB_ARN=$(aws --profile ${1} --region ${2} greengrass create-subscription-definition-version --subscription-definition-id ${GGC_SUB_ID} --subscriptions Id="${GGC_SUB_ID}-1",Source="cloud",Subject="opcua_gw/things/+",Target="${OPCUA_GW_ARN}" Id="${GGC_SUB_ID}-2",Source="GGShadowService",Subject="\$aws/things/+/shadow/update/delta",Target="${OPCUA_GW_ARN}" | jq -r '.Arn')
 
 # Create / Update the device definition(s) and store the Arn(s) to be able
 # to reference this (these) resource(s) in further operations

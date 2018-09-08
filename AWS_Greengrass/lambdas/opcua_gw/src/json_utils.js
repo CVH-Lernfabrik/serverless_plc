@@ -18,9 +18,9 @@
  * @param {Object} defaultValue - Default return value in case the operation
  *                                fails (e.g. because of a faulty path)
  *
- * @returns {Object}        - Status / Return code of the write operation
+ * @returns {Object}            - Specified object resp. default return value
  */
-function getObjectByPath(obj, path, defaultValue) {
+JSON.getObjectByPath = function (obj, path, defaultValue) {
     if (!obj) {
         return defaultValue;
     }
@@ -36,7 +36,7 @@ function getObjectByPath(obj, path, defaultValue) {
         path = [path];
     }
     if ( typeof path === 'string' ) {
-        return getObjectByPath(obj, path.split('.'), defaultValue);
+        return JSON.getObjectByPath(obj, path.split('.'), defaultValue);
     }
 
     // Get the next path element
@@ -63,13 +63,43 @@ function getObjectByPath(obj, path, defaultValue) {
 
     // Recursively pass through the object until either the destination or a
     // "dead end" are reached
-    return getObjectByPath(nextObj, path.slice(1), defaultValue);
+    return JSON.getObjectByPath(nextObj, path.slice(1), defaultValue);
 };
+
+/*
+ * Description: Creates a JSON object from a given path
+ *
+ * @param {String} path     - Hierarchical structure of the JSON object
+ * @param {Object} value    - Value to assign to the innermost element of
+ *                            the JSON object to create
+ *
+ * @returns {Object}        - JSON equivalent of the specified path
+ */
+JSON.createObjectFromPath = function (path, value) {
+    if ( !path
+        || (path.length == 0)
+    ) {
+        return '{}';
+    }
+
+    // Resolve the path in case it was specified in form of a concatenated string
+    if ( typeof path === 'string' ) {
+        return JSON.createObjectFromPath(path.split('.'), value);
+    }
+
+    var json_string = '{"';
+    json_string = json_string.concat( path.join('":{"') + '":' + value);
+    for (let i = 0; i < path.length; i++) {
+        json_string = json_string.concat('}');
+    }
+
+    return JSON.parse(json_string);
+}
 
 //----------
 // Exports:
 //----------
 
 module.exports = {
-     [JSON.getObjectByPath]: getObjectByPath
+    JSON
 };

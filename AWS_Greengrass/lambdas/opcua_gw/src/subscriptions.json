@@ -2,21 +2,20 @@
     {
         "thingName": "mps_conveyor",
         "subscriptions": [
-            "lightBarrier_infeed"
+            "lightBarrier_infeed.components.state"
         ]
     },
     {
         "thingName": "mps_hmi",
         "subscriptions": [
-            "led_start"
+            "led_start.components.indicator.components.state"
         ]
     },
     {
         "thingName": "mps_magazine",
         "subscriptions": [
-            "ejector_extended",
-            "ejector_retracted",
-            "magazine_empty"
+            "ejector.components.position",
+            "lightBarrier_magazineEmpty.components.state"
         ]
     }
 ]

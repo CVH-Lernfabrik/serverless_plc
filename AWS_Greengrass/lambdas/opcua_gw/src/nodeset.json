@@ -4,9 +4,15 @@
         "topic": "$aws/things/mps_conveyor/shadow/update",
         "UANodes": {
             "lightBarrier_infeed": {
-                "nodeId": "ns=1;s=I_9",
+                "nodeId": "ns=1;i=2007",
                 "UANodeClass": "Object",
-                "UADataType": "Boolean"
+                "components": {
+                    "state": {
+                        "nodeId": "ns=1;i=2011",
+                        "UANodeClass": "Variable",
+                        "UADataType": "Boolean"
+                    }
+                }
             }
         }
     },
@@ -15,21 +21,31 @@
         "topic": "$aws/things/mps_hmi/shadow/update",
         "UANodes": {
             "led_start": {
-                "nodeId": "ns=1;s=O_1",
+                "nodeId": "ns=1;i=2301",
                 "UANodeClass": "Object",
-                "UADataType": "Boolean",
                 "components": {
-                    "getState": {
-                        "nodeId": "ns=1;i=2010",
-                        "UANodeClass": "Method",
-                        "inputArguments": []
-                    },
-                    "setState": {
-                        "nodeId": "ns=1;i=2010",
-                        "UANodeClass": "Method",
-                        "inputArguments": [
-                            "Boolean"
-                        ]
+                    "indicator": {
+                        "nodeId": "ns=1;i=2304",
+                        "UANodeClass": "Object",
+                        "components": {
+                            "state": {
+                                "nodeId": "ns=1;i=2310",
+                                "UANodeClass": "Variable",
+                                "UADataType": "Boolean"
+                            },
+                            "getState": {
+                                "nodeId": "ns=1;i=2305",
+                                "UANodeClass": "Method",
+                                "inputArguments": []
+                            },
+                            "setState": {
+                                "nodeId": "ns=1;i=2308",
+                                "UANodeClass": "Method",
+                                "inputArguments": [
+                                    "Boolean"
+                                ]
+                            }
+                        }
                     }
                 }
             }
@@ -39,20 +55,27 @@
         "thingName": "mps_magazine",
         "topic": "$aws/things/mps_magazine/shadow/update",
         "UANodes": {
-            "ejector_extended": {
-                "nodeId": "ns=1;s=I_12",
+            "ejector": {
+                "nodeId": "ns=1;i=2235",
                 "UANodeClass": "Object",
-                "UADataType": "Boolean"
+                "components": {
+                    "position": {
+                        "nodeId": "ns=1;i=2240",
+                        "UANodeClass": "Variable",
+                        "UADataType": "Boolean"
+                    }
+                }
             },
-            "ejector_retracted": {
-                "nodeId": "ns=1;s=I_10",
+            "lightBarrier_magazineEmpty": {
+                "nodeId": "ns=1;i=2230",
                 "UANodeClass": "Object",
-                "UADataType": "Boolean"
-            },
-            "magazine_empty": {
-                "nodeId": "ns=1;s=I_14",
-                "UANodeClass": "Object",
-                "UADataType": "Boolean"
+                "components": {
+                    "state": {
+                        "nodeId": "ns=1;i=2234",
+                        "UANodeClass": "Variable",
+                        "UADataType": "Boolean"
+                    }
+                }
             }
         }
     }

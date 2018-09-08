@@ -95,10 +95,6 @@ worker.on('message', (msg) => {
 exports.handler = (event, context) => {
     LOGGER.LOG('Received event:', JSON.stringify(event, null, 2), 'on context:', JSON.stringify(context, null, 2));
 
-    if ( !event.hasOwnProperty('state') ) {
-        LOGGER.ERROR('Invalid event passed!');
-        context.fail();
-    }
     if ( !context.hasOwnProperty('clientContext')
         || !context.clientContext.hasOwnProperty('Custom')
         || !context.clientContext.Custom.hasOwnProperty('subject')
@@ -108,16 +104,16 @@ exports.handler = (event, context) => {
     }
 
     // Extract the subject from the event and check if it matches the
-    // necessary pattern ('opcua_gw/thing/+')
+    // allowed pattern ('opcua_gw/things/+')
     const subject = context.clientContext.Custom.subject;
-    if ( subject.indexOf('opcua_gw/thing/') != 0 ) {
+    if ( !(subject.indexOf('opcua_gw/things/') == 0) ) {
         LOGGER.WARN('Event passed on an invalid topic! Skipping!');
         context.fail();
     }
 
     // Resolve the thing name and the payload
-    const thingName = subject.split('/')[3];
-    const payload   = event.state;
+    const thingName = subject.split('/')[2];
+    const payload = event;
 
     for (var path in payload) {
         var value = payload[path];
