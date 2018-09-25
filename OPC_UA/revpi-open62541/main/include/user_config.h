@@ -26,7 +26,7 @@
 
     #define CREDENTIALS_SIZE                2
 
-    #define UA_LOGLEVEL = 200
+    #define UA_LOGLEVEL                     UA_LOGLEVEL_DEBUG
 
     // Set the login credentials clients can use to access the server
     // Note: Only the first CREDENTIALS_SIZE entries will be valid. Every further

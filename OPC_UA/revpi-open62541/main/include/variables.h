@@ -27,8 +27,6 @@ extern void afterWriteReadonlyVariable(UA_Server *server,
 extern void addValueCallbackToVariable(UA_Server *server,
                    char *pszVariableName, bool readonly, bool verbose);
 
-
-
 extern UA_StatusCode readDataSourceVariable(UA_Server *server,
                const UA_NodeId *sessionId, void *sessionContext,
                const UA_NodeId *nodeId, void *nodeContext,

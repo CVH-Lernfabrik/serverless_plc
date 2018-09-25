@@ -27,6 +27,7 @@
 #include "variables.h"
 
 #include "util.h"
+//#include "dictionary.h"
 #include "user_config.h"
 
 #define DEBUG
@@ -557,15 +558,20 @@ int main(int argc, char* argv[])
     }
     //else {
         // Link the Nodes from the Nodeset with their resources
+        UA_StatusCode linkResult;
         for (int i = 0; i < 16; i++){
           // Link the Variable "Value" with its Input Pin for all 16 Digital Inputs
           // For this nodeset, the NodeIds of the Input "Value" Variables increment by 5
-          linkDataSourceVariable(server, UA_NODEID_NUMERIC(1, 2041 + i * 5));
+          linkResult = linkDataSourceVariable(server, UA_NODEID_NUMERIC(1, 2041 + i * 5));
+          UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "main: linkDataSourceVariable returned %s for NodeID 1:%i", UA_StatusCode_name(linkResult), 2041 + i * 5);
+
           UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(1, 2039 + i * 5), &universalSetGetCallback);
 
           // Link the Variable "Value" with its Output Pin for all 16 Digital Outputs
           // For this nodeset, the NodeIds of the Output "Value" Variables increment by 7
-          linkDataSourceVariable(server, UA_NODEID_NUMERIC(1, 2122 + i * 7));
+          linkResult = linkDataSourceVariable(server, UA_NODEID_NUMERIC(1, 2122 + i * 7));
+          UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "main: linkDataSourceVariable returned %s for NodeID 1:%i", UA_StatusCode_name(linkResult), 2122 + i * 7);
+
           UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(1, 2120 + i * 7), &universalSetGetCallback);
           UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(1, 2123 + i * 7), &universalSetGetCallback);
         }
@@ -587,6 +593,8 @@ int main(int argc, char* argv[])
         UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(1, 2251), &universalSetGetCallback);
         UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(1, 2262), &universalSetGetCallback);
         UA_Server_setMethodNode_callback(server, UA_NODEID_NUMERIC(1, 2267), &universalSetGetCallback);
+
+        UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "UA_LOGLEVEL = %i", UA_LOGLEVEL);
 
         //linkStateWithIO(server, UA_NODEID_NUMERIC(1, 2281));
 

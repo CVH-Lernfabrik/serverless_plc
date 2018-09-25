@@ -23,7 +23,7 @@ universalSetGetCallback(UA_Server *server,
 
 
     char *methodName = String_fromUA_String(&methodQN->name);
-    UA_LOG_DEBUG(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "readBrowseName returned: %s, methodName: %s", UA_StatusCode_name(retval), methodName);
+    UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_SERVER, "readBrowseName returned: %s, methodName: %s", UA_StatusCode_name(retval), methodName);
 
     bool writeValue = false;
 
