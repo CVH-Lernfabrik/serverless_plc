@@ -17,6 +17,8 @@ require('requirish')._(module);
 
 const child_process = require('child_process');
 
+require('json_utils');
+
 //--------------
 // Definitions:
 //--------------
@@ -104,19 +106,22 @@ exports.handler = (event, context) => {
     }
 
     // Extract the subject from the event and check if it matches the
-    // allowed pattern ('opcua_gw/things/+')
+    // allowed patterns ('opcua_gw/things/+' resp. '$aws/things/#')
     const subject = context.clientContext.Custom.subject;
-    if ( !(subject.indexOf('opcua_gw/things/') == 0) ) {
+    if ( !(subject.indexOf('opcua_gw/things/') == 0)
+        && !(subject.indexOf('$aws/things/') == 0)
+    ) {
         LOGGER.WARN('Event passed on an invalid topic! Skipping!');
         context.fail();
     }
 
     // Resolve the thing name and the payload
     const thingName = subject.split('/')[2];
-    const payload = event;
+    const payload   = subject.indexOf('$aws/things/') == 0 ? event.state : event;
+    const paths     = JSON.objectToPath(payload);
 
-    for (var path in payload) {
-        var value = payload[path];
+    for (var path in paths) {
+        var value = paths[path];
 
         LOGGER.LOG('Setting', thingName + '.' + path, 'to', value + '...');
 

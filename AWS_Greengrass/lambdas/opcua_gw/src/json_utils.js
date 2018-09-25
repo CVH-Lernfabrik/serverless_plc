@@ -62,7 +62,7 @@ JSON.getObjectByPath = function (obj, path, defaultValue) {
     }
 
     // Recursively pass through the object until either the destination or a
-    // "dead end" are reached
+    // "dead end" (innermost layer, no further subojects) are reached
     return JSON.getObjectByPath(nextObj, path.slice(1), defaultValue);
 };
 
@@ -87,6 +87,7 @@ JSON.createObjectFromPath = function (path, value) {
         return JSON.createObjectFromPath(path.split('.'), value);
     }
 
+    // Generate the string representation of the JSON structure
     var json_string = '{"';
     json_string = json_string.concat( path.join('":{"') + '":' + value);
     for (let i = 0; i < path.length; i++) {
@@ -94,6 +95,45 @@ JSON.createObjectFromPath = function (path, value) {
     }
 
     return JSON.parse(json_string);
+}
+
+/*
+ * Description: Generates the path representation of a given JSON object
+ *
+ * @param {Object} obj      - Object / JSON structure to generate the path
+ *                            representation of
+ * @param {String} path     - Hierarchical structure of the JSON object
+ *
+ * @returns {Object}        - Unique hierarchical path representation of each
+ *                            nested element in the JSON structure as well as
+ *                            the associated values
+ */
+JSON.objectToPath = function (obj, path) {
+    if ( !obj
+        || (typeof obj !== 'object')
+    ) {
+        return {[path]: obj};
+    }
+
+    // Obtain the keys of the subobjects on the current layer of the JSON structure
+    var keys = Object.keys(obj);
+    if (keys.length == 0) {
+        return {[path]: obj};
+    }
+    else {
+        var pathArr = {};
+        for (var key in keys) {
+            // Append the keys as the unique identifiers for the subobjects to
+            // the path
+            var p = path ? path.concat('.') : '';
+            p = p.concat(keys[key]);
+
+            // Recursively pass through the object until a "dead end" (innermost
+            // layer, no further subojects) is reached and aggregate the paths
+            Object.assign( pathArr, JSON.objectToPath(obj[keys[key]], p) );
+        }
+        return pathArr;
+    }
 }
 
 //----------
