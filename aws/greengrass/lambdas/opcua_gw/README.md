@@ -16,6 +16,7 @@ necessary:
 
 1. In [config.json](https://github.com/CVH-Lernfabrik/serverless_plc/tree/master/aws/greengrass/lambdas/opcua_gw/config.json), modify the section
 
+    ```
     "connectionParameters": {
         "url": "{URL OF THE OPC SERVER}",
         "securityMode": "{SECURITY MODE}",
@@ -25,6 +26,7 @@ necessary:
         "username": "{USERNAME (optional)}",
         "password": "{PASSWORD (optional)}"
     }
+    ```
 
 to match the settings of your OPC server. Please note, that the URL provided
 has to match the one specified in the certificate in case an encrypted
@@ -41,6 +43,7 @@ as [AutomationML](https://www.automationml.org/o.red.c/home.html).
 The gateway expects the nodeset defined in
 [nodeset.json](https://github.com/CVH-Lernfabrik/serverless_plc/tree/master/aws/greengrass/lambdas/opcua_gw/config.json) to have the following format:
 
+    ```
     [
         {
             "thingName": "{AWS THING NAME}",
@@ -59,11 +62,13 @@ The gateway expects the nodeset defined in
         },
         ...
     ]
+    ```
 
 3. Lastly, it is necessary to define the nodes whose status the gateway is to
 monitor. This is done in
 [nodeset.json](https://github.com/CVH-Lernfabrik/serverless_plc/tree/master/aws/greengrass/lambdas/opcua_gw/subscriptions.json). The format is as follows:
 
+    ```
     [
         {
             "thingName": "{AWS THING NAME}",
@@ -74,6 +79,7 @@ monitor. This is done in
         },
         ...
     ]
+    ```
 
 ### Deployment
 
