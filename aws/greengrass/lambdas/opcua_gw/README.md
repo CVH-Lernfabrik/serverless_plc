@@ -16,15 +16,15 @@ necessary:
 
 1. In [config.json](https://github.com/CVH-Lernfabrik/serverless_plc/tree/master/aws/greengrass/lambdas/opcua_gw/config.json), modify the section
 
-"connectionParameters": {
-    "url": "{URL OF THE OPC SERVER}",
-    "securityMode": "{SECURITY MODE}",
-    "securityPolicy": "{SECURITY POLICY}",
-    "serverCertificate": "{PATH TO THE SERVER CERTIFICATE IN PEM FORMAT (optional)}",
-    "serverCertificateSelfSigned": {TRUE / FALSE (optional)},
-    "username": "{USERNAME (optional)}",
-    "password": "{PASSWORD (optional)}"
-}
+    "connectionParameters": {
+        "url": "{URL OF THE OPC SERVER}",
+        "securityMode": "{SECURITY MODE}",
+        "securityPolicy": "{SECURITY POLICY}",
+        "serverCertificate": "{PATH TO THE SERVER CERTIFICATE IN PEM FORMAT (optional)}",
+        "serverCertificateSelfSigned": {TRUE / FALSE (optional)},
+        "username": "{USERNAME (optional)}",
+        "password": "{PASSWORD (optional)}"
+    }
 
 to match the settings of your OPC server. Please note, that the URL provided
 has to match the one specified in the certificate in case an encrypted
@@ -41,39 +41,39 @@ as [AutomationML](https://www.automationml.org/o.red.c/home.html).
 The gateway expects the nodeset defined in
 [nodeset.json](https://github.com/CVH-Lernfabrik/serverless_plc/tree/master/aws/greengrass/lambdas/opcua_gw/config.json) to have the following format:
 
-[
-    {
-        "thingName": "{AWS THING NAME}",
-        "topic": "{TOPIC ON WHICH STATE CHANGES ARE PUBLISHED}",
-        "UANodes": {
-            "{NODE NAME}": {
-                "nodeId": "{NODE ID}",
-                "UANodeClass": "{NODE CLASS}",
-                "UADataType": "{NODE TYPE (optional)}",
-                "components": {
-                    {SUBNODES (optional)}
-                }
-            },
-            ...
-        }
-    },
-    ...
-]
+    [
+        {
+            "thingName": "{AWS THING NAME}",
+            "topic": "{TOPIC ON WHICH STATE CHANGES ARE PUBLISHED}",
+            "UANodes": {
+                "{NODE NAME}": {
+                    "nodeId": "{NODE ID}",
+                    "UANodeClass": "{NODE CLASS}",
+                    "UADataType": "{NODE TYPE (optional)}",
+                    "components": {
+                        {SUBNODES (optional)}
+                    }
+                },
+                ...
+            }
+        },
+        ...
+    ]
 
 3. Lastly, it is necessary to define the nodes whose status the gateway is to
 monitor. This is done in
 [nodeset.json](https://github.com/CVH-Lernfabrik/serverless_plc/tree/master/aws/greengrass/lambdas/opcua_gw/subscriptions.json). The format is as follows:
 
-[
-    {
-        "thingName": "{AWS THING NAME}",
-        "subscriptions": [
-            "{ABSOLUTE PATH WITHIN THE NODESET (e.g. lightBarrier_infeed.components.state)}",
-            ...
-        ]
-    },
-    ...
-]
+    [
+        {
+            "thingName": "{AWS THING NAME}",
+            "subscriptions": [
+                "{ABSOLUTE PATH WITHIN THE NODESET (e.g. lightBarrier_infeed.components.state)}",
+                ...
+            ]
+        },
+        ...
+    ]
 
 ### Deployment
 
