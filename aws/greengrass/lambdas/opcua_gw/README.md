@@ -14,7 +14,7 @@ production systems.
 To connect the gateway to an OPC UA server, three configuration steps are
 necessary:
 
-1\. In [config.json](https://github.com/CVH-Lernfabrik/serverless_plc/tree/master/aws/greengrass/lambdas/opcua_gw/config.json), modify the section
+1. In [config.json](https://github.com/CVH-Lernfabrik/serverless_plc/tree/master/aws/greengrass/lambdas/opcua_gw/config.json), modify the section
 
     ```
     "connectionParameters": {
@@ -34,7 +34,7 @@ necessary:
  the options `serverCertificate` and `serverCertificateSelfSigned` are ignored
  (can be left blank).
 
-2\. In the current state of implementation, it is necessary to manually configure
+2. In the current state of implementation, it is necessary to manually configure
 the node set of the server for the gateway to be able to resolve the connection
 between node ID and the AWS representation of the physical entity. In a later
 version, this could possibly be substituted by a further abstraction level such
@@ -64,7 +64,7 @@ as [AutomationML](https://www.automationml.org/o.red.c/home.html).
     ]
     ```
 
-3\. Lastly, it is necessary to define the nodes whose status the gateway is to
+3. Lastly, it is necessary to define the nodes whose status the gateway is to
 monitor. This is done in
 [nodeset.json](https://github.com/CVH-Lernfabrik/serverless_plc/tree/master/aws/greengrass/lambdas/opcua_gw/subscriptions.json). The format is as follows:
 
