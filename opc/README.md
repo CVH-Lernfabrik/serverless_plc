@@ -1,4 +1,4 @@
-# Setting up an OPC UA server on a KUNBUS Revolution Pi 3
+# Setting up an OPC UA server on a KUNBUS RevPi Core 3
 
 This guide describes, how to set up an OPC UA server on a
 [KUNBUS Revolution Pi 3](https://revolution.kunbus.de/) (RevPi) using
@@ -25,8 +25,8 @@ This guide describes, how to set up an OPC UA server on a
     Attention: The default keyboard-layout might be set to gb, so y and z might
                be switched.
 
-    THE ABSOLUTELY FIRST THING YOU WANT TO DO IS TO CHANGE THIS DEFAULT
-    USERNAME / PASSWORD COMBINATION! The easiest way to do this is via
+    The absolutely first thing you want to do is to change these default
+    user credentials! The easiest way to do this is via
 
         raspi-config
 
@@ -40,7 +40,7 @@ This guide describes, how to set up an OPC UA server on a
     Just remove the # infront of the respective entry in /etc/locale.gen and
     re-run raspi-config afterwards.
 
-    UPDATE YOUR SYSTEM AFTERWARDS BY EXECUTING
+    Update your system afterwards by executing
 
         sudo apt-get update
         sudo apt-get upgrade

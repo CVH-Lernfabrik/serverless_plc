@@ -21,9 +21,9 @@ Part of the secondary objectives is the integration of a digital twin in the
 style of AutomationML. Additional attention is given to the aspects of redundancy
 and availability as well as deployment of software changes.
 
-For further information on this project, please refer to
-[this paper](https://github.com/CVH-Lernfabrik/serverless_plc/tree/master/doc/paper/Serverless_PLC.pdf).
-
 The following illustration visualizes the architectural concept:
 
 ![](doc/img/architecture.png)
+
+For further information on this project, please refer to
+[this paper](https://github.com/CVH-Lernfabrik/serverless_plc/tree/master/doc/paper/Serverless_PLC.pdf).

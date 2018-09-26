@@ -30,8 +30,8 @@ RPI site of the set up procedure.
 
     Attention: The default keyboard-layout is set to gb, so y and z are switched.
 
-    THE ABSOLUTELY FIRST THING YOU WANT TO DO IS TO CHANGE THIS DEFAULT
-    USERNAME / PASSWORD COMBINATION! The easiest way to do this is via
+    The absolutely first thing you want to do is to change this default
+    username / password combination! The easiest way to do this is via
 
         raspi-config
 
@@ -40,7 +40,7 @@ RPI site of the set up procedure.
     well. Also, expand the filesystem (under the point "Advanced Options") if
     you haven't done it already while setting up the SD card.
 
-    UPDATE YOUR SYSTEM AFTERWARDS BY EXECUTING
+    Update your system afterwards by executing
 
         sudo apt-get update
         sudo apt-get upgrade

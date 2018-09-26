@@ -16,9 +16,6 @@ directory of the Lambda function you want to deploy and execute
 This will automatically built a package in the .zip format containing the
 source code, the AWS Greengrass Core SDK and all further specified dependencies.
 
-Annotation: The building process requires [Docker](https://www.docker.com/) to
-be installed on your local machine.
-
 Afterwards, upload the newly built package by executing
 
     terraform apply
@@ -28,7 +25,8 @@ This will create the necessary AWS resources (S3 bucket to store the source
 code, IAM policies), upload the function and automatically deploy it to the
 Greengrass Core device.
 
-Annotation: The deployment configuration can be found
+Annotation: The building process requires [Docker](https://www.docker.com/) to
+be installed on your local machine. The deployment configuration can be found
 [here](https://github.com/CVH-Lernfabrik/serverless_plc/tree/master/aws/greengrass/lambdas/deploy.sh)
 and has to be adjusted to the custom Lambda function's requirements (e.g.
 regarding subscriptions or devices associated to the Greengrass Group).
