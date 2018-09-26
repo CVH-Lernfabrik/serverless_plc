@@ -1,0 +1,25 @@
+###########################
+# UaModeler Project File  #
+# Generated at 22.08.2018 #
+###########################
+
+PROJECTNAME = nodeid as value
+
+TEMPLATESET = ($TEMPLATES)/modeling/v1_0/t0/modeling.tt2set
+
+MODELS += ($MODELS)/Opc.Ua.NodeSet2.ua \
+    nodeid_as_value.ua
+
+COLORS = ($MODELS)/Opc.Ua.NodeSet2.ua: #0000ff\
+    nodeid_as_value.ua: #008000
+
+OUTPUTPATH = 
+
+GENERATE += nodeid_as_value.ua
+
+NODEACCESSINFOROLES += Administrator \
+    SecurityAdmin \
+    ConfigurationAdmin \
+    Operator \
+    Observer
+

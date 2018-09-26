@@ -1,0 +1,32 @@
+{
+    "clientParameters": {
+        "keepSessionAlive": true,
+        "connectionStrategy": {
+            "maxRetry": 100,
+            "initialDelay": 1000,
+            "maxDelay": 10000
+        }
+    },
+    "connectionParameters": {
+        "url": "opc.tcp://RevPiCore3:4840/",
+        "securityMode": "SIGNANDENCRYPT",
+        "securityPolicy": "Basic256Sha256",
+        "serverCertificate": "certs/certificate.pem.crt",
+        "serverCertificateSelfSigned": true,
+        "username": "",
+        "password": ""
+    },
+    "subscriptionParameters": {
+        "requestedPublishingInterval": 100,
+        "requestedLifetimeCount": 1000,
+        "requestedMaxKeepAliveCount": 12,
+        "maxNotificationsPerPublish": 10,
+        "publishingEnabled": true,
+        "priority": 10
+    },
+    "monitoringParameters": {
+        "samplingInterval": 250,
+        "queueSize": 10000,
+        "discardOldest": true
+    }
+}

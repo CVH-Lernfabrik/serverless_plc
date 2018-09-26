@@ -1,0 +1,38 @@
+RevPiStatus		 0	 //BYTE  
+RevPiIOCycle		 1	 //BYTE  
+RevPiLED		 6	 //BYTE  
+I_1		 11.0	 //BOOL Start 
+I_2		 11.1	 //BOOL Zylinder eingefahren 
+I_3		 11.2	 //BOOL Stop 
+I_4		 11.3	 //BOOL Kapazitiver/Induktiver/optischer Sensor 
+I_5		 11.4	 //BOOL Auto/Man 
+I_6		 11.5	 //BOOL Rutsche voll 
+I_7		 11.6	 //BOOL Reset 
+I_8		 11.7	 //BOOL Werkstück in Modul 
+I_9		 11.8	 //BOOL Einlauf Werkstück 
+I_10		 11.9	 //BOOL Magazin eingefahren 
+I_11		 11.10	 //BOOL  
+I_12		 11.11	 //BOOL Magazin ausgefahren 
+I_13		 11.12	 //BOOL Auslauf Werkstück 
+I_14		 11.13	 //BOOL Magazin leer 
+I_15		 11.14	 //BOOL Not-Halt 
+I_16		 11.15	 //BOOL  
+Status		 15	 //WORD  
+Output_Status_i03		 126	 //WORD  
+Status_i03		 128	 //WORD  
+O_1		 194.0	 //BOOL Start 
+O_2		 194.1	 //BOOL Ausschiebezylinder ausfahren 
+O_3		 194.2	 //BOOL Reset 
+O_4		 194.3	 //BOOL Ausschiebezylinder einfahren 
+O_5		 194.4	 //BOOL Q1 
+O_6		 194.5	 //BOOL  
+O_7		 194.6	 //BOOL Q2 
+O_8		 194.7	 //BOOL  
+O_9		 194.8	 //BOOL Motor rechtslauf 
+O_10		 194.9	 //BOOL Zylinder ausfahren 
+O_11		 194.10	 //BOOL Motor linkslauf 
+O_12		 194.11	 //BOOL Zylinder einfahren 
+O_13		 194.12	 //BOOL Motor langsam 
+O_14		 194.13	 //BOOL  
+O_15		 194.14	 //BOOL Motor stopp 
+O_16		 194.15	 //BOOL  

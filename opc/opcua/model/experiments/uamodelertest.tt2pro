@@ -1,0 +1,35 @@
+###########################
+# UaModeler Project File  #
+# Generated at 31.07.2018 #
+###########################
+
+PROJECTNAME = UaModelerTest
+
+TEMPLATESET = ($TEMPLATES)/ansi_c/v1_8/t0/ansi_c.tt2set
+
+MODELS += ($MODELS)/Opc.Ua.NodeSet2.ua \
+    ($MODELS)/Opc.Ua.Di.NodeSet2.ua \
+    ($MODELS)/Opc.Ua.PLCopen.NodeSet.ua \
+    uamodelertest.ua \
+    ../../../open62541/examples/nodeset/server_nodeset.ua
+
+COLORS = ($MODELS)/Opc.Ua.NodeSet2.ua: #0000ff\
+    ($MODELS)/Opc.Ua.Di.NodeSet2.ua: #0000ff\
+    ($MODELS)/Opc.Ua.PLCopen.NodeSet.ua: #0000ff\
+    uamodelertest.ua: #008000\
+    ../../../open62541/examples/nodeset/server_nodeset.ua: #0000ff
+
+PROJECTVARIABLES += ProviderName = UaModelerTest \
+    alarmAndEvents = true
+
+OUTPUTPATH = UaModelerCode
+
+GENERATE += uamodelertest.ua \
+    ../../../open62541/examples/nodeset/server_nodeset.ua
+
+NODEACCESSINFOROLES += Administrator \
+    SecurityAdmin \
+    ConfigurationAdmin \
+    Operator \
+    Observer
+

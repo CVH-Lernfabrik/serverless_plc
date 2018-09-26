@@ -1,0 +1,607 @@
+<?xml version='1.0' encoding='utf-8'?>
+<UANodeSet xmlns="http://opcfoundation.org/UA/2011/03/UANodeSet.xsd" xmlns:uax="http://opcfoundation.org/UA/2008/02/Types.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NamespaceUris>
+    <Uri>https://github.com/CVH-Lernfabrik/serverless_plc/OPC_UA</Uri>
+  </NamespaceUris>
+  <Aliases>
+    <Alias Alias="Boolean">i=1</Alias>
+    <Alias Alias="String">i=12</Alias>
+    <Alias Alias="Organizes">i=35</Alias>
+    <Alias Alias="HasModellingRule">i=37</Alias>
+    <Alias Alias="HasTypeDefinition">i=40</Alias>
+    <Alias Alias="HasSubtype">i=45</Alias>
+    <Alias Alias="HasProperty">i=46</Alias>
+    <Alias Alias="HasComponent">i=47</Alias>
+    <Alias Alias="Argument">i=296</Alias>
+  </Aliases>
+  <UAVariable BrowseName="1:I_1" DataType="Boolean" NodeId="ns=1;s=I_1" ParentNodeId="i=85">
+    <DisplayName>I_1</DisplayName>
+    <Description>I_1</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="1:I_2" DataType="Boolean" NodeId="ns=1;s=I_2" ParentNodeId="i=85">
+    <DisplayName>I_2</DisplayName>
+    <Description>I_2</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="1:I_3" DataType="Boolean" NodeId="ns=1;s=I_3" ParentNodeId="i=85">
+    <DisplayName>I_3</DisplayName>
+    <Description>I_3</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="1:I_4" DataType="Boolean" NodeId="ns=1;s=I_4" ParentNodeId="i=85">
+    <DisplayName>I_4</DisplayName>
+    <Description>I_4</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="1:I_5" DataType="Boolean" NodeId="ns=1;s=I_5" ParentNodeId="i=85">
+    <DisplayName>I_5</DisplayName>
+    <Description>I_5</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="1:I_6" DataType="Boolean" NodeId="ns=1;s=I_6" ParentNodeId="i=85">
+    <DisplayName>I_6</DisplayName>
+    <Description>I_6</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="1:I_7" DataType="Boolean" NodeId="ns=1;s=I_7" ParentNodeId="i=85">
+    <DisplayName>I_7</DisplayName>
+    <Description>I_7</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="1:I_8" DataType="Boolean" NodeId="ns=1;s=I_8" ParentNodeId="i=85">
+    <DisplayName>I_8</DisplayName>
+    <Description>I_8</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="1:I_9" DataType="Boolean" NodeId="ns=1;s=I_9" ParentNodeId="i=85">
+    <DisplayName>I_9</DisplayName>
+    <Description>I_9</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="1:I_10" DataType="Boolean" NodeId="ns=1;s=I_10" ParentNodeId="i=85">
+    <DisplayName>I_10</DisplayName>
+    <Description>I_10</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="1:I_11" DataType="Boolean" NodeId="ns=1;s=I_11" ParentNodeId="i=85">
+    <DisplayName>I_11</DisplayName>
+    <Description>I_11</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="1:I_12" DataType="Boolean" NodeId="ns=1;s=I_12" ParentNodeId="i=85">
+    <DisplayName>I_12</DisplayName>
+    <Description>I_12</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="1:I_13" DataType="Boolean" NodeId="ns=1;s=I_13" ParentNodeId="i=85">
+    <DisplayName>I_13</DisplayName>
+    <Description>I_13</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="1:I_14" DataType="Boolean" NodeId="ns=1;s=I_14" ParentNodeId="i=85">
+    <DisplayName>I_14</DisplayName>
+    <Description>I_14</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="1:I_15" DataType="Boolean" NodeId="ns=1;s=I_15" ParentNodeId="i=85">
+    <DisplayName>I_15</DisplayName>
+    <Description>I_15</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="1:I_16" DataType="Boolean" NodeId="ns=1;s=I_16" ParentNodeId="i=85">
+    <DisplayName>I_16</DisplayName>
+    <Description>I_16</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable AccessLevel="3" BrowseName="1:O_1" DataType="Boolean" NodeId="ns=1;s=O_1" ParentNodeId="i=85">
+    <DisplayName>O_1</DisplayName>
+    <Description>O_1</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable AccessLevel="3" BrowseName="1:O_2" DataType="Boolean" NodeId="ns=1;s=O_2" ParentNodeId="i=85">
+    <DisplayName>O_2</DisplayName>
+    <Description>O_2</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable AccessLevel="3" BrowseName="1:O_3" DataType="Boolean" NodeId="ns=1;s=O_3" ParentNodeId="i=85">
+    <DisplayName>O_3</DisplayName>
+    <Description>O_3</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable AccessLevel="3" BrowseName="1:O_4" DataType="Boolean" NodeId="ns=1;s=O_4" ParentNodeId="i=85">
+    <DisplayName>O_4</DisplayName>
+    <Description>O_4</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable AccessLevel="3" BrowseName="1:O_5" DataType="Boolean" NodeId="ns=1;s=O_5" ParentNodeId="i=85">
+    <DisplayName>O_5</DisplayName>
+    <Description>O_5</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable AccessLevel="3" BrowseName="1:O_6" DataType="Boolean" NodeId="ns=1;s=O_6" ParentNodeId="i=85">
+    <DisplayName>O_6</DisplayName>
+    <Description>O_6</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable AccessLevel="3" BrowseName="1:O_7" DataType="Boolean" NodeId="ns=1;s=O_7" ParentNodeId="i=85">
+    <DisplayName>O_7</DisplayName>
+    <Description>O_7</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable AccessLevel="3" BrowseName="1:O_8" DataType="Boolean" NodeId="ns=1;s=O_8" ParentNodeId="i=85">
+    <DisplayName>O_8</DisplayName>
+    <Description>O_8</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable AccessLevel="3" BrowseName="1:O_9" DataType="Boolean" NodeId="ns=1;s=O_9" ParentNodeId="i=85">
+    <DisplayName>O_9</DisplayName>
+    <Description>O_9</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable AccessLevel="3" BrowseName="1:O_10" DataType="Boolean" NodeId="ns=1;s=O_10" ParentNodeId="i=85">
+    <DisplayName>O_10</DisplayName>
+    <Description>O_10</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable AccessLevel="3" BrowseName="1:O_11" DataType="Boolean" NodeId="ns=1;s=O_11" ParentNodeId="i=85">
+    <DisplayName>O_11</DisplayName>
+    <Description>O_11</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable AccessLevel="3" BrowseName="1:O_12" DataType="Boolean" NodeId="ns=1;s=O_12" ParentNodeId="i=85">
+    <DisplayName>O_12</DisplayName>
+    <Description>O_12</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable AccessLevel="3" BrowseName="1:O_13" DataType="Boolean" NodeId="ns=1;s=O_13" ParentNodeId="i=85">
+    <DisplayName>O_13</DisplayName>
+    <Description>O_13</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable AccessLevel="3" BrowseName="1:O_14" DataType="Boolean" NodeId="ns=1;s=O_14" ParentNodeId="i=85">
+    <DisplayName>O_14</DisplayName>
+    <Description>O_14</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable AccessLevel="3" BrowseName="1:O_15" DataType="Boolean" NodeId="ns=1;s=O_15" ParentNodeId="i=85">
+    <DisplayName>O_15</DisplayName>
+    <Description>O_15</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAVariable AccessLevel="3" BrowseName="1:O_16" DataType="Boolean" NodeId="ns=1;s=O_16" ParentNodeId="i=85">
+    <DisplayName>O_16</DisplayName>
+    <Description>O_16</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAObjectType BrowseName="1:ModularProductionSystemCoreModuleType" NodeId="ns=1;i=1001">
+    <DisplayName>ModularProductionSystemCoreModuleType</DisplayName>
+    <Description>ModularProductionSystemCoreModuleType</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasSubtype">i=58</Reference>
+      <Reference ReferenceType="HasSubtype">ns=1;i=2005</Reference>
+    </References>
+  </UAObjectType>
+  <UAObjectType BrowseName="1:IndicatorType" NodeId="ns=1;i=2005">
+    <DisplayName>IndicatorType</DisplayName>
+    <Description>IndicatorType</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasSubtype">ns=1;i=1001</Reference>
+      <Reference ReferenceType="HasProperty">ns=1;i=2006</Reference>
+      <Reference ReferenceType="HasComponent">ns=1;i=2007</Reference>
+      <Reference ReferenceType="HasComponent">ns=1;i=2008</Reference>
+      <Reference ReferenceType="HasComponent">ns=1;i=2010</Reference>
+    </References>
+  </UAObjectType>
+  <UAVariable BrowseName="1:OutputPin" DataType="String" NodeId="ns=1;i=2006" ParentNodeId="ns=1;i=2005">
+    <DisplayName>OutputPin</DisplayName>
+    <Description>OutputPin</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasProperty">ns=1;i=2005</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
+      <Reference ReferenceType="HasModellingRule">i=78</Reference>
+    </References>
+  </UAVariable>
+  <UAVariable AccessLevel="3" BrowseName="1:State" DataType="Boolean" NodeId="ns=1;i=2007" ParentNodeId="ns=1;i=2005" UserAccessLevel="3">
+    <DisplayName>State</DisplayName>
+    <Description>State</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">ns=1;i=2005</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+      <Reference ReferenceType="HasModellingRule">i=78</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAMethod BrowseName="1:setIndicatorState" NodeId="ns=1;i=2008" ParentNodeId="ns=1;i=2005">
+    <DisplayName>setIndicatorState</DisplayName>
+    <Description>setIndicatorState</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">ns=1;i=2005</Reference>
+      <Reference ReferenceType="HasModellingRule">i=78</Reference>
+      <Reference ReferenceType="HasProperty">ns=1;i=2009</Reference>
+    </References>
+  </UAMethod>
+  <UAVariable ArrayDimensions="1" BrowseName="0:InputArguments" DataType="Argument" NodeId="ns=1;i=2009" ParentNodeId="ns=1;i=2008" ValueRank="0">
+    <DisplayName>InputArguments</DisplayName>
+    <Description>InputArguments</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasProperty">ns=1;i=2008</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
+      <Reference ReferenceType="HasModellingRule">i=78</Reference>
+    </References>
+    <Value>
+      <uax:ListOfExtensionObject>
+        <uax:ExtensionObject>
+          <uax:TypeId>
+            <uax:Identifier>i=296</uax:Identifier>
+          </uax:TypeId>
+          <uax:Body>
+            <uax:Argument>
+              <uax:Name>state</uax:Name>
+              <uax:DataType>
+                <uax:Identifier>i=1</uax:Identifier>
+              </uax:DataType>
+              <uax:ValueRank>-1</uax:ValueRank>
+              <uax:ArrayDimensions />
+              <uax:Description>
+                <uax:Encoding>2</uax:Encoding>
+                <uax:Locale />
+                <uax:Text>0: Indicator is off; 1: Indicator is active</uax:Text>
+              </uax:Description>
+            </uax:Argument>
+          </uax:Body>
+        </uax:ExtensionObject>
+      </uax:ListOfExtensionObject>
+    </Value>
+  </UAVariable>
+  <UAMethod BrowseName="1:getIndicatorState" NodeId="ns=1;i=2010" ParentNodeId="ns=1;i=2005">
+    <DisplayName>getIndicatorState</DisplayName>
+    <Description>getIndicatorState</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">ns=1;i=2005</Reference>
+      <Reference ReferenceType="HasModellingRule">i=78</Reference>
+      <Reference ReferenceType="HasProperty">ns=1;i=2011</Reference>
+    </References>
+  </UAMethod>
+  <UAVariable BrowseName="0:OutputArguments" DataType="Argument" NodeId="ns=1;i=2011" ParentNodeId="ns=1;i=2010" ValueRank="0">
+    <DisplayName>OutputArguments</DisplayName>
+    <Description>OutputArguments</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasProperty">ns=1;i=2010</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
+      <Reference ReferenceType="HasModellingRule">i=78</Reference>
+    </References>
+    <Value>
+      <uax:ListOfExtensionObject>
+        <uax:ExtensionObject>
+          <uax:TypeId>
+            <uax:Identifier>i=296</uax:Identifier>
+          </uax:TypeId>
+          <uax:Body>
+            <uax:Argument>
+              <uax:Name>state</uax:Name>
+              <uax:DataType>
+                <uax:Identifier>i=1</uax:Identifier>
+              </uax:DataType>
+              <uax:ValueRank>-1</uax:ValueRank>
+              <uax:ArrayDimensions />
+              <uax:Description>
+                <uax:Encoding>2</uax:Encoding>
+                <uax:Locale />
+                <uax:Text>0: Indicator ist off; 1: Indicator is active</uax:Text>
+              </uax:Description>
+            </uax:Argument>
+          </uax:Body>
+        </uax:ExtensionObject>
+      </uax:ListOfExtensionObject>
+    </Value>
+  </UAVariable>
+  <UAObject BrowseName="1:StartLed" NodeId="ns=1;i=5003" ParentNodeId="i=85">
+    <DisplayName>StartLed</DisplayName>
+    <Description>IndicatorType</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="Organizes">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">ns=1;i=2005</Reference>
+      <Reference ReferenceType="HasProperty">ns=1;i=2012</Reference>
+      <Reference ReferenceType="HasComponent">ns=1;i=2013</Reference>
+      <Reference ReferenceType="HasComponent">ns=1;i=2014</Reference>
+      <Reference ReferenceType="HasComponent">ns=1;i=2016</Reference>
+    </References>
+  </UAObject>
+  <UAVariable BrowseName="1:OutputPin" DataType="String" NodeId="ns=1;i=2012" ParentNodeId="ns=1;i=5003">
+    <DisplayName>OutputPin</DisplayName>
+    <Description>OutputPin</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasProperty">ns=1;i=5003</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
+    </References>
+    <Value>
+      <uax:String>O_1</uax:String>
+    </Value>
+  </UAVariable>
+  <UAVariable AccessLevel="3" BrowseName="1:State" DataType="Boolean" NodeId="ns=1;i=2013" ParentNodeId="ns=1;i=5003" UserAccessLevel="3">
+    <DisplayName>State</DisplayName>
+    <Description>State</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">ns=1;i=5003</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Boolean>false</uax:Boolean>
+    </Value>
+  </UAVariable>
+  <UAMethod BrowseName="1:setIndicatorState" NodeId="ns=1;i=2014" ParentNodeId="ns=1;i=5003">
+    <DisplayName>setIndicatorState</DisplayName>
+    <Description>setIndicatorState</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">ns=1;i=5003</Reference>
+      <Reference ReferenceType="HasProperty">ns=1;i=2015</Reference>
+    </References>
+  </UAMethod>
+  <UAVariable ArrayDimensions="1" BrowseName="0:InputArguments" DataType="Argument" NodeId="ns=1;i=2015" ParentNodeId="ns=1;i=2014" ValueRank="0">
+    <DisplayName>InputArguments</DisplayName>
+    <Description>InputArguments</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasProperty">ns=1;i=2014</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
+    </References>
+    <Value>
+      <uax:ListOfExtensionObject>
+        <uax:ExtensionObject>
+          <uax:TypeId>
+            <uax:Identifier>i=296</uax:Identifier>
+          </uax:TypeId>
+          <uax:Body>
+            <uax:Argument>
+              <uax:Name>state</uax:Name>
+              <uax:DataType>
+                <uax:Identifier>i=1</uax:Identifier>
+              </uax:DataType>
+              <uax:ValueRank>-1</uax:ValueRank>
+              <uax:ArrayDimensions />
+              <uax:Description>
+                <uax:Encoding>2</uax:Encoding>
+                <uax:Locale />
+                <uax:Text>0: Indicator is off; 1: Indicator is active</uax:Text>
+              </uax:Description>
+            </uax:Argument>
+          </uax:Body>
+        </uax:ExtensionObject>
+      </uax:ListOfExtensionObject>
+    </Value>
+  </UAVariable>
+  <UAMethod BrowseName="1:getIndicatorState" NodeId="ns=1;i=2016" ParentNodeId="ns=1;i=5003">
+    <DisplayName>getIndicatorState</DisplayName>
+    <Description>getIndicatorState</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">ns=1;i=5003</Reference>
+      <Reference ReferenceType="HasProperty">ns=1;i=2017</Reference>
+    </References>
+  </UAMethod>
+  <UAVariable BrowseName="0:OutputArguments" DataType="Argument" NodeId="ns=1;i=2017" ParentNodeId="ns=1;i=2016" ValueRank="0">
+    <DisplayName>OutputArguments</DisplayName>
+    <Description>OutputArguments</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasProperty">ns=1;i=2016</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
+    </References>
+    <Value>
+      <uax:ListOfExtensionObject>
+        <uax:ExtensionObject>
+          <uax:TypeId>
+            <uax:Identifier>i=296</uax:Identifier>
+          </uax:TypeId>
+          <uax:Body>
+            <uax:Argument>
+              <uax:Name>state</uax:Name>
+              <uax:DataType>
+                <uax:Identifier>i=1</uax:Identifier>
+              </uax:DataType>
+              <uax:ValueRank>-1</uax:ValueRank>
+              <uax:ArrayDimensions />
+              <uax:Description>
+                <uax:Encoding>2</uax:Encoding>
+                <uax:Locale />
+                <uax:Text>0: Indicator ist off; 1: Indicator is active</uax:Text>
+              </uax:Description>
+            </uax:Argument>
+          </uax:Body>
+        </uax:ExtensionObject>
+      </uax:ListOfExtensionObject>
+    </Value>
+  </UAVariable>
+</UANodeSet>

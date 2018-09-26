@@ -1,0 +1,19 @@
+# opcua.service
+# Copyright 2018 Lukas Friedrichsen, Philipp Stenkamp
+# License: Apache License Version 2.0
+#
+# 2018-05-09
+
+[Unit]
+Description=Simple OPC UA-server that acts as an interface between the MPS (Modular Production System) from Festo Didactic and AWS Greengrass
+After=network.target ssh.service
+
+[Service]
+Type=simple
+Environment="CERT_PATH=/usr/local/src/OPC_UA/opcua/certs"
+ExecStart=/bin/bash -c "opcua ${CERT_PATH}/server/certificate.pem.crt ${CERT_PATH}/server/private.pem.key $(if [ -f ${CERT_PATH}/trustlist/*.crt ]; then echo ${CERT_PATH}/trustlist/*.crt; fi)"
+KillSignal=SIGTERM
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
