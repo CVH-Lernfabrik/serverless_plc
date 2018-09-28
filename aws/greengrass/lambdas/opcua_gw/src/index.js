@@ -123,7 +123,7 @@ exports.handler = (event, context) => {
     for (var path in paths) {
         var value = paths[path];
 
-        LOGGER.LOG('Setting', thingName + '.' + path, 'to', value + '...');
+        LOGGER.LOG('Invoking', thingName + '.' + path, 'with argument', value + '...');
 
         // Forward the event to the OPC UA gateway process to initiate the
         // write operation

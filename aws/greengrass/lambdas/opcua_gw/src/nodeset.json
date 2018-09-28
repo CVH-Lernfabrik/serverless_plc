@@ -3,12 +3,23 @@
         "thingName": "mps_conveyor",
         "topic": "$aws/things/mps_conveyor/shadow/update",
         "UANodes": {
-            "lightBarrier_infeed": {
-                "nodeId": "ns=1;i=2007",
+            "lightBarrier_entry": {
+                "nodeId": "ns=1;i=XXX",
                 "UANodeClass": "Object",
                 "components": {
                     "state": {
-                        "nodeId": "ns=1;i=2011",
+                        "nodeId": "ns=1;i=2116",
+                        "UANodeClass": "Variable",
+                        "UADataType": "Boolean"
+                    }
+                }
+            },
+            "lightBarrier_exit": {
+                "nodeId": "ns=1;i=XXX",
+                "UANodeClass": "Object",
+                "components": {
+                    "state": {
+                        "nodeId": "ns=1;i=2061",
                         "UANodeClass": "Variable",
                         "UADataType": "Boolean"
                     }
@@ -20,32 +31,108 @@
         "thingName": "mps_hmi",
         "topic": "$aws/things/mps_hmi/shadow/update",
         "UANodes": {
-            "led_start": {
-                "nodeId": "ns=1;i=2301",
+            "actuator_start": {
+                "nodeId": "ns=1;i=2037",
                 "UANodeClass": "Object",
                 "components": {
                     "indicator": {
-                        "nodeId": "ns=1;i=2304",
+                        "nodeId": "ns=1;i=2118",
                         "UANodeClass": "Object",
                         "components": {
                             "state": {
-                                "nodeId": "ns=1;i=2310",
+                                "nodeId": "ns=1;i=2122",
                                 "UANodeClass": "Variable",
                                 "UADataType": "Boolean"
                             },
                             "getState": {
-                                "nodeId": "ns=1;i=2305",
+                                "nodeId": "ns=1;i=2120",
                                 "UANodeClass": "Method",
                                 "inputArguments": []
                             },
                             "setState": {
-                                "nodeId": "ns=1;i=2308",
+                                "nodeId": "ns=1;i=2123",
                                 "UANodeClass": "Method",
                                 "inputArguments": [
                                     "Boolean"
                                 ]
                             }
                         }
+                    },
+                    "state": {
+                        "nodeId": "ns=1;i=2041",
+                        "UANodeClass": "Variable",
+                        "UADataType": "Boolean"
+                    },
+                    "getState": {
+                        "nodeId": "ns=1;i=2039",
+                        "UANodeClass": "Method",
+                        "inputArguments": []
+                    }
+                }
+            },
+            "actuator_reset": {
+                "nodeId": "ns=1;i=XXX",
+                "UANodeClass": "Object",
+                "components": {
+                    "indicator": {
+                        "nodeId": "ns=1;i=XXX",
+                        "UANodeClass": "Object",
+                        "components": {
+                            "state": {
+                                "nodeId": "ns=1;i=2185",
+                                "UANodeClass": "Variable",
+                                "UADataType": "Boolean"
+                            },
+                        }
+                    },
+                    "state": {
+                        "nodeId": "ns=1;i=2106",
+                        "UANodeClass": "Variable",
+                        "UADataType": "Boolean"
+                    }
+                }
+            },
+            "actuator_stop": {
+                "nodeId": "ns=1;i=XXX",
+                "UANodeClass": "Object",
+                "components": {
+                    "state": {
+                        "nodeId": "ns=1;i=2086",
+                        "UANodeClass": "Variable",
+                        "UADataType": "Boolean"
+                    }
+                }
+            },
+            "switch_opMode": {
+                "nodeId": "ns=1;i=XXX",
+                "UANodeClass": "Object",
+                "components": {
+                    "state": {
+                        "nodeId": "ns=1;i=2096",
+                        "UANodeClass": "Variable",
+                        "UADataType": "Boolean"
+                    }
+                }
+            },
+            "indicator_Q1": {
+                "nodeId": "ns=1;i=XXX",
+                "UANodeClass": "Object",
+                "components": {
+                    "state": {
+                        "nodeId": "ns=1;i=2199",
+                        "UANodeClass": "Variable",
+                        "UADataType": "Boolean"
+                    }
+                }
+            },
+            "indicator_Q2": {
+                "nodeId": "ns=1;i=XXX",
+                "UANodeClass": "Object",
+                "components": {
+                    "state": {
+                        "nodeId": "ns=1;i=2213",
+                        "UANodeClass": "Variable",
+                        "UADataType": "Boolean"
                     }
                 }
             }
@@ -56,22 +143,22 @@
         "topic": "$aws/things/mps_magazine/shadow/update",
         "UANodes": {
             "ejector": {
-                "nodeId": "ns=1;i=2235",
+                "nodeId": "ns=1;i=XXX",
                 "UANodeClass": "Object",
                 "components": {
                     "position": {
-                        "nodeId": "ns=1;i=2240",
+                        "nodeId": "ns=1;i=2056",
                         "UANodeClass": "Variable",
                         "UADataType": "Boolean"
                     }
                 }
             },
             "lightBarrier_magazineEmpty": {
-                "nodeId": "ns=1;i=2230",
+                "nodeId": "ns=1;i=XXX",
                 "UANodeClass": "Object",
                 "components": {
                     "state": {
-                        "nodeId": "ns=1;i=2234",
+                        "nodeId": "ns=1;i=2066",
                         "UANodeClass": "Variable",
                         "UADataType": "Boolean"
                     }

@@ -8,7 +8,14 @@
     {
         "thingName": "mps_hmi",
         "subscriptions": [
-            "led_start.components.indicator.components.state"
+            "actuator_start.components.indicator.components.state",
+            "actuator_start.components.state",
+            "actuator_stop.components.state",
+            "actuator_reset.components.indicator.components.state",
+            "actuator_reset.components.state",
+            "switch_opMode.components.state",
+            "indicator_Q1.components.state",
+            "indicator_Q2.components.state"
         ]
     },
     {
