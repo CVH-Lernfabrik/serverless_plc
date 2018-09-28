@@ -1,0 +1,13 @@
+# Ignore server certificates and keys for security reasons
+*.pem.crt
+*.cert.pem
+*.key
+
+# Ignore binaries
+**/build
+
+# Ignore Terraform artifacts
+**/terraform.tfvars
+**/terraform.tfstate
+**/terraform.tfstate.backup
+**/.terraform
