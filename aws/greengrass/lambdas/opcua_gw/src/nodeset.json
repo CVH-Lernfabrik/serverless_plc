@@ -3,6 +3,73 @@
         "thingName": "mps_conveyor",
         "topic": "$aws/things/mps_conveyor/shadow/update",
         "UANodes": {
+            "emergency_stop": {
+                "nodeId": "ns=1;i=XXX",
+                "UANodeClass": "Object",
+                "components": {
+                    "state": {
+                        "nodeId": "ns=1;i=2071",
+                        "UANodeClass": "Variable",
+                        "UADataType": "Boolean"
+                    }
+                }
+            },
+            "motor": {
+                "nodeId": "ns=1;i=XXX",
+                "UANodeClass": "Object",
+                "components": {
+                    "direction": {
+                        "nodeId": "ns=1;i=XXX",
+                        "UANodeClass": "Object",
+                        "components": {
+                            "left": {
+                                "nodeId": "ns=1;i=XXX",
+                                "UANodeClass": "Object",
+                                "components": {
+                                    "state": {
+                                        "nodeId": "ns=1;i=2136",
+                                        "UANodeClass": "Variable",
+                                        "UADataType": "Boolean"
+                                    }
+                                }
+                            },
+                            "right": {
+                                "nodeId": "ns=1;i=XXX",
+                                "UANodeClass": "Object",
+                                "components": {
+                                    "state": {
+                                        "nodeId": "ns=1;i=2227",
+                                        "UANodeClass": "Variable",
+                                        "UADataType": "Boolean"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "slow": {
+                        "nodeId": "ns=1;i=XXX",
+                        "UANodeClass": "Object",
+                        "components": {
+                            "state": {
+                                "nodeId": "ns=1;i=2150",
+                                "UANodeClass": "Variable",
+                                "UADataType": "Boolean"
+                            }
+                        }
+                    },
+                    "stop": {
+                        "nodeId": "ns=1;i=XXX",
+                        "UANodeClass": "Object",
+                        "components": {
+                            "state": {
+                                "nodeId": "ns=1;i=2164",
+                                "UANodeClass": "Variable",
+                                "UADataType": "Boolean"
+                            }
+                        }
+                    }
+                }
+            },
             "lightBarrier_entry": {
                 "nodeId": "ns=1;i=XXX",
                 "UANodeClass": "Object",
@@ -82,7 +149,7 @@
                                 "nodeId": "ns=1;i=2185",
                                 "UANodeClass": "Variable",
                                 "UADataType": "Boolean"
-                            },
+                            }
                         }
                     },
                     "state": {
@@ -147,9 +214,54 @@
                 "UANodeClass": "Object",
                 "components": {
                     "position": {
-                        "nodeId": "ns=1;i=2056",
-                        "UANodeClass": "Variable",
-                        "UADataType": "Boolean"
+                        "nodeId": "ns=1;i=XXX",
+                        "UANodeClass": "Object",
+                        "components": {
+                            "retracted": {
+                                "nodeId": "ns=1;i=XXX",
+                                "UANodeClass": "Object",
+                                "components": {
+                                    "state": {
+                                        "nodeId": "ns=1;i=2046",
+                                        "UANodeClass": "Variable",
+                                        "UADataType": "Boolean"
+                                    }
+                                }
+                            },
+                            "extended": {
+                                "nodeId": "ns=1;i=XXX",
+                                "UANodeClass": "Object",
+                                "components": {
+                                    "state": {
+                                        "nodeId": "ns=1;i=2056",
+                                        "UANodeClass": "Variable",
+                                        "UADataType": "Boolean"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "retract": {
+                        "nodeId": "ns=1;i=XXX",
+                        "UANodeClass": "Object",
+                        "components": {
+                            "state": {
+                                "nodeId": "ns=1;i=2143",
+                                "UANodeClass": "Variable",
+                                "UADataType": "Boolean"
+                            }
+                        }
+                    },
+                    "extend": {
+                        "nodeId": "ns=1;i=XXX",
+                        "UANodeClass": "Object",
+                        "components": {
+                            "state": {
+                                "nodeId": "ns=1;i=2129",
+                                "UANodeClass": "Variable",
+                                "UADataType": "Boolean"
+                            }
+                        }
                     }
                 }
             },
@@ -159,6 +271,90 @@
                 "components": {
                     "state": {
                         "nodeId": "ns=1;i=2066",
+                        "UANodeClass": "Variable",
+                        "UADataType": "Boolean"
+                    }
+                }
+            }
+        }
+    },
+    {
+        "thingName": "mps_ejector",
+        "topic": "$aws/things/mps_ejector/shadow/update",
+        "UANodes": {
+            "ejector": {
+                "nodeId": "ns=1;i=XXX",
+                "UANodeClass": "Object",
+                "components": {
+                    "position": {
+                        "nodeId": "ns=1;i=XXX",
+                        "UANodeClass": "Object",
+                        "components": {
+                            "retracted": {
+                                "nodeId": "ns=1;i=XXX",
+                                "UANodeClass": "Object",
+                                "components": {
+                                    "state": {
+                                        "nodeId": "ns=1;i=2081",
+                                        "UANodeClass": "Variable",
+                                        "UADataType": "Boolean"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "retract": {
+                        "nodeId": "ns=1;i=XXX",
+                        "UANodeClass": "Object",
+                        "components": {
+                            "state": {
+                                "nodeId": "ns=1;i=2192",
+                                "UANodeClass": "Variable",
+                                "UADataType": "Boolean"
+                            }
+                        }
+                    },
+                    "extend": {
+                        "nodeId": "ns=1;i=XXX",
+                        "UANodeClass": "Object",
+                        "components": {
+                            "state": {
+                                "nodeId": "ns=1;i=2178",
+                                "UANodeClass": "Variable",
+                                "UADataType": "Boolean"
+                            }
+                        }
+                    }
+                }
+            },
+            "sensor_inductive": {
+                "nodeId": "ns=1;i=XXX",
+                "UANodeClass": "Object",
+                "components": {
+                    "state": {
+                        "nodeId": "ns=1;i=2091",
+                        "UANodeClass": "Variable",
+                        "UADataType": "Boolean"
+                    }
+                }
+            },
+            "lightBarrier_occupancyState": {
+                "nodeId": "ns=1;i=XXX",
+                "UANodeClass": "Object",
+                "components": {
+                    "state": {
+                        "nodeId": "ns=1;i=2111",
+                        "UANodeClass": "Variable",
+                        "UADataType": "Boolean"
+                    }
+                }
+            },
+            "lightBarrier_slideFull": {
+                "nodeId": "ns=1;i=XXX",
+                "UANodeClass": "Object",
+                "components": {
+                    "state": {
+                        "nodeId": "ns=1;i=2101",
                         "UANodeClass": "Variable",
                         "UADataType": "Boolean"
                     }

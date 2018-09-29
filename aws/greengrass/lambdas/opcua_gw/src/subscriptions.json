@@ -2,7 +2,13 @@
     {
         "thingName": "mps_conveyor",
         "subscriptions": [
-            "lightBarrier_infeed.components.state"
+            "emergency_stop.components.state",
+            "motor.components.direction.components.left.components.state",
+            "motor.components.direction.components.right.components.state",
+            "motor.components.slow.components.state",
+            "motor.components.stop.components.state",
+            "lightBarrier_entry.components.state",
+            "lightBarrier_exit.components.state"
         ]
     },
     {
@@ -21,8 +27,22 @@
     {
         "thingName": "mps_magazine",
         "subscriptions": [
-            "ejector.components.position",
+            "ejector.components.position.components.retracted.components.state",
+            "ejector.components.position.components.extended.components.state",
+            "ejector.components.retract.components.state",
+            "ejector.components.extend.components.state",
             "lightBarrier_magazineEmpty.components.state"
+        ]
+    },
+    {
+        "thingName": "mps_ejector",
+        "subscriptions": [
+            "ejector.components.position.components.retracted.components.state",
+            "ejector.components.retract.components.state",
+            "ejector.components.extend.components.state",
+            "sensor_inductive.components.state",
+            "lightBarrier_occupancyState.components.state",
+            "lightBarrier_slideFull.components.state"
         ]
     }
 ]

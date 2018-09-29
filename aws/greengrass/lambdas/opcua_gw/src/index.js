@@ -118,7 +118,7 @@ exports.handler = (event, context) => {
     // Resolve the thing name and the payload
     const thingName = subject.split('/')[2];
     const payload   = subject.indexOf('$aws/things/') == 0 ? event.state : event;
-    const paths     = JSON.objectToPath(payload);
+    const paths     = subject.indexOf('$aws/things/') == 0 ? JSON.objectToPath(payload) : payload;
 
     for (var path in paths) {
         var value = paths[path];

@@ -444,7 +444,7 @@ class OPCUAGateway {
             var inputArguments  = [];
             node.inputArguments.forEach( (inputArgument) => {
                 inputArguments = inputArguments.concat({
-                    'dataType': opcua.DataType.get(inputArgument.UADataType),
+                    'dataType': opcua.DataType.get(inputArgument),
                     'value': value[node.inputArguments.indexOf(inputArgument)]
                 });
             });
