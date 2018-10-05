@@ -1,0 +1,51 @@
+\thispagestyle{empty}
+
+\begin{minipage}{0.55\textwidth}
+\institutname{}
+%  Institut für Mechatronik\\
+%  und Fahrzeugtechnik
+\end{minipage}\hfill
+%\includegraphics[height=2cm]{bilder/bologo} % Pixelgrafik-Version
+\begin{picture}(0,0)(0,1.37) % Vektorgrafik-Version
+  \put(-2.7,0.0){\includegraphics[scale=1.06]{layout/logo-hochschule-bochum-bo.pdf}}
+  \put(-6.2,0.87){\includegraphics[scale=0.545]{layout/logo-hochschule-bochum-text.pdf}}
+  \put(-6.2,-0.07){\includegraphics[scale=0.635]{layout/logo-hochschule-bochum-cvh-text.pdf}}
+\end{picture}%
+
+
+% freier Platz: 1/3 oben
+\vfill
+
+\begin{center}
+  % Die äußeren geschweiften Klammern begrenzen die Wirkung von \Huge.
+  % Das \par am Ende ist notwendig, damit zum einen der Zeilenabstand
+  % des \Huge-Textes angepaßt wird; zum anderen arbeitet \bigskip nicht
+  % innerhalb von Textabsätzen, sondern außerhalb.
+  {\huge\textbf{\thetitle}\par}
+  \bigskip\bigskip
+  ~von\par
+  \bigskip\bigskip
+  \begin{tabular}{ c c c }
+    {\Large\textbf{\firstAuthor}} & und & {\Large\textbf{\secondAuthor}} \\
+    Matrikelnummer:~\firstStudentnumber & & Matrikelnummer:~\secondStudentnumber \\
+  \end{tabular}\par
+  \bigskip\bigskip\bigskip
+  \dokumentname{}\\
+  %\smallskip
+  %\companyname\\
+  %\smallskip
+  \discipline\\
+% zur Erlangung des akademischen Grades\\
+% \abschluss{}
+\end{center}
+
+% freier Platz: 2/3 unten
+\vfill
+
+\begin{tabular}{ll}
+  \textbf{Eingereicht am:} & \printdate{\finaldate}\\
+  \\
+  \textbf{1.~Prüfer:} & Prof.\,Dr.\,rer.\,nat.~Peter~Gerwinski \\
+  % \textbf{2.~Prüfer:} & Prof.\,Dr.\,Ing.~Markus Lemmen
+  % \textbf{Prüfer:} & Prof.\,Dr.\,rer.\,nat.~Jörg Frochte
+\end{tabular}

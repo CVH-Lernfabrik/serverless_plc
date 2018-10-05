@@ -1,0 +1,131 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{layout/BOmodern}[2016/11/02 BOmodern Design Package - Philipp Stenkamp]
+
+%% Page layout and dimensions
+\RequirePackage[a4paper,top=32mm,bottom=3cm,left=3cm,right=3cm,marginparwidth=1.75cm,headheight=12mm,footskip=12mm]{geometry}
+%% Language and font encodings
+\RequirePackage[rm, sfdefault]{roboto} 
+\RequirePackage[T1]{fontenc}
+
+%% Packages
+\RequirePackage{hyperref}
+\RequirePackage{fancyhdr}
+\RequirePackage{xcolor}
+\RequirePackage[explicit]{titlesec} %customize chapters and sections
+\RequirePackage[absolute]{textpos}
+
+%% Copy author and title to use them in the header and footer
+\makeatletter
+\let\runauthor\@author
+\let\runtitle\@title
+\makeatother
+
+%% Defines the colors used for the design elements
+\definecolor{pagenum}{rgb}{1,0.75,0}
+\definecolor{BO}{RGB}{227,27,0}
+
+%% Redefining pagestyle, headers and footers
+\pagestyle{empty}
+\pagestyle{fancy}
+\fancypagestyle{plain}{} % makes headers and footers appear also on pages containing chapter headlines
+
+\renewcommand{\familydefault}{\rmdefault}
+
+\fancyhead{} % clear all header fields
+
+\fancyhead[RO]{\fontfamily{\sfdefault}\mdseries\textbf{\runcourse}\\\runcategory}
+\fancyhead[LE]{\includegraphics[height=10mm]{layout/logo-hochschule-bochum-text.pdf}\hspace{3mm}\includegraphics[height=10mm]{layout/logo-hochschule-bochum-bo.pdf}}
+
+\fancyfoot{} % clear all footer fields
+\fancyfoot[LO]{\parbox{\textwidth}{\fontfamily{\sfdefault}\mdseries\MakeUppercase{\runtitle}}}
+\fancyfoot[RE]{\parbox{\textwidth}{\fontfamily{\sfdefault}\mdseries\MakeUppercase{\runauthor}}}
+
+\fancyfoot[LE,RO]{\colorbox{pagenum}{\color{white}\parbox[c][10mm-4\fboxsep][c]{10mm-4\fboxsep}{\fontfamily{\sfdefault}\centering\bf\thepage}}} % page number in orange square
+\fancyfootoffset[LE,RO]{12mm} % offsets the page number 12 mm to the side
+
+\renewcommand{\headrulewidth}{0pt} % removes the seperating line between header and page
+\renewcommand{\footrulewidth}{0pt} % removes the seperating line between footer and page
+
+% Redefinition of ToC heading (Workaround, would be cleaner to change the formatting of the \contentsname, not its value
+\addto\captionsgerman{
+  \renewcommand{\contentsname}%
+    {INHALTSVERZEICHNIS}%
+}
+
+% Redefinition of LoF heading; anaolog to the redefinition of the ToC-heading
+\addto\captionsgerman{
+  \renewcommand{\listfigurename}%
+    {ABBILDUNGSVERZEICHNIS}%
+}
+
+% Redefinition of LoL heading; anaolog to the redefinition of the ToC-heading
+\addto\captionsgerman{
+  \renewcommand{\lstlistlistingname}%
+    {LISTINGS}%
+}
+
+%% Custom chapters and sections
+\newlength\widestnum
+\setlength\widestnum{1.5em}
+
+\titleformat{\chapter}[hang]
+  {\fontfamily{\sfdefault}\fontseries{m}\color{white}\fontsize{12}{12}\uppercase}
+  {}
+  {0em}
+  {%
+    \makebox[\linewidth]{%
+      \colorbox{BO}{%
+        \parbox{\textwidth+2\fboxsep}{%
+        \ifnum\thechapter=0
+          \hspace{\fboxsep}%
+          \parbox[t]{\dimexpr\textwidth-\widestnum\relax}{\strut#1\strut}%
+        \else
+          \hspace{\fboxsep}\parbox[t]{\widestnum}{\strut\thechapter\strut}%
+          \parbox[t]{\dimexpr\textwidth-\widestnum\relax}{\strut#1\strut}%
+        \fi
+        }%
+      }%
+    }%
+  }
+\titlespacing*{\chapter}
+  {0pt}{-12pt}{12pt}
+
+\titleformat{\section}
+  {\fontfamily{\sfdefault}\fontseries{m}\fontsize{12}{15}\color{BO}}{\thesection}{1em}{#1} % without #1 the section title disappears, since [explicit]{titlesec} is used
+
+\titleformat{\subsection}
+  {\fontfamily{\sfdefault}\fontseries{m}\color{BO}}{\thesubsection}{1em}{#1}
+
+%% Custom titlepage (redefines \maketitle, might not be up to LaTeX standards!)
+\renewcommand{\maketitle}{
+\begin{titlepage}
+\vspace*{-20mm}
+\includegraphics[height=15mm]{layout/logo-hochschule-bochum-text.pdf}\hspace{3mm}\includegraphics[height=15mm]{layout/logo-hochschule-bochum-bo.pdf}
+\vspace*{-21mm} % crude way to vertically align the text with the logo, alternatives using tabu and tabularx did not work as desired
+\begin{flushright}
+\LARGE
+\MakeUppercase\today\\
+\vfill	% stretches the vertical space between date and title to the maximum
+\huge
+\fontseries{l}
+\MakeUppercase\runtitle
+\LARGE
+\vskip\baselineskip
+\MakeUppercase\runcategory
+\normalsize
+\fontseries{\seriesdefault}
+\vskip3\baselineskip
+HOCHSCHULE BOCHUM\\
+Campus Velbert/Heiligenhaus\\
+Höseler Platz 2\\
+42579 Heiligenhaus
+\end{flushright}
+
+\begin{textblock*}{5mm}(\paperwidth-25mm,15mm)
+{\color{BO}\rule{5mm}{\paperheight-40mm}}
+\end{textblock*}
+\begin{textblock*}{5mm}(\paperwidth-25mm,\paperheight-20mm)
+{\color{pagenum}\rule{5mm}{5mm}}
+\end{textblock*}
+\end{titlepage}
+}
