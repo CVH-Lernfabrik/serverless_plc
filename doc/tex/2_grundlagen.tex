@@ -1,0 +1,251 @@
+% % Imports nur für Referenzenauflösung während des Schreibens! Vorm Kompilieren auskommentieren!
+% \bibliography{0_hauptdatei}
+% \input{1_einleitung}
+% \input{2_grundlagen}
+% \input{3_konzeption}
+% \input{4_implementierung}
+% \input{5_tests}
+% \input{6_zusammenfassung}
+% % Ende Imports
+
+\section{Grundlagen%
+  \label{sec:2-grundlagen}}
+
+\subsection{Speicherprogrammierbare-Steuerung und Linux -- Revolution Pi%
+     \label{sec:2-sps}}
+
+\subsubsection{Kunbus RevolutionPi%
+        \label{sec:2-revpi}}
+Der RevolutionPi 3 ist eine speicherprogrammierbare Steuerung (SPS) des Herstellers
+Kunbus GmbH. Kern dieser SPS ist das von der Raspberry Pi Foundation entwickelte
+und vertriebene Raspberry Pi Compute Module 3. Dieses integriert ein Broadcom BCM2837
+System-on-Chip (SoC) mit vier 1,2GHz Prozessorkernen, 1GB RAM, 4GB eMMC Anwendungsspeicher
+und sonstige Peripherie in ein Modul im DDR2-SODIMM Formfaktor. Diese Spezifikationen
+sind weitgehend identisch zu denen des ausgesprochen populären Raspberry Pi 3.
+Der Revolution Pi profitiert daher von dem gleichen großen Angebot an Software
+und Unterstützung wie der Raspberry Pi, ergänzt dessen Hardware jedoch um eine 24V
+Spannungsversorgung, die Möglichkeit der Erweiterung durch mehrere industrietaugliche
+Ein-/ Ausgabemodule und Gateways sowie ein Gehäuse zur Montage auf einer DIN-Schiene.
+\begin{itemize}
+  \item{Prozessor: BCM2837}
+  \item{Taktfrequenz 1,2 GHz}
+  \item{Anzahl Prozessorkerne: 4}
+  \item{Arbeitsspeicher: 1 GByte}
+  \item{eMMC Flash Speicher: 4 GByte}
+  \item{Betriebssystem: Angepasstes Raspbian mit RT-Patch}
+  \item{RTC mit 24h Pufferung über wartungsfreien Kondensator}
+  \item{Treiber / API: Treiber schreibt zyklisch Prozessdaten in ein Prozessabbild, Zugriff auf Prozessabbild über Linux-Filesystem als API zu Fremdsoftware.}
+  \item{Kommunikationsanschlüsse: 2 x USB 2.0 A (je 500 mA belastbar), 1 x Micro-USB, HDMI, Ethernet (RJ45) 10/100 Mbit/s}
+  \item{Stromversorgung: min. 10,7 V, max. 28,8 V, maximal 10 Watt}
+  \item{Zulässige Umgebungstemperatur: -40 bis +55 C}
+  \item{Gehäuseabmessungen: (HxBxL) 96 mm x 22,5 mm x 110,5 mm (ohne gesteckte Stecker)}
+  \item{ESD Schutz: 4 kV / 8 kV gemäß EN61131-2 und IEC 61000-6-2}
+  \item{Surge / Burst Prüfungen: gemäß EN61131-2 und IEC 61000-6-2 eingekoppelt auf Versorgungsspannung, Ethernet und IO-Leitungen}
+  \item{EMI Prüfungen: gemäß EN61131-2 und IEC 61000-6-2}
+\end{itemize}
+
+Kunbus bietet eine Auswahl an IO- und Gateway-Modulen zur Erweiterung des Revolution Pi an.
+Gateways dienen der Kommunikation mit Systemen oder Komponenten der Automatisierungstechnik
+über Protokolle wie PROFIBUS oder EtherCAT. IO-Module erlauben die Überwachung
+und Steuerung von digitalen oder analogen Ein- und Ausgängen.
+
+\subsubsection{Zugriff auf IO-Module%
+        \label{sec:2-io}}
+Der Zugriff auf die Ein- und Ausgänge der IO-Module erfolgt über ein Prozessabbild
+und einen hierfür von Kunbus bereitgestellten Treiber, genannt piControl. Dieser
+aktualisiert das Prozessabbild zyklisch. Die angestrebte Zykluszeit beträgt 5ms,
+kann jedoch je nach Anzahl der angeschlossenen Module auch größer sein. Kunbus
+garantiert bei drei IO-Modulen und zwei Gateway-Modulen eine Zykluszeit von 10 ms.
+Jedes der IO-Module stellt ein eigenständiges eingebettetes System dar. Es verfügt
+über einen Microcontroller, welcher die IOs bereitstellt und über einen RS485-Bus
+mit dem Revolution Pi kommuniziert.
+% https://revolution.kunbus.de/io-modul/
+
+Lizenz: GPL
+% https://github.com/RevolutionPi/piControl
+
+\begin{lstlisting}[language={c},firstnumber={226},caption={Setzen der Scheduler-Priorität auf SCHED\_FIFO in revpi\_common.c\label{lst:2-sched_priority}}]
+param.sched_priority = ktprio->prio;
+ret = sched_setscheduler(child, SCHED_FIFO,
+       &param);
+\end{lstlisting}
+
+
+\subsection{Echtzeit und Multithreading unter Linux -- preemptRT und posix%
+     \label{sec:2-echtzeit}}
+
+
+ Der Linux-Kernel verfügt über mehrere unterschiedliche Preemtion-Modelle:
+
+\begin{itemize}
+  \item No Forced Preemption (server):
+  Ausgelegt auf maximal möglichen Durchsatz, lediglich Interrupts und
+  System-Call-Returns bewirken Präemption.
+
+  \item Voluntary Kernel Preemption (Desktop):
+  Neben den implizit bevorrechtigten Interrupts und System-Call-Returns gibt es
+  in diesem Modell weitere Abschnitte des Kernels in welchen Preämption explizit
+  gestattet ist.
+
+  \item Preemptible Kernel (Low-Latency Desktop):
+  In diesem Modell ist der gesamte Kernel, mit Ausnahme sog.~kritischer Abschnitte
+  präemptible. Nach jedem kritischen Abschnitt gibt es einen impliziten Präemptions-Punkt.
+
+  \item Preemptible Kernel (Basic RT):
+  Dieses Modell ist dem zuvor genannten sehr ähnlich, hier sind jedoch alle Interrupt-Handler
+  als eigenständige Threads ausgeführt.
+
+  \item Fully Preemptible Kernel (RT):
+  Wie auch bei den beiden zuvor genannten Modellen ist hier der gesamte Kernel
+  präemtible, die Anzahl und Dauer der nicht-präemtiblen kritischen Abschnitte
+  ist auf ein notwendiges Minimum beschränkt. Alle Interrupt-Handler sind als
+  eigenständige Threads ausgeführt, Spinlocks durch Sleeping-Spinlocks und Mutexe
+  durch sog.~RT-Mutexe ersetzt.
+
+\end{itemize}
+\todo{Spinlocks und Mutexe sowie die RT-Varianten dieser erklären!}
+
+Lediglich mit dem vollständig präemtiblen Kernel kann Echtzeit-Verhalten realisiert werden.
+
+% https://wiki.linuxfoundation.org/realtime/documentation/technical_basics/preemption_models bzw kernel/Kconfig.preempt
+
+\subsubsection{preemptRT%
+        \label{sec:2-preemptRT}}
+% https://wiki.linuxfoundation.org/realtime/documentation/technical_details/start
+% https://wiki.linuxfoundation.org/realtime/documentation/technical_basics/start
+
+Das dem PREEMPT RT Kernel zugrunde liegende Prinzip lässt sich in einer einfachen
+Regel ausdrücken: Nur Code, welcher absolut nicht-präemtible sein darf, ist es
+gestattet nicht-präemtible zu sein.
+Das erklärte Ziel des PREEMPT\_RT Patches ist es folglich, die Menge des nicht-präemtiblen
+Codes im Linux-Kernel auf das absolut notwendige Minimum zu reduzieren.
+
+Dies wird durch Verwendung folgender Mechanismen erreicht:
+
+\begin{itemize}
+  \item Hochauflösende Timer
+  \item Sleeping Spinlocks
+  \item Threaded Interrupt Handlers
+  \item rt\_mutex
+  \item RCU
+\end{itemize}
+
+
+\subsubsection{posix%
+        \label{sec:2-posix}}
+Ist posix hier wirklich relevant? Debian bzw.~Raspbian sind weitgehend posix
+kompatibel, aber wird es hier genutzt? -> JA, open62541 nutzt pthread.h
+piControl nutzt kthread.h, und semaphore.h
+
+\subsection{OPC-UA und open62541%
+     \label{sec:2-opc}}
+
+\subsubsection{OPC UA%
+        \label{sec:2-opcua}}
+Open Platform Communications (OPC) ist eine Familie von Standards zur herstellerunabhängigen
+Kommunikation von Maschinen (M2M) in der Automatisierungstechnik. Die sog.~OPC Task Force, zu deren
+Mitgliedern verschiedene große Firmen der Automatisierungsindustrie gehören, veröffentlichte
+die OPC Specification Version 1.0 im August 1996.
+Motiviert ist dieser offene Standard durch die Erkenntniss, dass die Anpassung der
+zahlreichen Herstellerstandards an individuelle Infrastrukturen und Anlagen einen
+großen Mehraufwand verursachen.
+Die Wikipedia beschreibt das Anwendungsgebiet für OPC wie folgt:
+
+\glqq{}OPC wird dort eingesetzt, wo Sensoren, Regler und Steuerungen verschiedener Hersteller
+ein gemeinsames Netzwerk bilden. Ohne OPC benötigten zwei Geräte zum Datenaustausch
+genaue Kenntnis über die Kommunikationsmöglichkeiten des Gegenübers. Erweiterungen
+und Austausch gestalten sich entsprechend schwierig. Mit OPC genügt es, für jedes
+Gerät genau einmal einen OPC-konformen Treiber zu schreiben. Idealerweise wird
+dieser bereits vom Hersteller zur Verfügung gestellt. Ein OPC-Treiber lässt sich
+ohne großen Anpassungsaufwand in beliebig große Steuer- und Überwachungssysteme
+integrieren.
+
+OPC unterteilt sich in verschiedene Unterstandards, die für den jeweiligen Anwendungsfall
+unabhängig voneinander implementiert werden können. OPC lässt sich damit verwenden
+für Echtzeitdaten (Überwachung), Datenarchivierung, Alarm-Meldungen und neuerdings
+auch direkt zur Steuerung (Befehlsübermittlung).\grqq{}
+
+OPC basiert in der ursprünglichen Spezifikation auf Microsofts DCOM-Spezifikation.
+DCOM macht Funktionen und Objekte einer Anwendung anderen Anwendungen im Netzwerk
+zugänglich. Der OPC-Standard definiert entsprechende DCOM-Objekte um mit anderen
+OPC-Anwendungen Daten austauschen zu können. Die Verwendung von DCOM bindet Anwender
+an Betriebssysteme von Microsoft. Die ursprüngliche OPC Spezifikation wird durch die
+Entwicklung von OPC Unified Architecture (OPC UA) abgelöst.
+OPC UA setzt auf einem eigenen Kommunikationionsstack auf, die Verwendung von DCOM
+und damit die Bindung an Microsoft wurden aufgelöst.
+
+Die OPC-UA-Architektur ist eine Service-orientierte Architektur (SOA), deren Struktur
+aus mehreren Schichten besteht.
+
+% Wikipedia
+Das OPC-Informationsmodell ist nicht mehr nur eine Hierarchie aus Ordnern, Items
+und Properties. Es ist ein sogenanntes Full-Mesh-Network aus Nodes, mit dem neben
+den Nutzdaten eines Nodes auch Meta- und Diagnoseinformationen repräsentiert werden.
+Ein Node ähnelt einem Objekt aus der objektorientierten Programmierung. Ein Node
+kann Attribute besitzen, die gelesen werden können (Data Access (DA), Historical
+Data Access (HDA)). Es ist möglich Methoden zu definieren und aufzurufen.
+Eine Methode besitzt Aufrufargumente und Rückgabewerte. Sie wird durch ein Command
+aufgerufen. Weiterhin werden Events unterstützt, die versendet werden können
+(AE (Alarms \& Events), DA DataChange), um bestimmte Informationen zwischen Geräten
+auszutauschen. Ein Event besitzt unter anderem einen Empfangszeitpunkt, eine Nachricht
+und einen Schweregrad. Die o. g. Nodes werden sowohl für die Nutzdaten als auch
+alle anderen Arten von Metadaten verwendet. Der damit modellierte OPC-Adressraum
+beinhaltet nun auch ein Typmodell, mit dem sämtliche Datentypen spezifiziert werden.
+
+% https://de.wikipedia.org/wiki/Open_Platform_Communications
+% https://de.wikipedia.org/wiki/OPC_Unified_Architecture
+% https://opcfoundation.org/developer-tools/specifications-unified-architecture
+% Von Gerhard Gappmeier - ascolab GmbH, CC BY-SA 3.0, https://de.wikipedia.org/w/index.php?curid=1892069
+\subsubsection{open62541%
+        \label{sec:2-open62541}}
+open62541 ist eine offene und freie Implementierung von OPC UA. Die in C geschriebene
+Bibliothek stellt eine beständig zunehmende Anzahl der im OPC UA Standard definierten
+Funktionen bereit. Sie kann sowohl zur Erstellung von OPC-Servern als auch -Clients
+genutzt werden. Ergänzend zu der unter der Mozilla Public License v2.0 lizensierten
+Bibliothek stellt das open62541 Projekt auch Beispielprogramme unter einer CC0 Lizenz
+zur Verfügung.
+
+Die Bibliothek eignet sich auch für die Entwicklung auf eingebetteten Systemen und
+Microcontrollern. Je nach Umfang der gewünschten Funktionen und des OPC Informationsmodells
+beträgt die Größe einer Server-Binary weniger als 100kb. %evtl. kürzen?
+
+\todo{Nodes erklären! Evtl.~oben!}
+
+Folgende Auswahl an Eigenschaften und Funktionen zeichnet die in dieser Arbeit verwendete
+Version 0.3 von open62541 aus:
+\begin{itemize}
+  \item Kommunikationionsstack
+  \begin{itemize}
+      \item OPC UA Binär-Protokoll (HTTP oder SOAP werden gegenwärtig nicht unterstützt)
+      \item Austauschbare Netzwerk-Schicht, welche die Verwendung eigener Netzwerk-APIs
+      erlaubt.
+      \item Verschlüsselte Kommunikationion
+      \item Asynchrone Dienst-Anfragen im Client
+  \end{itemize}
+  \item Informationsmodell
+  \begin{itemize}
+    \item Unterstützung aller OPC UA Node-Typen, inkl.~Methoden
+    \item Hinzufügen und Entfernen von Nodes und Referenzen zur Laufzeit.
+    \item Vererbung und Instanziierung von Objekt- und Variablentypen
+    \item Zugriffskontrolle auch für einzelne Nodes
+  \end{itemize}
+  \item Subscriptions
+  \begin{itemize}
+    \item Erlaubt die Überwachung (subscriptions / monitoreditems)
+    \item Sehr geringer Ressourcenbedarf pro überwachtem Wert
+  \end{itemize}
+  \item Code-Generierung auf XML-Basis
+  \begin{itemize}
+    \item Erlaubt die Erstellung von Datentypen
+    \item Erlaubt die Generierung des serverseitigen Informationsmodells
+  \end{itemize}
+\end{itemize}
+
+% https://open62541.org/doc/0.3/
+
+
+Mozilla Public License
+CC0 Lizenz für Beispiele und Plugins
+
+% https://open62541.org/doc/open62541-current.pdf
+% https://open62541.org/

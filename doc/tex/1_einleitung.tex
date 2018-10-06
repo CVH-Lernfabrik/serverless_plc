@@ -1,0 +1,61 @@
+% Mit \section{...} eröffnen wir einen neuen Abschnitt.
+% Der Befehl setzt nicht nur den Text in einer größeren,
+% fetten Schrift, sondern sorgt außerdem dafür, daß er im
+% Inhaltsverzeichnis erscheint.
+%
+% Mit \label{...} erzeugen wir einen Bezeichner, mit dessen Hilfe
+% wir später auf die Nummer des Abschnitts verweisen können (nämlich
+% mit~\ref{...}).
+%
+% Das Kommentarzeichen hinter „Übersicht“ dient dazu, ein
+% Leerzeichen zwischen „Übersicht“ und dem \label-Befehl
+% zu vermeiden, das andernfalls sichtbar würde – z.B. im
+% Inhaltsverzeichnis.
+%
+
+% % Imports nur für Referenzenauflösung während des Schreibens! Vorm Kompilieren auskommentieren!
+% \bibliography{0_hauptdatei}
+% \input{1_einleitung}
+%\input{2_grundlagen}
+%\input{3_konzeption}
+%\input{4_implementierung}
+%\input{5_tests}
+%\input{6_zusammenfassung}
+% % Ende Imports
+
+\section{Einleitung und Motivation%
+  \label{sec:1-einleitung}}
+Ziel dieses Projektes ist die Integration eines OPC-Servers mit einer auf Linux
+basierenden speicherprogrammierbaren Steuerung (SPS). Angeschlossen an diese SPS
+ist jeweils ein digitales Ein-/\,bzw.~Ausgabemodul. Die von diesen bereitgestellten
+Ein-/\, bzw.~Ausgänge (IO) sollen in der Datenstruktur des OPC-Servers abgebildet
+und über diesen für OPC-Clients les-/\,und schreibar sein. Weiterhin sollen einige
+Funktionen zur Überwachung und Steuerung der an die SPS angeschlossenen Aktoren
+und Sensoren direkt im OPC-Server implementiert werden.
+Hiermit stellt dieses Projekt eine der Grundlagen für ein übergeordnetes Projekt,
+die cloudbasierte Steuerung eines miniaturisierten Produktions-Systems, dar.
+
+Der hier verwendete OPC-Server ist Teil des sog. open62541 Projekts. Er ist in C
+geschrieben und implementiert bereits einen großen Teil der im OPC-UA-Standard
+spezifizierten Funktionen.
+Als SPS findet ein Revolution Pi 3 der Firma Kunbus Verwendung. Dieser integriert
+ein sog. Compute Module der Raspberry Pi Foundation in ein industrietaugliches
+Gehäuse und erlaubt die Erweiterung mittels IO- oder Gateway-Modulen. Über diese
+erfolgt die Kommunikation mit weiteren Komponenten der Automatisierungstechnik.
+
+Motiviert ist dieses Projekt durch die Beobachtung, dass die Verbreitung offener
+Standards sowie freier Software auch in der Automatisierungstechnik zunimmt.
+Linux ist ein freies Betriebssystem, OPC-UA ein offen zugänglicher, aktiv gepflegter
+und weit verbreiteter Standard. Der Raspberry Pi findet sowohl bei Hobby-Anwendern als
+auch in den Bereichen Forschung und Entwicklung sowie bei industriellen Anwendern
+Verwendung. Dieses Projekt stellt somit eine für unterschiedliche Anwender interessante
+Entwicklung dar.
+
+Im Anschluss an diese einleitende Übersicht im Abschnitt~\ref{sec:1-einleitung} folgt
+die Darstellung der wichtigsten Grundlagen in Abschnitt~\ref{sec:2-grundlagen}.
+Aufbauend auf diesen Grundlagen folgt die konzeptuelle Ausarbeitung im Abschnitt~\ref{sec:3-konzeption}.
+Die Umsetzung wird im Abschnitt~\ref{sec:4-implementierung} erläutert.
+Die Leistungsfähigkeit der Implementierung wird in Abschnitt~\ref{sec:5-tests} untersucht.
+Eine Zusammenfassung und ein Ausblick schließen die Arbeit in
+Abschnitt~\ref{sec:6-fazit} ab. Eventuell noch benötigte Anhänge
+finden sich in den Anhängen [...] bis [...].

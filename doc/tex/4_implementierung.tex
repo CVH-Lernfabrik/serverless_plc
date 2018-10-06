@@ -1,0 +1,214 @@
+% % Imports nur für Referenzenauflösung während des Schreibens! Vorm Kompilieren auskommentieren!
+% \bibliography{0_hauptdatei}
+% \input{1_einleitung}
+% \input{2_grundlagen}
+% \input{3_konzeption}
+% \input{4_implementierung}
+% \input{5_tests}
+% \input{6_zusammenfassung}
+% \input{anhang}
+% % Ende Imports
+
+\section{Implementierung%
+  \label{sec:4-implementierung}}
+
+revpi.c - 58
+
+\begin{lstlisting}[language={c},firstnumber=97,caption={Setzen eines phsikalischen, digitalen Ausgangs\label{lst:4-PI_writeSingleIO}}]
+extern void PI_writeSingleIO(char *pszVariableName, bool *bit, bool verbose)
+{
+	int rc;
+	SPIVariable sPiVariable;
+	SPIValue sPIValue;
+
+	strncpy(sPiVariable.strVarName, pszVariableName, sizeof(sPiVariable.strVarName));
+	rc = piControlGetVariableInfo(&sPiVariable);
+	if (rc < 0) {
+		printf("Cannot find variable '%s'\n", pszVariableName);
+		return;
+	}
+
+		sPIValue.i16uAddress = sPiVariable.i16uAddress;
+		sPIValue.i8uBit = sPiVariable.i8uBit;
+		sPIValue.i8uValue = *bit;
+		rc = piControlSetBitValue(&sPIValue);
+		if (rc < 0)
+			printf("Set bit error %s\n", getWriteError(rc));
+		else if (verbose)
+			printf("Set bit %d on byte at offset %d. Value %d\n", sPIValue.i8uBit, sPIValue.i16uAddress,
+			       sPIValue.i8uValue);
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language={c},firstnumber=301,caption={Methode piControlSetBitValue in piControlIf.c\label{lst:4-piControlSetBitValue(}}]
+/***********************************************************************************/
+/*!
+ * @brief Set Bit Value
+ *
+ * Set the value of one bit in the process image.
+ *
+ * @param[in/out]   Pointer to SPIValue.
+ *
+ * @return 0 or error if negative
+ *
+ ************************************************************************************/
+int piControlSetBitValue(SPIValue *pSpiValue)
+{
+    piControlOpen();
+
+    if (PiControlHandle_g < 0)
+	return -ENODEV;
+
+    pSpiValue->i16uAddress += pSpiValue->i8uBit / 8;
+    pSpiValue->i8uBit %= 8;
+
+    if (ioctl(PiControlHandle_g, KB_SET_VALUE, pSpiValue) < 0)
+	return errno;
+
+    return 0;
+}
+\end{lstlisting}
+\begin{lstlisting}[numbers=none,caption={Auszug aus der RevolutionPi Programmers Manual\label{lst:4-manpage}}]
+KB_SET_VALUE SPIValue *argp
+Write one bit or one byte to the process image. Before the call the elements i16uAddress and
+i8uBit must be set to the address of the value. i8uValue must set to the value to write. This call is
+more efficient than the usual calls of seek and write because only one function call is necessary. If
+more than on application are writing bits in one output byte, this call is the only safe way to set a
+bit without overwriting the other bits because this call is doning a read-modify-write-cycle.
+The struct SPIValue used by this ioctl is defined as
+typedef struct SPIValueStr
+{
+uint16_t i16uAddress; // Address of the byte in the process image
+uint8_t i8uBit; // 0-7 bit position, >= 8 whole byte
+uint8_t i8uValue; // Value: 0/1 for bit access, whole byte otherwise
+} SPIValue;
+\end{lstlisting}
+
+\begin{lstlisting}[language={c},firstnumber=74,caption={Methode piControlOpen in piControlIf.c\label{lst:4-piControlOpen}}]
+/***********************************************************************************/
+/*!
+ * @brief Open Pi Control Interface
+ *
+ * Initialize the Pi Control Interface
+ *
+ ************************************************************************************/
+void piControlOpen(void)
+{
+    /* open handle if needed */
+    if (PiControlHandle_g < 0)
+    {
+	PiControlHandle_g = open(PICONTROL_DEVICE, O_RDWR);
+    }
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language={c},firstnumber=718,caption={Methode piControlIoctl in piControlMain.c\label{lst:4-piControlIoctl}}]
+
+  /*****************************************************************************/
+  /*    I O C T L                                                           */
+  /*****************************************************************************/
+  static long piControlIoctl(struct file *file, unsigned int prg_nr, unsigned long usr_addr) // <-
+  {
+  	int status = -EFAULT;
+  	tpiControlInst *priv;
+  	int timeout = 10000;	// ms
+
+  	if (prg_nr != KB_CONFIG_SEND && prg_nr != KB_CONFIG_START && !isRunning()) {
+  		return -EAGAIN;
+  	}
+
+  	priv = (tpiControlInst *) file->private_data;
+
+  	if (prg_nr != KB_GET_LAST_MESSAGE) {
+  		// clear old message
+  		priv->pcErrorMessage[0] = 0;
+  	}
+
+  	switch (prg_nr) {
+
+    [...]
+
+    piControlMain.c - 865
+    case KB_SET_VALUE:	// <-
+  		{
+  			SPIValue *pValue = (SPIValue *) usr_addr;
+
+  			if (!isRunning())
+  				return -EFAULT;
+
+  			if (pValue->i16uAddress >= KB_PI_LEN) {
+  				status = -EFAULT;
+  			} else {
+  				INT8U i8uValue_l;
+  				my_rt_mutex_lock(&piDev_g.lockPI);
+  				i8uValue_l = piDev_g.ai8uPI[pValue->i16uAddress];
+
+  				if (pValue->i8uBit >= 8) {
+  					i8uValue_l = pValue->i8uValue;
+  				} else {
+  					if (pValue->i8uValue)
+  						i8uValue_l |= (1 << pValue->i8uBit);
+  					else
+  						i8uValue_l &= ~(1 << pValue->i8uBit);
+  				}
+
+  				piDev_g.ai8uPI[pValue->i16uAddress] = i8uValue_l;  // <-
+  				rt_mutex_unlock(&piDev_g.lockPI);
+
+  #ifdef VERBOSE
+  				pr_info("piControlIoctl Addr=%u, bit=%u: %02x %02x\n", pValue->i16uAddress, pValue->i8uBit, pValue->i8uValue, i8uValue_l);
+  #endif
+
+  				status = 0;
+  			}
+  		}
+  		break;
+
+    [...]
+
+    default:
+      pr_err("Invalid Ioctl");
+      return (-EINVAL);
+      break;
+
+    }
+
+    return status;
+  }
+\end{lstlisting}
+
+\begin{lstlisting}[language={c},firstnumber=62,caption={Definition des Struct spiControlDev in piControlMain.h\label{lst:4-spiControlDev}}]
+typedef struct spiControlDev {
+	// device driver stuff
+	int init_step;
+	enum revpi_machine machine_type;
+	void *machine;
+	struct cdev cdev;	// Char device structure   // <->  #include <linux/cdev.h>
+	struct device *dev;                          // <->  #include <linux/device.h>
+	struct thermal_zone_device *thermal_zone;
+
+	// process image stuff
+	INT8U ai8uPI[KB_PI_LEN];
+	INT8U ai8uPIDefault[KB_PI_LEN];
+	struct rt_mutex lockPI;
+	bool stopIO;
+	piDevices *devs;
+	piEntries *ent;
+	piCopylist *cl;
+	piConnectionList *connl;
+	ktime_t tLastOutput1, tLastOutput2;
+
+	// handle open connections and notification
+	u8 PnAppCon;		// counter of open connections
+	struct list_head listCon;
+	struct rt_mutex lockListCon;
+
+	struct led_trigger power_red;
+	struct led_trigger a1_green;
+	struct led_trigger a1_red;
+	struct led_trigger a2_green;
+	struct led_trigger a2_red;
+	struct led_trigger a3_green;
+	struct led_trigger a3_red;
+} tpiControlDev;
+\end{lstlisting}
