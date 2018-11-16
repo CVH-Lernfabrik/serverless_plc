@@ -141,6 +141,7 @@
 \do\x\do\y\do\z\do\1\do\2\do\3\do\4\do\5\do\6\do\7\do\8\do\9}
 
 % Paket für Textfarben
+\usepackage{color}
 \usepackage{xcolor}
 
 \definecolor{martiniblue}{RGB}{82,182,214}
@@ -198,25 +199,12 @@
 \usepackage{listings}
 
 \usepackage{pgfplotstable}
-%
-% Einstellungen für C-Quelltexte
-%\lstset{numbers=left,
-%        numberstyle=\tiny,
-%        numbersep=5pt,
-%        keywordstyle=\color{black}\bfseries,
-%        stringstyle=\ttfamily,
-%        showstringspaces=false,
-%        basicstyle=\footnotesize,
-%        captionpos=b}
-%\lstset{language=c}
-
-% Füge weitere Vorlagen für Listings hinzu
-
 
 \lstset{
-	basicstyle=\footnotesize,
+	language=c,
+	basicstyle=\footnotesize\ttfamily,
 	keywordstyle=\color{black}\bfseries,
-  stringstyle=\ttfamily,
+    stringstyle=\ttfamily,
  	showstringspaces=false,
  	flexiblecolumns=false,
  	tabsize=2,
@@ -227,6 +215,7 @@
  	numbersep=10pt,
  	xleftmargin=15pt,
 	breaklines=true,
+	escapeinside={|>}{<|},
   extendedchars=true, %Unterstützung deutscher Umlaute in Listings
   literate={ä}{{\"a}}1 {ö}{{\"o}}1 {ü}{{\"u}}1 {Ä}{{\"A}}1 {Ö}{{\"O}}1 {Ü}{{\"U}}1 {ß}{{\ss}}1 {~}{{\textasciitilde}}1,
 }
@@ -275,11 +264,18 @@
 
 %%%%%%%%%%%%%%%
 % pgfplots und tikz
+\usepackage[customcolors]{hf-tikz}
+\hfsetfillcolor{white}
+\hfsetbordercolor{martinired}
+\tikzset{above offset={0.35}, below offset={-0.1}}
+
 \usepackage{tikz}
 \usepackage{pgfplots}
 \usetikzlibrary{patterns}
 \usetikzlibrary{datavisualization}
 \usetikzlibrary{shapes,arrows}
+\usetikzlibrary{tikzmark}
+\usetikzmarklibrary{listings}
 
 %\usepgfplotslibrary{external}
 %\tikzexternalize
@@ -361,7 +357,7 @@
 % \newcommand{\companyname}{Musterfirma GmbH}
 % \newcommand{\institutname}{  Institut für Mechatronik\\  und Fahrzeugtechnik}
   \newcommand{\institutname}{  Institut für eingebettete Systeme\par und angewandte Informatik}
-  \newcommand{\thetitle}{Integration eines OPC-Servers mit einer modularen, auf Linux basierenden speicherprogrammierbaren Steuerung}
+  \newcommand{\thetitle}{Integration eines OPC-Servers in eine modulare, auf Linux basierende speicherprogrammierbare Steuerung}
   \newcommand{\firstAuthor}{Lukas Friedrichsen}
   \newcommand{\firstStudentnumber}{013\,200\,111}
 	\newcommand{\secondAuthor}{Philipp Stenkamp}
@@ -393,53 +389,54 @@
   % Bilder für den Beginn der nächsten Seite o.ä. im Speicher
   % befinden, soll LaTeX diese jetzt abarbeiten.
 
-	% Rückseite des Deckblatts blank
-	\clearpage
-	\begingroup
-	  \pagestyle{empty}
-	  \cleardoublepage
-	\endgroup
+% Rückseite des Deckblatts blank
+\clearpage
+\input{0_platzhalter}
+% \begingroup
+%   \pagestyle{empty}
+%   \cleardoublepage
+% \endgroup
 
-  %
-  % Sperrvermerk, falls notwendig
-  % \input{0_sperrvermerk}
-  % \clearpage
+%
+% Sperrvermerk, falls notwendig
+% \input{0_sperrvermerk}
+% \clearpage
 
-	% Rückseite des Sperrvermerks blank
-	\clearpage
-	\begingroup
-	  \pagestyle{empty}
-	  \cleardoublepage
-	\endgroup
+% Rückseite des Sperrvermerks blank
+\clearpage
+\begingroup
+  \pagestyle{empty}
+  \cleardoublepage
+\endgroup
 
 
 \pagenumbering{Roman}
 \setcounter{page}{3}
-  % Normalerweise wird bei einem neuen Abschnitt (\section{...}) die
-  % Kopfzeile links automatisch auf den Namen dieses Abschnitts gesetzt.
-  % Für das Abstract verwenden wir einen „stummen“ Abschnitt
-  % (\section*{...}), bei dem dies nicht automatisch geschieht.
-  % Mit dem folgenden Befehl setzen wir stattdessen die Kopfzeile
-  % „von Hand“ auf „Abstract“.
-  \fancyhead[LO]{Abstract}
-	\fancyhead[RE]{Abstract}
-  %\fancyhead[L]{Kurzfassung}
-  %
-  % Inhalt aus separater Datei lesen
-  \input{0_kurzfassung}
+% Normalerweise wird bei einem neuen Abschnitt (\section{...}) die
+% Kopfzeile links automatisch auf den Namen dieses Abschnitts gesetzt.
+% Für das Abstract verwenden wir einen „stummen“ Abschnitt
+% (\section*{...}), bei dem dies nicht automatisch geschieht.
+% Mit dem folgenden Befehl setzen wir stattdessen die Kopfzeile
+% „von Hand“ auf „Abstract“.
+\fancyhead[LO]{Abstract}
+\fancyhead[RE]{Abstract}
+%\fancyhead[L]{Kurzfassung}
+%
+% Inhalt aus separater Datei lesen
+% \input{0_kurzfassung}
 
-  %\clearpage
-  %\fancyhead[L]{Abstract}
-  %
-  % Inhalt aus separater Datei lesen
-  \input{0_abstract}
+%\clearpage
+%\fancyhead[L]{Abstract}
+%
+% Inhalt aus separater Datei lesen
+% \input{0_abstract}
 
 
-	% Vorwort
-	%	\clearpage
-	%	\fancyhead[LO]{Vorwort}
-	%	\fancyhead[RE]{Vorwort}
-	%	\input{0_vorwort}
+% Vorwort
+%	\clearpage
+%	\fancyhead[LO]{Vorwort}
+%	\fancyhead[RE]{Vorwort}
+%	\input{0_vorwort}
 
   % Inhaltsverzeichnis auf neuer Seite anzeigen
   \clearpage
@@ -498,10 +495,10 @@
   \clearpage
   \input{4_implementierung}
 
-  \clearpage
-  \input{5_tests}
+  %\clearpage
+  %\input{5_tests}
 
-  % Abschnitt 4: Zusammenfassung und Ausblick
+  % Abschnitt 6: Zusammenfassung und Ausblick
   \clearpage
   \input{6_zusammenfassung}
 

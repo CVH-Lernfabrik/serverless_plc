@@ -15,6 +15,27 @@ Den Abschluss dieser Arbeit bildet der Ausblick in Abschnitt~\ref{sec:6-ausblick
 
 \subsection{Zusammenfassung%
      \label{sec:6-zusammenfassung}}
+Im Bezug auf den aktuellen Stand der Implementierung lässt sich festhalten, dass ein Machbarkeitsbeweis hinsichtlich der Steuerung des mit der SPS verbundenen Produktionssystems über den OPC-Server erbracht werden konnte, jedoch noch Potential zur Erweiterung besteht. 
+Gegenwärtig sind rudimentäre Funktionen zum Lesen und Schreiben der Ein- bzw.\,Ausgänge aller IO-Module in dem OPC-Server umgesetzt. 
+Diese erlauben den Zugriff auf Werte im Prozessabbild der SPS über einen OPC-Client.
+Der verbundene Laboraufbau kann so mittels OPC über ein Netzwerk gesteuert werden.
+Aktuell existieren weder auf Server- noch auf Client-Seite Funktionen, welche komplexere Abläufe realisieren 
+oder die bereitgestellten Werte programmatisch schreiben.
+Eine quantitative Beurteilung der Leistungsfähigkeit des OPC-Servers und dessen Anbindung an den Treiber piControl kann
+so jedoch noch nicht vorgenommen werden.
+Zum aktuellen Zeitpunkt ist lediglich bekannt, dass der OPC-Server funktioniert und eine Ansteuerung der an die 
+SPS angeschlossenen IO-Module erlaubt.
+Grundsätzlich sind alle umgesetzten und verwendeten Software-Bausteine so implementiert, dass sie die Anforderungen
+an harte Echtzeit erfüllen können. Ob sie dies auch tatsächlich tun, gilt es im weiteren Projektverlauf zu evaluieren.
 
 \subsection{Ausblick%
      \label{sec:6-ausblick}}
+Das hier dokumentierte Projekt ist, wie eingangs in Abschnitt~\ref{sec:1-einleitung} beschrieben, als Teil eines übergeordneten Sammelprojekts zu betrachten und stellt dort die Basis für eine Fassadierung echtzeit- bzw. sicherheitskritischer Programmabschnitte innerhalb des Produktionsprozesses gegenüber einer hierarchisch übergeordneten, steuernden Instanz dar.
+Die im aktuellen Stand implementierten Basisfunktionen sind ausreichend, um die Steuerung des mit der SPS verbundenen Produktionssystems aus der Cloud heraus zu realisieren, ermöglichen allerdings derzeit noch keine lokale Kapselung komplexerer Abläufe.
+Um das hier beschriebene Projekt abzuschließen sind zudem noch weiterführende Tests und eine
+wissenschaftliche Auswertung dieser erforderlich. 
+Insbesondere eine Ermittlung der bestmöglichen und schlechtesten Zykluszeiten für das lokale wie 
+auch entfernte (mittels OPC UA) Lesen und Schreiben einer Menge einzelner Variablen erscheint sinnvoll.
+Zusammenfassend kann festgehalten werden, dass ein Machbarkeitsbeweis erbracht werden konnte, der Funktionsumfang des in diesem Projektes implementierten OPC-Servers allerdings noch Potential zur Erweiterung bietet.
+Das im Verlaufe des Semesters erlangte Wissen bzgl.\, Treiberentwicklung unter Linux sowie Echtzeit bietet eine gute Grundlage für
+weiterführende Projekte.

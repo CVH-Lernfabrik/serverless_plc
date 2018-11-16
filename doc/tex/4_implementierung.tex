@@ -11,10 +11,83 @@
 
 \section{Implementierung%
   \label{sec:4-implementierung}}
+Das folgende Kapitel stellt in Auszügen die Implementierung des OPC-Servers sowie die Anbindung an die IO-Module
+der SPS dar. Der Schwerpunkt liegt hierbei auf der Funktionsweise des piControl-Treibers und dessen Integration in das Projekt. Abschnitt~\ref{sec:4-picontrol} erklärt die zum Schreibens eines Bits verwendeten Funktionsaufrufe.
+Zuvor soll jedoch in Abschnitt~\ref{sec:4-open62541} der Teil des OPC-Servers vorgestellt werden, welcher auf besagten Treiber zugreift. 
 
-revpi.c - 58
+\subsection{Implementierung des OPC-Servers%
+     \label{sec:4-open62541}}
+Wie im vorangegangenen Abschnitt~\ref{sec:3-integration} begründet, soll die Verknüpfung zwischen dem Prozessabbild der SPS und den auf dem OPC-Server bereitgestellten Werten über sog.\,Datenquellen erfolgen. Hierzu ist zunächst eine Callback-Methode zu implementieren, welche bei einem Lese- oder Schreibzugriff auf eine Variable aufgerufen wird. Die Verknüpfung zwischen Callback-Methode und Variable muss manuell erfolgen.
 
-\begin{lstlisting}[language={c},firstnumber=97,caption={Setzen eines phsikalischen, digitalen Ausgangs\label{lst:4-PI_writeSingleIO}}]
+\begin{lstlisting}[language={c},firstnumber=237,caption={Auszug der Methode \lstinline{linkDataSourceVariable} in \lstinline{variables.c}\label{lst:4-linkDataSourceVariable}}]
+extern UA_StatusCode
+ linkDataSourceVariable(UA_Server *server, UA_NodeId nodeId) {
+     bool readonly = false;
+     UA_DataSource dataSourceVariable;
+     UA_StatusCode rc; |>\setcounter{lstnumber}{254}<|
+
+     dataSourceVariable.read = readDataSourceVariable;
+     if (!readonly)
+        dataSourceVariable.write = writeDataSourceVariable;
+     else
+        dataSourceVariable.write = writeReadonlyDataSourceVariable;
+
+     return UA_Server_setVariableNode_dataSource(server, nodeId, dataSourceVariable);
+ }
+\end{lstlisting}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.42\textwidth]{doc/img/OPC_RevPiDO.pdf}
+    \caption{Auszug des verwendeten Nodesets, hier Digitalausgang 1 des Versuchsaufbaus
+      \label{fig:opc-do}}
+\end{figure}
+
+Die in Listing~\ref{lst:4-linkDataSourceVariable} abgebildete Methode \lstinline{linkDataSourceVariable()} erzeugt ein Struct vom Typ \lstinline{UA_DataSource}. In diesem werden dem Lesen und Schreiben einer OPC-Variablen entsprechende Callback-Methoden zugewiesen. Die Verknüpfung einer OPC-Variable, genauer ihrer NodeId, mit der zuvor definierten Datenquelle erfolgt über die von open62541 bereitgestellte Methode \lstinline{UA_Server_setVariableNode_dataSource()}. Vor dem Lesen und nach dem Schreiben dieser Variable werden von nun an die entsprechenden Callbacks aufgerufen.
+     
+\begin{lstlisting}[language={c},firstnumber=168,caption={Auszug des Callbacks \lstinline{writeDataSourceVariable} in \lstinline{variables.c}\label{lst:4-writeDataSourceVariable}}]  
+extern UA_StatusCode
+ writeDataSourceVariable(UA_Server *server,
+            const UA_NodeId *sessionId, void *sessionContext,
+            const UA_NodeId *nodeId, void *nodeContext,
+            const UA_NumericRange *range, const UA_DataValue *dataValue) {
+
+    UA_StatusCode retval  = UA_STATUSCODE_GOOD;
+    UA_NodeId *nameNodeId = UA_malloc(sizeof(UA_NodeId));
+    UA_QualifiedName nameQN = UA_QUALIFIEDNAME(1, "Name");
+    UA_Variant nameVar;
+    UA_Boolean bit;
+
+    retval |= findSiblingByBrowsename(server, nodeId, &nameQN, nameNodeId);
+    retval |= UA_Server_readValue(server, *nameNodeId, &nameVar);
+    retval |= UA_Boolean_copy(dataValue->value.data, &bit);
+
+    |>\tikzmarkin[set border color=martinired]{writeIO}<|PI_writeSingleIO(String_fromUA_String(nameVar.data), &bit, false);                                                 |>\tikzmarkend{writeIO}<|
+
+    free(nameNodeId);
+    return retval;
+ }
+\end{lstlisting}
+
+Listing~\ref{lst:4-writeDataSourceVariable} zeigt die Callback-Methode, welche nach dem Schreiben einer Variablen auf dem OPC-Server aufgerufen wird.
+Dieser Methode wird neben der NodeId der mit ihr verknüpften Variablen auch der Wert dieser in Form eines Zeigers auf ein Struct vom Typ \lstinline{UA_DataValue} übergeben.
+
+Die Gestaltung des hier verwendeten Nodesets sieht vor, dass in einer OPC-Variablen \lstinline{"Name"} der Bezeichner des zu schreibenden Digitalausgangs hinterlegt ist, siehe Abbildung~\ref{fig:opc-do}. Dies erlaubt eine Rekonfiguration der Ein- und Ausgänge der SPS ohne Änderungen im Programmcode des OPC-Servers vornehmen zu müssen.
+Es ist daher erforderlich, nach jedem Schreiben einer mit einem Digitalausgang verknüpften Variablen, hier \lstinline{"Value"}, dessen Bezeichner \lstinline{"Name"} abzufragen. 
+Dies geschieht in den Zeilen 180 und 181.
+Anschließend wird dieser Bezeichner sowie der zu schreibende Wert der Methode \lstinline{PI_writeSingleIO()} übergeben, welche wiederum die Interaktion mit piControl übernimmt (vgl. Abschnitt \ref{sec:4-picontrol}).
+ 
+\subsection{Integration von piControl%
+     \label{sec:4-picontrol}}
+In Abschnitt~\ref{sec:2-io} wurde die Anbindung der IO-Module des Revolution Pi sowie die Funktionsweise von piControl aus Anwendersicht beschrieben. Die verfügbare Literatur beschränkt sich auch auf lediglich diese Sicht; eine weiterführende Dokumentation für Entwickler gibt es, neben der in Abschnitt~\ref{sec:3-anbindung} vorgestellten Manpage, nicht. 
+In diesem Abschnitt soll daher der Quellcode von piControl sowie dessen Verwendung im Projekt genauer betrachtet werden.
+Hierzu wird exemplarisch die in Abschnitt~\ref{sec:4-open62541} eingeführte Methode \lstinline{PI_writeSingleIO()} untersucht.
+Diese Methode ermöglicht das Setzen eines einzelnen Bits im Prozessabbild der SPS, und damit das Schalten eines digitalen Ausgangs auf einem IO-Modul.
+Die äquivalente Methode \lstinline{int piControlGetBitValue(SPIValue *pSpiValue)} zum Lesen eines Bits bzw. Eingangs funktioniert analog und soll daher an dieser Stelle nicht dediziert erörtert werden.
+
+\begin{lstlisting}[language={c},firstnumber=97,
+                   caption={Setzen eines phsikalischen, digitalen Ausgangs in \lstinline{revpi.c}
+                   \label{lst:4-PI_writeSingleIO}}]
 extern void PI_writeSingleIO(char *pszVariableName, bool *bit, bool verbose)
 {
 	int rc;
@@ -31,7 +104,7 @@ extern void PI_writeSingleIO(char *pszVariableName, bool *bit, bool verbose)
 		sPIValue.i16uAddress = sPiVariable.i16uAddress;
 		sPIValue.i8uBit = sPiVariable.i8uBit;
 		sPIValue.i8uValue = *bit;
-		rc = piControlSetBitValue(&sPIValue);
+		rc = |>\tikzmarkin[set border color=martinired]{setBitValue}<|piControlSetBitValue(&sPIValue)|>\tikzmarkend{setBitValue}<|;
 		if (rc < 0)
 			printf("Set bit error %s\n", getWriteError(rc));
 		else if (verbose)
@@ -40,96 +113,66 @@ extern void PI_writeSingleIO(char *pszVariableName, bool *bit, bool verbose)
 }
 \end{lstlisting}
 
-\begin{lstlisting}[language={c},firstnumber=301,caption={Methode piControlSetBitValue in piControlIf.c\label{lst:4-piControlSetBitValue(}}]
-/***********************************************************************************/
-/*!
- * @brief Set Bit Value
- *
- * Set the value of one bit in the process image.
- *
- * @param[in/out]   Pointer to SPIValue.
- *
- * @return 0 or error if negative
- *
- ************************************************************************************/
-int piControlSetBitValue(SPIValue *pSpiValue)
+Der Programmcode in Listing~\ref{lst:4-PI_writeSingleIO} ist Teil des implementierten OPC-Servers. In diesem wird auf zwei Funktionen des piControl-Treibers zugegriffen. 
+Beiden Methoden wird als Argument ein Zeiger auf ein Struct vom Typ \lstinline{SPIValue} übergeben. Der im Struct abgelegte Name wird mittels \lstinline{piControlGetVariableInfo(&sPIValue)} zu einer Adresse im Prozessabbild aufgelöst. Diese wird in \lstinline{sPIValue.i16uAdress} gespeichert. Der Wert der Variablen wird anschließend mittels \lstinline{piControlSetBitValue(&sPIValue)} an dieser Adresse in das Prozessabbild geschrieben.
+
+\begin{lstlisting}[language={c},firstnumber=309,caption={Methode \lstinline{piControlSetBitValue} in \lstinline{piControlIf.c}\label{lst:4-piControlSetBitValue}}]
+int |>\tikzmarkin[set border color=martiniblue]{setBitValueFcn}<|piControlSetBitValue(SPIValue *pSpiValue)|>\tikzmarkend{setBitValueFcn}<|
 {
     piControlOpen();
 
     if (PiControlHandle_g < 0)
-	return -ENODEV;
+	    return -ENODEV;
 
     pSpiValue->i16uAddress += pSpiValue->i8uBit / 8;
     pSpiValue->i8uBit %= 8;
 
-    if (ioctl(PiControlHandle_g, KB_SET_VALUE, pSpiValue) < 0)
-	return errno;
+    if (|>\tikzmarkin[set border color=martinired]{ioctl}<|ioctl(PiControlHandle_g, KB_SET_VALUE, pSpiValue)|>\tikzmarkend{ioctl}<| < 0)
+	    return errno;
 
     return 0;
 }
 \end{lstlisting}
-\begin{lstlisting}[numbers=none,caption={Auszug aus der RevolutionPi Programmers Manual\label{lst:4-manpage}}]
-KB_SET_VALUE SPIValue *argp
-Write one bit or one byte to the process image. Before the call the elements i16uAddress and
-i8uBit must be set to the address of the value. i8uValue must set to the value to write. This call is
-more efficient than the usual calls of seek and write because only one function call is necessary. If
-more than on application are writing bits in one output byte, this call is the only safe way to set a
-bit without overwriting the other bits because this call is doning a read-modify-write-cycle.
-The struct SPIValue used by this ioctl is defined as
-typedef struct SPIValueStr
-{
-uint16_t i16uAddress; // Address of the byte in the process image
-uint8_t i8uBit; // 0-7 bit position, >= 8 whole byte
-uint8_t i8uValue; // Value: 0/1 for bit access, whole byte otherwise
-} SPIValue;
-\end{lstlisting}
 
-\begin{lstlisting}[language={c},firstnumber=74,caption={Methode piControlOpen in piControlIf.c\label{lst:4-piControlOpen}}]
-/***********************************************************************************/
-/*!
- * @brief Open Pi Control Interface
- *
- * Initialize the Pi Control Interface
- *
- ************************************************************************************/
+Die in Listing~\ref{lst:4-piControlSetBitValue} dargestellte Methode \lstinline{piControlSetBitValue} ist lediglich eine Hüllfunktion (häufig auch als Wrapper-Funktion bezeichnet) für einen Aufruf des \lstinline{ioctl} Kernel-Moduls.
+Folgende Parameter werden übergeben:
+\lstinline{PiControlHandle_g} ist die Referenz auf die Geräte-Datei des piControl-Treibers. \lstinline{KB_SET_VALUE} ist das ioctl-Kommando zum Schreiben eines Bits in das Prozessabbild. Der Zeiger \lstinline{pSpiValue} verweist auf ein Struct des bereits vorgestellten Typs \lstinline{SPIValue}.
+
+\begin{lstlisting}[language={c},firstnumber=80,caption={Methode \lstinline{piControlOpen} in \lstinline{piControlIf.c}\label{lst:4-piControlOpen}}]
 void piControlOpen(void)
 {
     /* open handle if needed */
     if (PiControlHandle_g < 0)
     {
-	PiControlHandle_g = open(PICONTROL_DEVICE, O_RDWR);
+	    |>\tikzmarkin[set border color=martiniblue]{PiControlHandle}<|PiControlHandle_g = open(PICONTROL_DEVICE, O_RDWR)|>\tikzmarkend{PiControlHandle}<|;
     }
 }
 \end{lstlisting}
 
-\begin{lstlisting}[language={c},firstnumber=718,caption={Methode piControlIoctl in piControlMain.c\label{lst:4-piControlIoctl}}]
+Die in Listing~\ref{lst:4-piControlOpen} dargestellte Methode öffnet, sofern nicht bereits geschehen, die Geräte-Datei. Das Macro \lstinline{PICONTROL_DEVICE} verweist hierbei auf \lstinline{/dev/piControl0}.
 
-  /*****************************************************************************/
-  /*    I O C T L                                                           */
-  /*****************************************************************************/
-  static long piControlIoctl(struct file *file, unsigned int prg_nr, unsigned long usr_addr) // <-
-  {
-  	int status = -EFAULT;
-  	tpiControlInst *priv;
-  	int timeout = 10000;	// ms
+\begin{lstlisting}[language={c},firstnumber=721,caption={Methode \lstinline{piControlIoctl} in \lstinline{piControlMain.c}\label{lst:4-piControlIoctl}}]
+static long |>\tikzmarkin[set border color=martiniblue, below offset=0.9em]{piControlIoctl}<|piControlIoctl(struct file *file, unsigned int prg_nr, 
+                           unsigned long usr_addr)                                      |>\tikzmarkend{piControlIoctl}<|
+{
+  int status = -EFAULT;
+  tpiControlInst *priv;
+  int timeout = 10000;	// ms
 
-  	if (prg_nr != KB_CONFIG_SEND && prg_nr != KB_CONFIG_START && !isRunning()) {
-  		return -EAGAIN;
-  	}
+  if (prg_nr != KB_CONFIG_SEND && prg_nr != KB_CONFIG_START && !isRunning()) {
+  	return -EAGAIN;
+  }
 
-  	priv = (tpiControlInst *) file->private_data;
+  priv = (tpiControlInst *) file->private_data;
 
-  	if (prg_nr != KB_GET_LAST_MESSAGE) {
-  		// clear old message
-  		priv->pcErrorMessage[0] = 0;
-  	}
+  if (prg_nr != KB_GET_LAST_MESSAGE) {
+  	// clear old message
+  	priv->pcErrorMessage[0] = 0;
+  }
 
-  	switch (prg_nr) {
+  switch (prg_nr) {|>\setcounter{lstnumber}{864}<|
 
-    [...]
-
-    piControlMain.c - 865
-    case KB_SET_VALUE:	// <-
+    case |>\tikzmarkin[set border color=martiniblue]{KB_SET_VALUE}<|KB_SET_VALUE:|>\tikzmarkend{KB_SET_VALUE}<|
   		{
   			SPIValue *pValue = (SPIValue *) usr_addr;
 
@@ -152,7 +195,7 @@ void piControlOpen(void)
   						i8uValue_l &= ~(1 << pValue->i8uBit);
   				}
 
-  				piDev_g.ai8uPI[pValue->i16uAddress] = i8uValue_l;  // <-
+  				|>\tikzmarkin[set border color=martinired]{i8uValue}<|piDev_g.ai8uPI[pValue->i16uAddress] = i8uValue_l;|>\tikzmarkend{i8uValue}<|
   				rt_mutex_unlock(&piDev_g.lockPI);
 
   #ifdef VERBOSE
@@ -162,9 +205,7 @@ void piControlOpen(void)
   				status = 0;
   			}
   		}
-  		break;
-
-    [...]
+  		break; |>\setcounter{lstnumber}{1314}<|
 
     default:
       pr_err("Invalid Ioctl");
@@ -177,38 +218,201 @@ void piControlOpen(void)
   }
 \end{lstlisting}
 
-\begin{lstlisting}[language={c},firstnumber=62,caption={Definition des Struct spiControlDev in piControlMain.h\label{lst:4-spiControlDev}}]
-typedef struct spiControlDev {
+Listing~\ref{lst:4-piControlIoctl} zeigt in Auszügen die ioctl-Methode des piControl Kernel-Treibers. Diese bekommt folgende Argumente übergeben: \lstinline{struct file *file} enthält den Verweis auf die Geräte-Datei, hier \lstinline{/dev/piControl0}. Der Wert von \lstinline{unsigned int prg_nr} beschreibt die Anfrage an den Treiber, in diesem Fall \lstinline{KB_SET_VALUE}. Das Argument \lstinline{unsigned long usr_addr} enthält einen typ-agnostischen Pointer. Dieser verweist auf einen Speicherbereich, in welchem die zur Bearbeitung der Anfrage notwendigen Daten abgelegt sind. Hier können auch vom Treiber empfangene Daten dem Anwendungsprogramm bereitgestellt werden. 
+
+Die switch-case-Anweisung führt die über das Argument \lstinline{prg_nr} spezifizierte Aktion aus. Hier betrachten wir \lstinline{KB_SET_VALUE}:
+Zunächst wird in Zeile 868 der übergebene Zeiger \lstinline{usr_addr} mittels explizitem Typecast zu einem Zeiger des Typs \lstinline{SPIValue *} konvertiert. Da dieser auf Daten im Userspace verweist, ist beim Zugriff durch den Kernel-Treiber besondere Vorsicht geboten.
+In Zeile 877 wird mittels Mutex das Prozessabbild \lstinline{piDev_g} für den Zugriff durch andere Threads oder Prozesse gesperrt.
+\lstinline{my_rt_mutex_lock} verweist hierbei auf die Funktion \lstinline{rt_mutex_lock} aus \lstinline{linux/sched.h}\footnote{Offenbar wurde hier auch eine alternative Implementierung vorgesehen, siehe revpi\_common.h}
+
+In Zeile 889 wird das Byte \lstinline{i8uValue_l}, welches den zu schreibenden Wert enthält in das Prozessabbild übertragen. Anschließend wird die Mutex auf \lstinline{piDev_g} wieder entsperrt.
+\newpage
+
+\begin{lstlisting}[language={c},firstnumber=62,caption={Auszug des Struct \lstinline{spiControlDev} in \lstinline{piControlMain.h}\label{lst:4-spiControlDev}}]
+|>\tikzmarkin[set border color=martiniblue]{spiControlDev}<|typedef struct spiControlDev|>\tikzmarkend{spiControlDev}<| {
 	// device driver stuff
 	int init_step;
 	enum revpi_machine machine_type;
 	void *machine;
-	struct cdev cdev;	// Char device structure   // <->  #include <linux/cdev.h>
-	struct device *dev;                          // <->  #include <linux/device.h>
+	struct cdev cdev;	// Char device structure
+	struct device *dev;
 	struct thermal_zone_device *thermal_zone;
 
-	// process image stuff
+	|>\tikzmarkin[set border color=martiniblue]{processImage}<|// process image stuff
 	INT8U ai8uPI[KB_PI_LEN];
-	INT8U ai8uPIDefault[KB_PI_LEN];
-	struct rt_mutex lockPI;
+	INT8U ai8uPIDefault|>\tikzmarkin[set border color=martinired]{KB_PI_LEN_0}<|[KB_PI_LEN]|>\tikzmarkend{KB_PI_LEN_0}<|;
+	struct rt_mutex lockPI;        |>\tikzmarkend{processImage}<|
 	bool stopIO;
-	piDevices *devs;
-	piEntries *ent;
-	piCopylist *cl;
-	piConnectionList *connl;
-	ktime_t tLastOutput1, tLastOutput2;
-
-	// handle open connections and notification
-	u8 PnAppCon;		// counter of open connections
-	struct list_head listCon;
-	struct rt_mutex lockListCon;
-
-	struct led_trigger power_red;
-	struct led_trigger a1_green;
-	struct led_trigger a1_red;
-	struct led_trigger a2_green;
-	struct led_trigger a2_red;
-	struct led_trigger a3_green;
-	struct led_trigger a3_red;
+	piDevices *devs; |>\setcounter{lstnumber}{94}<|
 } tpiControlDev;
 \end{lstlisting}
+
+Das Prozessabbild ist als Byte-Array der Länge \lstinline{KB_PI_LEN} in Listing~\ref{lst:4-spiControlDev} definiert. Konfigurationsparameter wie \lstinline{KB_PI_LEN} oder die Zykluszeit für den Datenaustausch zwischen SPS und IO-Modulen sind im folgenden Listing~\ref{lst:4-process} definiert.
+
+\begin{lstlisting}[language={c},firstnumber=119,caption={Konfigurationsparameter des Prozessabbildes in project.h\label{lst:4-process}}]
+#define INTERVAL_PI_GATE (5*1000*1000)  // 5 ms piGateCommunication |>\setcounter{lstnumber}{128}<|
+
+#define INTERVAL_IO_COM (5*1000*1000)  // 5 ms piIoComm |>\setcounter{lstnumber}{132}<|
+
+#define KB_PD_LEN       512
+|>\tikzmarkin[set border color=martiniblue]{KB_PI_LEN_1}<|#define KB_PI_LEN       4096|>\tikzmarkend{KB_PI_LEN_1}<|
+\end{lstlisting}
+
+Das zu setzende Bit wurde zu diesem Zeitpunkt erfolgreich in das Prozessabbild der SPS geschrieben.
+Es stellt sich die Frage, wie dieses nun an das IO-Modul kommuniziert wird.
+Die Kommunikation mit allen angebundenen Modulen ist ebenfalls Aufgabe des piControl-Treibers.
+
+\begin{lstlisting}[language={c},firstnumber=256,caption={Auszug der Methode \lstinline{piIoThread} in \lstinline{revpi_core.c}\label{lst:4-piIoThread}}]
+static int piIoThread(void *data)
+{
+	//TODO int value = 0;
+	ktime_t time;
+	ktime_t now;
+	s64 tDiff;
+
+	hrtimer_init(&piCore_g.ioTimer, CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
+	piCore_g.ioTimer.function = piIoTimer;
+
+	pr_info("piIO thread started\n");
+
+	now = hrtimer_cb_get_time(&piCore_g.ioTimer);
+
+	PiBridgeMaster_Reset();
+
+	while (!kthread_should_stop()) {
+		if (|>\tikzmarkin[set border color=martinired]{PiBridgeMaster}<|PiBridgeMaster_Run()|>\tikzmarkend{PiBridgeMaster}<| < 0)
+			break;
+	}
+
+	RevPiDevice_finish();
+
+	pr_info("piIO exit\n");
+	return 0;
+}
+\end{lstlisting}
+
+Der Kernel-Thread \lstinline{piIoThread} ist verantwortlich für den zyklischen Datenaustausch mit den IO-Modulen. In diesem wird fortlaufend die Methode \lstinline{PiBridgeMaster_Run()} aufgerufen, siehe Listing~\ref{lst:4-piIoThread}.
+
+\begin{lstlisting}[language={c},firstnumber=262,caption={Auszug der Methode \lstinline{PiBridgeMaster_Run(void)} in \lstinline{RevPiDevice.c}\label{lst:4-PiBridgeMaster_Run}}]
+int PiBridgeMaster_Run(void)
+{
+	static kbUT_Timer tTimeoutTimer_s;
+	static kbUT_Timer tConfigTimeoutTimer_s;
+	static int error_cnt;
+	static INT8U last_led;
+	static unsigned long last_update;
+	int ret = 0;
+	int i;
+
+	my_rt_mutex_lock(&piCore_g.lockBridgeState);
+	if (piCore_g.eBridgeState != piBridgeStop) {
+		switch (eRunStatus_s) { |>\setcounter{lstnumber}{514}<|
+		    case enPiBridgeMasterStatus_EndOfConfig:|>\setcounter{lstnumber}{621}<|
+		    if (|>\tikzmarkin[set border color=martinired]{RevPiDevice}<|RevPiDevice_run()|>\tikzmarkend{RevPiDevice}<|) {
+				// an error occured, check error limits |>\setcounter{lstnumber}{641}<|
+			} else {
+				ret = 1;
+			}
+			piCore_g.image.drv.i16uRS485ErrorCnt = RevPiDevice_getErrCnt();
+			break;
+\end{lstlisting}
+
+Die in Listing~\ref{lst:4-PiBridgeMaster_Run} dargestellte Methode ist eine sog. State-Machine. Ist die Konfiguration der IO-Module erfolgreich abgeschlossen, so führt sie bei Aufruf lediglich die Methode \lstinline{RevPiDevice_run()} aus.
+
+\begin{lstlisting}[language={c},firstnumber=140,caption={Auszug der Methode \lstinline{RevPiDevice_run(void)} in \lstinline{RevPiDevice.c}\label{lst:4-RevPiDevice_run}}]
+int RevPiDevice_run(void)
+{
+	INT8U i8uDevice = 0;
+	INT32U r;
+	int retval = 0;
+
+	RevPiDevices_s.i16uErrorCnt = 0;
+
+	for (i8uDevice = 0; i8uDevice < RevPiDevice_getDevCnt(); i8uDevice++) {
+		if (RevPiDevice_getDev(i8uDevice)->i8uActive) {
+			switch (RevPiDevice_getDev(i8uDevice)->sId.i16uModulType) {
+			case KUNBUS_FW_DESCR_TYP_PI_DIO_14:
+			case KUNBUS_FW_DESCR_TYP_PI_DI_16:
+			case KUNBUS_FW_DESCR_TYP_PI_DO_16:
+				r = |>\tikzmarkin[set border color=martinired]{sendCyclicTelegram}<|piDIOComm_sendCyclicTelegram(i8uDevice)|>\tikzmarkend{sendCyclicTelegram}\setcounter{lstnumber}{166} <|;
+
+				break; |>\setcounter{lstnumber}{216}<|
+			}
+		}
+	} |>\setcounter{lstnumber}{227}<|
+	return retval;
+}
+\end{lstlisting}
+
+Diese iteriert wie in Listing~\ref{lst:4-RevPiDevice_run} abgebildete durch alle gegenwärtig in der SPS konfigurierten Module. Ist das aktuelle Modul als aktiv markiert, so wird anhand eines sog. Firmware-Descriptors entschieden, welche Methode für die Ansteuerung des Moduls aufzurufen ist.
+
+\begin{lstlisting}[language={c},firstnumber=161,caption={Auszug der Methode \lstinline{piDIOComm_sendCyclicTelegram} in \lstinline{piDIOComm.c}\label{lst:4-sendCyclicTelegram}}]
+INT32U piDIOComm_sendCyclicTelegram(INT8U i8uDevice_p)
+{
+	INT32U i32uRv_l = 0;
+	SIOGeneric sRequest_l;
+	SIOGeneric sResponse_l;
+	INT8U len_l, data_out[18], i, p, data_in[70];
+	INT8U i8uAddress;
+	int ret; |>\setcounter{lstnumber}{239}<|
+	
+    |>\tikzmarkin[set border color=martinired]{piIoComm}<|ret = piIoComm_send((INT8U *) & sRequest_l, IOPROTOCOL_HEADER_LENGTH + len_l + 1);  |>\tikzmarkend{piIoComm}\setcounter{lstnumber}{298}<|
+}
+\end{lstlisting}
+
+Im Falle des hier verwendeten DO-Moduls wird die in Listing~\ref{lst:4-sendCyclicTelegram} abgebildete Methode \lstinline{piDIOComm_sendCyclicTelegram()} aufgerufen. Dieser wird ein Zeiger auf das zu schreibende Gerät übergeben. 
+Zunächst wird das Prozessabbild mittels eines proprietären, jedoch im Quellcode offen nachvollziehbaren Protokolls in ein \lstinline{sRequest_l} genanntes Byte-Array umgewandelt. Dieser Schritt ist in Listing~\ref{lst:4-sendCyclicTelegram} nicht abgebildet. Anschließend wird \lstinline{piIoComm_send()} ein Zeiger auf die so generierte Schreib-Anfrage übergeben.
+
+\begin{lstlisting}[language={c},firstnumber=220,caption={Auszug der Methode \lstinline{piIOComm_send} in \lstinline{piIOComm.c}\label{lst:4-piIOComm_send}}]
+int piIoComm_send(INT8U * buf_p, INT16U i16uLen_p)
+{
+	ssize_t write_l = 0;
+	INT16U i16uSent_l = 0;|>\setcounter{lstnumber}{249}<|
+
+	while (i16uSent_l < i16uLen_p) {
+		write_l = vfs_write(piIoComm_fd_m, buf_p + i16uSent_l, i16uLen_p - i16uSent_l, &piIoComm_fd_m->f_pos);
+		if (write_l < 0) {
+			pr_info_serial("write error %d\n", (int)write_l);
+			return -1;
+		} 
+		i16uSent_l += write_l;|>\setcounter{lstnumber}{263}<|
+	}
+	clear();
+	vfs_fsync(piIoComm_fd_m, 1);
+	return 0;
+}
+\end{lstlisting}
+
+Listing~\ref{lst:4-piIOComm_send} zeigt die Implementierung von \lstinline{piIoComm_send()}. Diese Methode ist für das Schreiben der oben generierten Anfrage auf die seriellen Schnittstelle verantwortlich. Realisiert wird dies mittels der Methode \lstinline{vfs_write()}. Diese ist in \lstinline{<linux/fs.h>} definiert. Sie ermöglicht das Schreiben einer Datei im Userspace aus dem Kernel heraus. Geschrieben wird hier die Datei mit dem Deskriptor \lstinline{piIoComm_fd_m}.
+Da die Funktion \lstinline{vfs_write()} durch andere Kernel-Tasks unterbrochen werden kann, ist nicht gewährleistet, dass die gesamte Anfrage mit nur einem Aufruf geschrieben wird. Die oben abgebildete while-Schleife stellt das vollständige Senden der Anfrage sicher.
+
+\begin{lstlisting}[language={c},firstnumber=157,caption={Auszug der Methode \lstinline{piIOComm_open_serial} in \lstinline{piIOComm.c}\label{lst:4-piIOComm_open_serial}}]
+int piIoComm_open_serial(void)
+{   |>\setcounter{lstnumber}{167}<|
+	struct file *fd;	/* Filedeskriptor */
+	struct termios newtio;	/* Schnittstellenoptionen */
+
+	|>\tikzmarkin[set border color=martiniblue]{fd}<|/* Port oeffnen - read/write, kein "controlling tty", 
+	    Status von DCD ignorieren */
+	fd = filp_open(|>\tikzmarkin[set border color=martinired]{tty}<|REV_PI_TTY_DEVICE|>\tikzmarkend{tty}<|, O_RDWR | O_NOCTTY, 0); |>\setcounter{lstnumber}{208}<|
+	
+	piIoComm_fd_m = fd;                                                      |>\tikzmarkend{fd}\setcounter{lstnumber}{217}<|
+
+	return 0;
+}
+\end{lstlisting}
+
+Der zum Schreiben auf die serielle Schnittstelle verwendete Datei-Deskriptor wird von der in Listing~\ref{lst:4-piIOComm_open_serial} abgebildeten Methode \lstinline{piIoComm_open_serial()} generiert. 
+
+\begin{lstlisting}[language={c},firstnumber=45,caption={Definition der seriellen Schnittstelle in \lstinline{piIOComm.h}\label{lst:4-REV_PI_TTY_DEVICE}}]
+#define REV_PI_TTY_DEVICE	"/dev/ttyAMA0"
+\end{lstlisting}
+
+Das in Listing~\ref{lst:4-REV_PI_TTY_DEVICE} definierte Macro verweist auf eine der seriellen Schnittstellen des RaspberryPi.
+Die Implementierung des zugehörigen Schnittstellentreibers soll hier nicht weiter untersucht werden. Somit ist an dieser Stelle die Kette vom Setzen einer Variablen auf dem OPC-Server bis hin zur Aktualisierung des Prozessabbilds der IO-Module geschlossen.
+
+% \begin{lstlisting}[language={c},firstnumber={226},caption={Setzen der Scheduler-Priorität auf SCHED\_FIFO in 
+% revpi\_common.c\label{lst:2-sched_priority}}]
+% param.sched_priority = ktprio->prio;
+% ret = sched_setscheduler(child, SCHED_FIFO, &param);
+% \end{lstlisting}

@@ -11,10 +11,62 @@
 
 \section{Systemkonzept%
   \label{sec:3-konzeption}}
-Auf Basis der in Abschnitt [...] vorgestellten Möglichkeiten folgt nun die Ausarbeitung eines Konzepts.
+Auf Basis der in Abschnitt \ref{sec:2-grundlagen} vorgestellten Möglichkeiten folgt nun die Ausarbeitung eines Konzepts.
+In den folgenden Abschnitten soll näher auf zwei zentrale Aspekte eingegangen werden: Abschnitt~\ref{sec:3-anbindung} stellt Möglichkeiten zum Zugriff auf Variablen bzw.\,Werte im Prozessabbild des Revolution Pi vor; in Abschnitt~\ref{sec:3-integration} wird ein Konzept zur Bereitstellung dieser Variablen auf einem OPC-Server vorgestellt.
 
 \subsection{Anbindung der IO an den OPC-Server%
      \label{sec:3-anbindung}}
 
+Eine Webanwendung mit Bezeichnung PiCtory dient zur Konfiguration der I/O- und virtuellen Module des RevolutionPi. Die Konfiguration liegt im JSON-Format in der Datei \lstinline{/etc/revpi/config.rsc}. Der piControl-Treiber liest diese Datei beim Start. 
+Der folgende Auszug aus der Manpage des piControl-Kernelmoduls beschreibt die von diesem zum Lesen und Schreiben einzelner Bits des Prozessabbildes bereitgestellten Funktionen~\citep[vgl.]{web-revpi-manpage}. Sie ist an dieser Stelle weitgehend ungekürzt zitiert, da sie die nutzbare Schnittstelle sehr kompakt beschreibt.
+
+\begin{lstlisting}[breakindent=0pt, numbers=none, caption={Auszug aus der Revolution Pi Programmers Manual\label{lst:4-manpage}}]
+KB_FIND_VARIABLE SPIVariable *argp
+Find a variable in the process image by its name. A pointer to a structure of type SPIVariable must be passed as argument. [...]
+The struct SPIVariable [...] is defined as 
+typedef struct SPIVariableStr
+{
+    char strVarName[32]; // Variable name
+    uint16_t i16uAddress; // Address of the byte in the process image
+    uint8_t i8uBit; // 0-7 bit position, >= 8 whole byte
+    uint16_t i16uLength; // length of the variable in bits.
+    // Possible values are 1, 8, 16 and 32
+} SPIVariable;
+
+Set and get values of the process image
+KB_GET_VALUE SPIValue *argp
+[...]
+KB_SET_VALUE SPIValue *argp
+Write one bit or one byte to the process image [...].  This call is more efficient than the usual calls of seek and write because only one function call is necessary. If more than on application are writing bits in one output byte, this call is the only safe way to set a bit without overwriting the other bits because this call is doing a read-modify-write-cycle. 
+
+The struct SPIValue used by this ioctl is defined as
+typedef struct SPIValueStr
+{
+    uint16_t i16uAddress; // Address of the byte in the process image
+    uint8_t i8uBit; // 0-7 bit position, >= 8 whole byte
+    uint8_t i8uValue; // Value: 0/1 for bit access, whole byte otherwise
+} SPIValue;
+\end{lstlisting} 
+
+Die oben beschriebenden Funtkionen \lstinline{KB_FIND_VARIABLE}, \lstinline{KB_GET_VALUE} und \lstinline{KB_SET_VALUE} ermöglichen einen einfachen und (lt.\,Manpage) effizienten Zugriff auf einzelne Bits des Prozessabbildes und damit auch auf die IO des RevolutionPi.
+Der Zugriff des OPC-Servers auf das Prozessabbild soll daher mittels dieser Funktionen realisiert werden.
+\lstinline{KB_FIND_VARIABLE} kann genutzt werden, um Adressen von Variablen im Prozessabbild mittels ihres Namens aufzulösen.
+\lstinline{KB_GET_VALUE} und \lstinline{KB_SET_VALUE} ermöglichen den Zugriff auf die Werte dieser Variablen.
+
+
 \subsection{Integration des OPC-Servers in das System%
      \label{sec:3-integration}}
+
+open62541 bietet drei Möglichkeiten zum Abgleich von Variablen mit dem Prozessabbild~\citep[vgl.][Tutorials - Connecting a Variable with a Physical Process]{web-open62541}:
+\begin{itemize}
+    \item Manuelles oder zyklisches Aktualisieren
+    \item Variable Value Callback
+    \item Variable Datasource
+\end{itemize}
+
+Die zyklische Aktualisierung eines oder mehrerer Werte nimmt, abhängig von der Zykluszeit, viele Systemressourcen in Anspruch. Value Callbacks ermöglichen es, einen Variablenwert effizienter mit einer Ressource wie etwa einem Prozessabbild zu synchronisieren. An die Variable wird ein Callback angehängt, welches vor jedem Lesen und nach jedem Schreibvorgang ausgeführt wird.
+Der Wert der Variablen wird weiterhin im Variablenknoten auf dem OPC-Server gespeichert, der Abgleich mit der verknüpften Ressource erfolgt durch die Callback-Methoden.
+
+Sogenannte Datenquellen gehen noch einen Schritt weiter. Der Server leitet jede Lese- und Schreibanforderung direkt an eine Callback-Funktion weiter. Beim Lesen liefert der Rückruf eine Kopie des aktuellen Wertes. Die Datenquelle muss intern ein eigenes Speichermanagement implementieren.
+
+Der Zugriff auf die Werte des Prozessabbildes erfolgt, wie in Abschnitt~\ref{sec:3-anbindung} beschrieben, über von piControl bereitgestellte Methoden. Um die durch open62541 gepflegte OPC-Datenstruktur und das durch piControl verwaltete Prozessabbild möglichst effektiv verknüpfen zu können, soll diese Interaktion mittels Datenquellen und den zugehörigen Callbacks implementiert werden.

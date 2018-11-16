@@ -26,22 +26,29 @@
 \section{Einleitung und Motivation%
   \label{sec:1-einleitung}}
 Ziel dieses Projektes ist die Integration eines OPC-Servers mit einer auf Linux
-basierenden speicherprogrammierbaren Steuerung (SPS). Angeschlossen an diese SPS
-ist jeweils ein digitales Ein-/\,bzw.~Ausgabemodul. Die von diesen bereitgestellten
-Ein-/\, bzw.~Ausgänge (IO) sollen in der Datenstruktur des OPC-Servers abgebildet
-und über diesen für OPC-Clients les-/\,und schreibar sein. Weiterhin sollen einige
-Funktionen zur Überwachung und Steuerung der an die SPS angeschlossenen Aktoren
-und Sensoren direkt im OPC-Server implementiert werden.
-Hiermit stellt dieses Projekt eine der Grundlagen für ein übergeordnetes Projekt,
-die cloudbasierte Steuerung eines miniaturisierten Produktions-Systems, dar.
+basierenden speicherprogrammierbaren Steuerung (SPS). Der OPC-Server implementiert das
+in der Automatisierungstechnik etablierte, IP-basierte und in einem offenen Standard 
+definierte Protokoll OPC-UA.
+Angeschlossen an die SPS ist jeweils ein digitales Ein-/\,bzw.~Ausgabemodul. 
+Die von diesen Modulen bereitgestellten Ein-/\, bzw.~Ausgänge (IO) sollen in 
+der Datenstruktur des OPC-Servers abgebildet werden.
 
-Der hier verwendete OPC-Server ist Teil des sog. open62541 Projekts. Er ist in C
+Weiterhin sollen einige Funktionen zur Überwachung und Steuerung der an die SPS 
+angeschlossenen Aktoren und Sensoren direkt serverseitig implementiert und potentiellen Clients per Applikationsschnittstelle bzw. Application Programming Interface (API) zur Verfügung gestellt werden.
+Hiermit stellt dieses Projekt eine der Grundlagen für ein übergeordnetes Projekt,
+die cloudbasierte Steuerung eines miniaturisierten Produktionssystems, dar.
+
+Das Hauptaugenmerk liegt in dieser Arbeit auf der Anbindung der physischen Ein- und Ausgänge der SPS an den OPC-Server.
+Diese erfolgt mittels eines Kernel-Moduls und ioctl-Aufrufen. Die Verwendung eines echtzeitfähigen Linux-Kernels soll
+Echtzeit im Sinne garantierter Zykluszeiten für das Lesen und Schreiben von Ein- bzw. Ausgängen gewährleisten.
+
+Der hier verwendete OPC-Server ist Teil des sog. open62541 Projektes. Er ist in C
 geschrieben und implementiert bereits einen großen Teil der im OPC-UA-Standard
 spezifizierten Funktionen.
 Als SPS findet ein Revolution Pi 3 der Firma Kunbus Verwendung. Dieser integriert
-ein sog. Compute Module der Raspberry Pi Foundation in ein industrietaugliches
-Gehäuse und erlaubt die Erweiterung mittels IO- oder Gateway-Modulen. Über diese
-erfolgt die Kommunikation mit weiteren Komponenten der Automatisierungstechnik.
+ein sog. Compute Module der Raspberry Pi Foundation in ein zur industriellen 
+Verwendung geeignetes Gehäuse und erlaubt die Erweiterung mittels IO- oder Gateway-Modulen. 
+Diese ermöglichen die Anbindung an weitere Komponenten der Automatisierungstechnik.
 
 Motiviert ist dieses Projekt durch die Beobachtung, dass die Verbreitung offener
 Standards sowie freier Software auch in der Automatisierungstechnik zunimmt.
@@ -57,5 +64,6 @@ Aufbauend auf diesen Grundlagen folgt die konzeptuelle Ausarbeitung im Abschnitt
 Die Umsetzung wird im Abschnitt~\ref{sec:4-implementierung} erläutert.
 Die Leistungsfähigkeit der Implementierung wird in Abschnitt~\ref{sec:5-tests} untersucht.
 Eine Zusammenfassung und ein Ausblick schließen die Arbeit in
-Abschnitt~\ref{sec:6-fazit} ab. Eventuell noch benötigte Anhänge
-finden sich in den Anhängen [...] bis [...].
+Abschnitt~\ref{sec:6-fazit} ab.
+
+Der vollständige Quellcode sowie ergänzende Dokumentation ist auf Github im Projektverzeichnis serverless\_plc des Nutzers CVH-Lernfabrik verfügbar\footnote{siehe \url{ https://github.com/CVH-Lernfabrik/serverless_plc}}.
