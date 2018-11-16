@@ -10,22 +10,41 @@
 
 \section{Grundlagen%
   \label{sec:2-grundlagen}}
+Die folgenden Abschnitte bieten einen Überblick über die Verwendung offener Betriebssysteme und
+Schnittstellen in der Automatisierungstechnik.
+In Abschnitt~\ref{sec:2-sps} wird am Beispiel des Revolution Pi eine modulare Steuerung 
+auf Basis von Linux vorgestellt. Ferner werden in Abschnitt~\ref{sec:2-echtzeit} die Themen Echtzeitfähigkeit und Portabilität von Software behandelt.
 
-\subsection{Speicherprogrammierbare-Steuerung und Linux -- Revolution Pi%
+Eine große Zahl an Systemen in der Automatisierungstechnik ist heutzutage als eine Menge von Subsystemen mit
+jeweils eigenem Speicher und Rechenleistung zu betrachten. Die zunehmende Komplexität von Fertigungsabläufen in Verbindung mit einer stetig abnehmenden Losgröße erfordert eine immer umfangreichere Kommunikation zwischen diesen Subsystemen.
+Dies gelingt, insbesondere bei Verwendung von Komponenten unterschiedlicher Hersteller, nur mittels offener und flexibler Schnittstellen. OPC-UA stellt eine solche Schnittstelle dar und wird in Abschnitt~\ref{sec:2-opc} vorgestellt.
+
+\subsection{Speicherprogrammierbare Steuerung auf Linux-Basis%
      \label{sec:2-sps}}
+In diesem Abschnitt wird mit dem Revolution Pi eine Hard- und Softwarelösung zur Verwendung von Linux als Steuerung in der
+Automatisierungstechnik vorgestellt.
 
-\subsubsection{Kunbus RevolutionPi%
+\subsubsection{Kunbus Revolution Pi%
         \label{sec:2-revpi}}
-Der RevolutionPi 3 ist eine speicherprogrammierbare Steuerung (SPS) des Herstellers
-Kunbus GmbH. Kern dieser SPS ist das von der Raspberry Pi Foundation entwickelte
-und vertriebene Raspberry Pi Compute Module 3. Dieses integriert ein Broadcom BCM2837
-System-on-Chip (SoC) mit vier 1,2GHz Prozessorkernen, 1GB RAM, 4GB eMMC Anwendungsspeicher
-und sonstige Peripherie in ein Modul im DDR2-SODIMM Formfaktor. Diese Spezifikationen
-sind weitgehend identisch zu denen des ausgesprochen populären Raspberry Pi 3.
-Der Revolution Pi profitiert daher von dem gleichen großen Angebot an Software
-und Unterstützung wie der Raspberry Pi, ergänzt dessen Hardware jedoch um eine 24V
-Spannungsversorgung, die Möglichkeit der Erweiterung durch mehrere industrietaugliche
-Ein-/ Ausgabemodule und Gateways sowie ein Gehäuse zur Montage auf einer DIN-Schiene.
+Als Revolution Pi (RevPi) vertreibt die Firma Kunbus GmbH eine modulare, speicherprogrammierbare 
+Steuerung (SPS). Zentrales Element dieser SPS ist der sog. RevPi Core, hier in der Version 3.
+Kernkomponente des RevPi Core 3 ist das von der Raspberry Pi Foundation entwickelte und vertriebene 
+Raspberry Pi Compute Module 3 (CM3, siehe Bild~\ref{fig:revpi-expl}. 
+Die Architektur des CM3 ist weitgehend identisch zu der des allgemein bekannten Raspberry Pi 3.
+Der RevPi Core 3 profitiert daher von dem selben großen Angebot an Software
+und Unterstützung wie der Raspberry Pi. Er ergänzt dessen Hardware jedoch um eine 24V
+Spannungsversorgung und die Möglichkeit der Erweiterung durch mehrere, zur industriellen 
+Verwendung geeignete Ein- und Ausgabemodule (IO-Module. Die Integration dieser Merkmale in ein robustes Gehäuse 
+mit Aufnahme für eine DIN-Schiene ermöglicht die Verwendung im industriellen Umfeld.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.85\textwidth]{doc/tex/images/revpi_teardown.png}
+    \caption{Der RevPi Core 3 und seine Einzelkomponenten (Quelle: Kunbus)
+      \label{fig:revpi-expl}}
+\end{figure}
+
+Spezifikationen des RevPi Core 3 \citep[Auswahl, vgl.][S. 1]{datasheet-revpi}:
 \begin{itemize}
   \item{Prozessor: BCM2837}
   \item{Taktfrequenz 1,2 GHz}
@@ -34,48 +53,92 @@ Ein-/ Ausgabemodule und Gateways sowie ein Gehäuse zur Montage auf einer DIN-Sc
   \item{eMMC Flash Speicher: 4 GByte}
   \item{Betriebssystem: Angepasstes Raspbian mit RT-Patch}
   \item{RTC mit 24h Pufferung über wartungsfreien Kondensator}
-  \item{Treiber / API: Treiber schreibt zyklisch Prozessdaten in ein Prozessabbild, Zugriff auf Prozessabbild über Linux-Filesystem als API zu Fremdsoftware.}
-  \item{Kommunikationsanschlüsse: 2 x USB 2.0 A (je 500 mA belastbar), 1 x Micro-USB, HDMI, Ethernet (RJ45) 10/100 Mbit/s}
+  \item{Treiber / API: Kernel-Treiber schreibt zyklisch Prozessdaten in ein Prozessabbild, Zugriff auf Prozessabbild mittels ioctl-Anfragen oder über Linux-Dateisystem als API zu Fremdsoftware}
+  \item{Kommunikationsanschlüsse: 2 x USB 2.0 A, 1 x Micro-USB, HDMI, Ethernet 10/100 Mbit/s}
   \item{Stromversorgung: min. 10,7 V, max. 28,8 V, maximal 10 Watt}
-  \item{Zulässige Umgebungstemperatur: -40 bis +55 C}
-  \item{Gehäuseabmessungen: (HxBxL) 96 mm x 22,5 mm x 110,5 mm (ohne gesteckte Stecker)}
-  \item{ESD Schutz: 4 kV / 8 kV gemäß EN61131-2 und IEC 61000-6-2}
-  \item{Surge / Burst Prüfungen: gemäß EN61131-2 und IEC 61000-6-2 eingekoppelt auf Versorgungsspannung, Ethernet und IO-Leitungen}
-  \item{EMI Prüfungen: gemäß EN61131-2 und IEC 61000-6-2}
 \end{itemize}
 
-Kunbus bietet eine Auswahl an IO- und Gateway-Modulen zur Erweiterung des Revolution Pi an.
-Gateways dienen der Kommunikation mit Systemen oder Komponenten der Automatisierungstechnik
-über Protokolle wie PROFIBUS oder EtherCAT. IO-Module erlauben die Überwachung
-und Steuerung von digitalen oder analogen Ein- und Ausgängen.
+Kunbus stellt für den Revolution Pi ein auf Raspbian\footnote{Raspbian ist eine speziell 
+für den Raspberry Pi angepasste Variante von Debian.} Stretch basierendes Betriebssystem bereit.
+Verwendet wird der Kernel 4.9.76-rt60-v7+ in Verbindung mit dem SMP PREEMPT RT Patch.
+
+\begin{figure}
+    \centering
+    \includegraphics[trim={13cm 5cm 1cm 3cm}, clip, width=0.85\textwidth]{../photos/serverless_plc_img_8}
+    \caption{Der Revolution Pi 3 mit digitalen IO-Modulen}
+    \label{fig:rev-pi-io}
+\end{figure}
+
+Kunbus bietet neben dem sog. Core auch IO- und Gateway-Modulen zur Erweiterung der SPS an, siehe Bild~\ref{fig:rev-pi-io}.
+Gateways dienen der Kommunikation mit externen Systemen oder Komponenten
+über in der Automatisierungstechnik gängige Protokolle wie PROFIBUS oder EtherCAT. 
+IO-Module erlauben die Überwachung und Steuerung von digitalen oder analogen Ein- und Ausgängen (IOs).
+
+Kunbus deklariert die Hardware des Revolution Pi als Open-Source \citep[vgl.][S. 4]{flyer-revpi}. 
+Die Schaltpläne des Revolution Pi, genauer die des RevPi Core 3 und der IO-Module, stehen auf der
+Website\footnote{\label{downloads}\url{https://revolution.kunbus.com/tutorials/downloads/}} des Herstellers zum 
+Download bereit. Eine Lizenz wird nicht angegeben.
+Die Raspberry Pi Foundation stellt die Schaltpläne des Compute Modules des weiteren in ihrem Gitub-Repository 
+zum Download bereit.
+
+Sowohl die Raspberry Pi Foundation als auch die Kunbus GmbH pflegen aktiv ihre öffentlichen Repositories\footnote{\url{https://github.com/raspberrypi/} resp.~\url{https://github.com/RevolutionPi/}}
+auf Github. 
+
+% Kunbus konnte so einige Verbesserungen zum Linux Kernel 4.15 beitragen
+% \footnote{siehe \url{https://revolution.kunbus.com/our-contribution-to-linux-4-15/}}.
+% \todo{letzten Absatz evtl. weglassen? an sich nicht schlecht, passt aber irgendwie 
+% nicht richtig zum Rest und stört den Lesefluss}
 
 \subsubsection{Zugriff auf IO-Module%
         \label{sec:2-io}}
-Der Zugriff auf die Ein- und Ausgänge der IO-Module erfolgt über ein Prozessabbild
-und einen hierfür von Kunbus bereitgestellten Treiber, genannt piControl. Dieser
-aktualisiert das Prozessabbild zyklisch. Die angestrebte Zykluszeit beträgt 5ms,
-kann jedoch je nach Anzahl der angeschlossenen Module auch größer sein. Kunbus
-garantiert bei drei IO-Modulen und zwei Gateway-Modulen eine Zykluszeit von 10 ms.
+Der Zugriff auf die Ein- und Ausgänge der IO-Module erfolgt über einen RS485-Bus und einen in Form eines Kernel-Moduls bereitgestellten Treiber, genannt piControl. Der RS485-Bus ist über die serielle Schnittstelle des Compute Modules angebunden. 
+piControl stellt ein Prozessabbild bereit, welches den physikalischen Zustand der Ein- und Ausgänge der IO-Module repräsentiert.
+Das Prozessabbild wird, wie in der Automatisierungstechnik üblich, zyklisch aktualisiert. 
+Die angestrebte Zykluszeit beträgt 5ms, kann jedoch je nach Anzahl der angeschlossenen Module auch größer sein. 
+Kunbus garantiert bei drei IO-Modulen und zwei Gateway-Modulen eine Zykluszeit von 10 ms \citep[vgl.][]{web-revpi-dio}.
+Die garantierte Zykluszeit ermöglicht die Umsetzung von Anwendungen mit harten Echtzeit-Anforderungen.
+
+Fremdanwendungen können über eine Applikationsschnittstelle (API) auf das Prozessabbild zugreifen. 
+Hierzu stellt das Kernel-Modul piControl sowohl \lstinline{seek}, \lstinline{read} und \lstinline{write} Methoden zur verfügung, wie auch die Möglichkeit mittels \lstinline{ioctl}-Anfragen gezielt auf einzelne Variablen des Prozessabbildes zuzugreifen.
+In der englischsprachigen Wikipedia werden ioctl-Aufrufe wie folgt beschrieben:
+
+\glqq{}The kernel is designed to be extensible, and may accept an extra module called a device driver which runs in kernel space and can directly address the device. An ioctl interface is a single system call by which userspace may communicate with device drivers. [...] The basic kernel can thus allow the userspace to access a device driver without knowing anything about the facilities supported by the device, and without needing an unmanageably large collection of system calls.
+
+[...] ioctl calls provide a convenient way to bridge userspace code to kernel extensions. Kernel extensions can provide a location in the filesystem that can be opened by name, through which an arbitrary number of ioctl calls can be dispatched, allowing the extension to be programmed without adding system calls to the operating system.\grqq{}\citep[vgl.][]{web-wiki-ioctl}
+
+Der Quellcode von piControl steht unter der GNU General Public License Version 2 (GNU GPLv2) und ist 
+auf Github verfügbar\footnote{\url{https://github.com/RevolutionPi/piControl}}. Als Einstieg in die 
+Entwicklung eigener Steuerungsprogramme liefert Kunbus das C-Programm piTest mit. Dieses verwendet 
+piControl und erlaubt dem Nutzer über Kommandozeilen-Parameter die angeschlossenen IO-Module zu steuern.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[trim={4cm 7cm 10.5cm 7.3cm}, clip, width=\textwidth]{literature/SchematicPrintsRevPi-DIO}
+    \caption{Schematische Darstellung eines DIO-Moduls (Quelle: Kunbus\textsuperscript{\ref{downloads}})
+      \label{fig:dio}}
+\end{figure}
+
 Jedes der IO-Module stellt ein eigenständiges eingebettetes System dar. Es verfügt
 über einen Microcontroller, welcher die IOs bereitstellt und über einen RS485-Bus
-mit dem Revolution Pi kommuniziert.
-% https://revolution.kunbus.de/io-modul/
-
-Lizenz: GPL
-% https://github.com/RevolutionPi/piControl
-
-\begin{lstlisting}[language={c},firstnumber={226},caption={Setzen der Scheduler-Priorität auf SCHED\_FIFO in revpi\_common.c\label{lst:2-sched_priority}}]
-param.sched_priority = ktprio->prio;
-ret = sched_setscheduler(child, SCHED_FIFO,
-       &param);
-\end{lstlisting}
+mit dem Revolution Pi kommuniziert (siehe Bild~\ref{fig:dio}). 
+Kunbus stellt exemplarisch den Quellcode eines DIO-Moduls unter der MIT Lizenz zur
+Verfügung\footnote{\url{https://github.com/RevolutionPi/IODeviceExample}}. 
 
 
-\subsection{Echtzeit und Multithreading unter Linux -- preemptRT und posix%
+\subsection{Echtzeit und Multitasking unter Linux -- preemptRT und posix%
      \label{sec:2-echtzeit}}
+     
+Moderne Betriebssysteme realisieren Multitasking i.d.R.\,in Form des präemptiven Multitasking. 
+Der Kernel verfügt über einen sog. Scheduler. Dieser priorisiert alle Prozesse und weist ihnen 
+Rechenzeit in sog. Time Slots zu. Die Größe der Zeitfenster sowie die Ausführungsreihenfolge 
+ist von der Priorität eines Prozesses abhängig. Besonders an einem präemptiven im Gegensatz zu einem kooperativen Scheduler ist dessen Fähigkeit, Tasks während ihrer Ausführung zu unterbrechen bzw. zu pausieren, wenn diese eine bestimmte Dauer überschreiten oder ein höher priorisierter Prozess (bspw. ausgelöst durch einen Interrupt oder durch eine inhärente Periodizität) Rechenleistung benötigt.
 
-
- Der Linux-Kernel verfügt über mehrere unterschiedliche Preemtion-Modelle:
+Eine Sonderform des präemptiven Multitasking ist das präemptible Multitasking. Hierbei werden auch Teile 
+des Kernels als Threads durch den Scheduler ausgeführt. Dieser ist somit in der Lage, auch Prozesse des Kernels
+zu unterbrechen, wenn andere Anwendungen Prozessorzeit oder Zugriff auf andere Systemressourcen benötigen
+\citep[vgl.][]{web-wiki-praempt}.
+     
+Der Linux-Kernel implementiert unterschiedliche Präemptions-Modelle \citep[vgl.][/preemption\_models]{web-linuxwiki-basics}:
 
 \begin{itemize}
   \item No Forced Preemption (server):
@@ -97,30 +160,33 @@ ret = sched_setscheduler(child, SCHED_FIFO,
 
   \item Fully Preemptible Kernel (RT):
   Wie auch bei den beiden zuvor genannten Modellen ist hier der gesamte Kernel
-  präemtible, die Anzahl und Dauer der nicht-präemtiblen kritischen Abschnitte
+  präemtible. Die Anzahl und Dauer der nicht-präemtiblen kritischen Abschnitte
   ist auf ein notwendiges Minimum beschränkt. Alle Interrupt-Handler sind als
   eigenständige Threads ausgeführt, Spinlocks durch Sleeping-Spinlocks und Mutexe
   durch sog.~RT-Mutexe ersetzt.
 
 \end{itemize}
-\todo{Spinlocks und Mutexe sowie die RT-Varianten dieser erklären!}
 
-Lediglich mit dem vollständig präemtiblen Kernel kann Echtzeit-Verhalten realisiert werden.
+Lediglich ein präemtibler Kernel kann hartes Echtzeit-Verhalten realisieren, 
+da nur hier eine maximale Antwortzeit garantiert werden kann.
+Viele Prozesse in der Automatisierungstechnik erfordern harte Echtzeit. 
+Eine verspätete Antwort auf eine Anfrage, 
+wie etwa das Signal eines Lagenendschalters oder eines Notausschalters kann hier nicht nur über
+den Erfolg eines Prozesses, sondern auch über das Leben der daran beteiligten Mitarbeiter entscheiden.
+Für weiterführende Erklärungen bzgl.\,Echtzeit, Mutexen und 
+Spinlocks sei an dieser Stelle auf die Vorlesung verwiesen~\citep{script-peter}.
 
-% https://wiki.linuxfoundation.org/realtime/documentation/technical_basics/preemption_models bzw kernel/Kconfig.preempt
 
 \subsubsection{preemptRT%
         \label{sec:2-preemptRT}}
-% https://wiki.linuxfoundation.org/realtime/documentation/technical_details/start
-% https://wiki.linuxfoundation.org/realtime/documentation/technical_basics/start
 
-Das dem PREEMPT RT Kernel zugrunde liegende Prinzip lässt sich in einer einfachen
-Regel ausdrücken: Nur Code, welcher absolut nicht-präemtible sein darf, ist es
-gestattet nicht-präemtible zu sein.
-Das erklärte Ziel des PREEMPT\_RT Patches ist es folglich, die Menge des nicht-präemtiblen
+Der Kernel des auf dem Revolution Pi installierten Raspbian mit PREEMP\_RT Patch fällt 
+in die Kategorie des \glqq{}Fully Preemptible Kernels\grqq{} (siehe Abschnitt \ref{sec:2-echtzeit}).
+Das zugrunde liegende Prinzip lässt sich wie folgt formulieren: Nur Code, welcher absolut nicht-präemtible sein darf, ist es
+gestattet nicht-präemtible zu sein. Ziel ist folglich, die Menge des nicht-präemtiblen 
 Codes im Linux-Kernel auf das absolut notwendige Minimum zu reduzieren.
 
-Dies wird durch Verwendung folgender Mechanismen erreicht:
+Dies wird durch Verwendung folgender Mechanismen erreicht~\citep[vgl.][]{web-linuxwiki-details}:
 
 \begin{itemize}
   \item Hochauflösende Timer
@@ -130,26 +196,62 @@ Dies wird durch Verwendung folgender Mechanismen erreicht:
   \item RCU
 \end{itemize}
 
+Diese Mechanismen sind bspw. im Linux-Wiki\footnote{siehe \url{https://wiki.linuxfoundation.org/realtime/documentation/technical_details}} ausführlich beschrieben.
 
-\subsubsection{posix%
+\subsubsection{POSIX%
         \label{sec:2-posix}}
-Ist posix hier wirklich relevant? Debian bzw.~Raspbian sind weitgehend posix
-kompatibel, aber wird es hier genutzt? -> JA, open62541 nutzt pthread.h
-piControl nutzt kthread.h, und semaphore.h
+Das Portable Operating System Interface (POSIX) bezeichnet eine Sammlung von Standards, 
+welche auf dem Unix-System basieren, jedoch nicht auf dieses beschränkt sind.
+
+Der Wechsel zwischen verschiedenen Unix-Distributionen brachte oft Kompatibilitätsprobleme mit sich. 
+Dieser Mangel an Portabilität erschwerte Benutzern und Entwicklern die Verwendung bzw. Bereitstellung 
+von Software auf unterschiedlichen Systemen. 
+Das Institut für Elektrotechnik und Elektronik (IEEE) begann 1984 mit der Entwicklung des Unix-Standards.
+Sie entwickelten das, was heute als Single UNIX Specification bekannt ist und allgemein als POSIX bezeichnet wird~\citep[vgl.][]{web-debianwiki-posix}.
+Das Konsortium \glqq{}The Open Group\grqq{} überwacht die weitere Entwicklung dieses Standards.
+Ferner stellt es einen Teil der POSIX-Spezifikation frei zur Verfügung~\citep[vgl.][]{web-opengroup-posix}.
+
+Die aktuelle Version POSIX.1-2017 ist verfügbar als IEEE Standard 1003.1-2017 sowie in Form der \glqq{}The Open Group Technical Standard Base Specifications\grqq{}, Ausgabe 7. POSIX.1-2017 definiert eine Standard-Betriebssystemschnittstelle und -umgebung, einschließlich eines Befehlsinterpreters (auch Shell genannt) und gängiger Dienstprogramme zur Unterstützung der Portabilität von Anwendungen auf Quellcode-Ebene. POSIX.1-2017 ist sowohl für Anwendungsentwickler als auch für Systemimplementierer gedacht und umfasst vier Hauptkomponenten \citep[vgl.][]{web-opengroup-overview}:
+\begin{itemize}
+    \item Basisdefinitionen:\\
+          Allgemeine Begriffe, Konzepte und Schnittstellen einschließlich Hilfskonventionen und C-Headern
+          
+    \item Systemschnittstellen:\\
+          Definitionen für Systemdienstfunktionen und Unterprogramme, C-spezifische Systemdienste, Portabilität
+        
+    \item Shell und Dienstprogramme:\\
+          Definitionen für eine Schnittstelle zur Befehlsinterpretation von Diensten und gängige Hilfsprogramme
+    
+    \item Begründungen und Historie
+\end{itemize}
+
+Debian basiert auf Linux und verwendet den Linux-Kernel. Linux ist zu großen Teilen POSIX-kompatibel. Debian ist jedoch nicht POSIX-zertifiziert, da diese Zertifizierung mit hohen Kosten verbunden ist\citep[vgl.][Kapitel 4.4.]{web-debian-faq}.
+
+Beide Kernkomponenten des in dieser Arbeit vorgestellten Projektes nutzen Komponenten von Linux, 
+welche an den POSIX-Standard angelehnt sind: open62541 verwendet u.a.\,POSIX-Threads und
+Mutexe~\citep[vgl.][pthread.h]{web-opengroup-pthread}, piControl nutzt POSIX-Semaphoren
+\citep[vgl.][semaphore.h]{web-opengroup-semaphore}. 
+
 
 \subsection{OPC-UA und open62541%
      \label{sec:2-opc}}
+In diesem Abschnitt sollen Möglichkeiten des Datenaustausch zwischen Komponenten der
+Automatisierungstechnik vorgestellt werden. OPC-UA stellt einen offenen, IP-basierten Kommunikationsstandard
+für Sensoren und Steuerungen dar. open62541 ist eine freie Client- sowie Server-Implementierung dieses
+Standards, geschrieben in C.
+
 
 \subsubsection{OPC UA%
         \label{sec:2-opcua}}
+
 Open Platform Communications (OPC) ist eine Familie von Standards zur herstellerunabhängigen
-Kommunikation von Maschinen (M2M) in der Automatisierungstechnik. Die sog.~OPC Task Force, zu deren
-Mitgliedern verschiedene große Firmen der Automatisierungsindustrie gehören, veröffentlichte
+Kommunikation von Maschinen (M2M) in der Automatisierungstechnik. Die sog. OPC Task Force, zu deren
+Mitgliedern verschiedene etablierte Firmen der Automatisierungsindustrie gehören, veröffentlichte
 die OPC Specification Version 1.0 im August 1996.
 Motiviert ist dieser offene Standard durch die Erkenntniss, dass die Anpassung der
 zahlreichen Herstellerstandards an individuelle Infrastrukturen und Anlagen einen
 großen Mehraufwand verursachen.
-Die Wikipedia beschreibt das Anwendungsgebiet für OPC wie folgt:
+Die Wikipedia beschreibt das Anwendungsgebiet für OPC wie folgt \citep[vgl.][]{web-wiki-opc}:
 
 \glqq{}OPC wird dort eingesetzt, wo Sensoren, Regler und Steuerungen verschiedener Hersteller
 ein gemeinsames Netzwerk bilden. Ohne OPC benötigten zwei Geräte zum Datenaustausch
@@ -165,51 +267,58 @@ unabhängig voneinander implementiert werden können. OPC lässt sich damit verw
 für Echtzeitdaten (Überwachung), Datenarchivierung, Alarm-Meldungen und neuerdings
 auch direkt zur Steuerung (Befehlsübermittlung).\grqq{}
 
-OPC basiert in der ursprünglichen Spezifikation auf Microsofts DCOM-Spezifikation.
+OPC basiert in der ursprünglichen Spezifikation (auch als OPC DA bezeichnet) auf Microsofts DCOM-Spezifikation.
 DCOM macht Funktionen und Objekte einer Anwendung anderen Anwendungen im Netzwerk
 zugänglich. Der OPC-Standard definiert entsprechende DCOM-Objekte um mit anderen
 OPC-Anwendungen Daten austauschen zu können. Die Verwendung von DCOM bindet Anwender
-an Betriebssysteme von Microsoft. Die ursprüngliche OPC Spezifikation wird durch die
-Entwicklung von OPC Unified Architecture (OPC UA) abgelöst.
-OPC UA setzt auf einem eigenen Kommunikationionsstack auf, die Verwendung von DCOM
+jedoch an Betriebssysteme von Microsoft. 
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.85\textwidth]{images/UA_Architecture_1024.png}
+    \caption{Die OPC Unified Architecture. Grafik von Gerhard Gappmeier - ascolab GmbH, CC BY-SA 3.0}
+    \label{fig:opc-unified-architecture}
+\end{figure}
+% Evtl Grafik: Von Gerhard Gappmeier - ascolab GmbH, CC BY-SA 3.0, https://de.wikipedia.org/w/index.php?curid=1892069
+
+Die ursprüngliche OPC Spezifikation wurde 2006 durch die Entwicklung der 
+OPC Unified Architecture (OPC UA) überholt. 
+Diese zeichnet sich durch eine Service-orientierte Architektur (SOA) aus, deren Struktur
+aus mehreren Schichten besteht, siehe Abbilung~\ref{fig:opc-unified-architecture}. 
+Über der untersten Schicht, dem Betriebssystem des Servers, verbindet eine Portabilitäts-Schicht 
+den sog.\, UA ANSI C Stack mit einer API. Diese API kann bspw.\,in C++ geschrieben sein, 
+und erlaubt die Anbindung der obersten Schicht, der Anwendungsschicht~\citep[vgl.][]{web-spec-opc}.
+OPC UA setzt auf einem eigenen Kommunikationsstack auf; die Verwendung von DCOM
 und damit die Bindung an Microsoft wurden aufgelöst.
 
-Die OPC-UA-Architektur ist eine Service-orientierte Architektur (SOA), deren Struktur
-aus mehreren Schichten besteht.
+Neben Architektur und Kommunikationsschnittstellen wird in der OPC Spezifikation auch ein 
+Informationsmodell definiert. Die deutschsprachige Wikipedia beschreibt dieses wie folgt: 
 
-% Wikipedia
-Das OPC-Informationsmodell ist nicht mehr nur eine Hierarchie aus Ordnern, Items
+\glqq{}Das OPC[-UA]-Informationsmodell ist nicht mehr nur eine Hierarchie aus Ordnern, Items
 und Properties. Es ist ein sogenanntes Full-Mesh-Network aus Nodes, mit dem neben
-den Nutzdaten eines Nodes auch Meta- und Diagnoseinformationen repräsentiert werden.
+den Nutzdaten eines Nodes auch Meta- und Diagnoseinformationen repräsentiert werden. [...]
 Ein Node ähnelt einem Objekt aus der objektorientierten Programmierung. Ein Node
-kann Attribute besitzen, die gelesen werden können (Data Access (DA), Historical
-Data Access (HDA)). Es ist möglich Methoden zu definieren und aufzurufen.
-Eine Methode besitzt Aufrufargumente und Rückgabewerte. Sie wird durch ein Command
-aufgerufen. Weiterhin werden Events unterstützt, die versendet werden können
+kann Attribute besitzen, die gelesen werden können. Es ist möglich Methoden zu definieren und aufzurufen. [...]
+Weiterhin werden Events unterstützt, die versendet werden können
 (AE (Alarms \& Events), DA DataChange), um bestimmte Informationen zwischen Geräten
 auszutauschen. Ein Event besitzt unter anderem einen Empfangszeitpunkt, eine Nachricht
-und einen Schweregrad. Die o. g. Nodes werden sowohl für die Nutzdaten als auch
+und einen Schweregrad. Die o.\,g. Nodes werden sowohl für die Nutzdaten als auch
 alle anderen Arten von Metadaten verwendet. Der damit modellierte OPC-Adressraum
-beinhaltet nun auch ein Typmodell, mit dem sämtliche Datentypen spezifiziert werden.
+beinhaltet nun auch ein Typmodell, mit dem sämtliche Datentypen spezifiziert werden.\grqq{}
 
-% https://de.wikipedia.org/wiki/Open_Platform_Communications
-% https://de.wikipedia.org/wiki/OPC_Unified_Architecture
-% https://opcfoundation.org/developer-tools/specifications-unified-architecture
-% Von Gerhard Gappmeier - ascolab GmbH, CC BY-SA 3.0, https://de.wikipedia.org/w/index.php?curid=1892069
+
 \subsubsection{open62541%
         \label{sec:2-open62541}}
-open62541 ist eine offene und freie Implementierung von OPC UA. Die in C geschriebene
-Bibliothek stellt eine beständig zunehmende Anzahl der im OPC UA Standard definierten
-Funktionen bereit. Sie kann sowohl zur Erstellung von OPC-Servern als auch -Clients
+open62541 ist eine offene und freie Implementierung von OPC UA. 
+Die in C geschriebene Bibliothek stellt eine beständig zunehmende Anzahl der im OPC UA Standard definierten
+Funktionen bereit. Sie kann sowohl zur Erstellung von OPC-Servern als auch von -Clients
 genutzt werden. Ergänzend zu der unter der Mozilla Public License v2.0 lizensierten
 Bibliothek stellt das open62541 Projekt auch Beispielprogramme unter einer CC0 Lizenz
 zur Verfügung.
+Zu den Unterstützern des Projektes zählen u.a.\, die RWTH Aachen, das Frauenhofer IOSB sowie die TU Dresden.
 
 Die Bibliothek eignet sich auch für die Entwicklung auf eingebetteten Systemen und
-Microcontrollern. Je nach Umfang der gewünschten Funktionen und des OPC Informationsmodells
-beträgt die Größe einer Server-Binary weniger als 100kb. %evtl. kürzen?
-
-\todo{Nodes erklären! Evtl.~oben!}
+Microcontrollern. Die Größe einer Server-Binary kann weniger als 100kB betragen.
 
 Folgende Auswahl an Eigenschaften und Funktionen zeichnet die in dieser Arbeit verwendete
 Version 0.3 von open62541 aus:
@@ -241,11 +350,4 @@ Version 0.3 von open62541 aus:
   \end{itemize}
 \end{itemize}
 
-% https://open62541.org/doc/0.3/
-
-
-Mozilla Public License
-CC0 Lizenz für Beispiele und Plugins
-
-% https://open62541.org/doc/open62541-current.pdf
-% https://open62541.org/
+Weiterführende Informationen und Code-Beispiele bietet die ausführliche Dokumentation des Projektes~\citep[siehe]{web-open62541} sowie der kommentierte Quelltext.
